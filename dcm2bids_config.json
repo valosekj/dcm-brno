@@ -19,21 +19,10 @@
         {
             "dataType": "anat",
             "modalityLabel": "T2star",
-            "customLabels": "acq-2-5mm",
             "criteria": {
                 "SeriesDescription": "t2_me2d*",
                 "ProtocolName": "t2_me2d*",
                 "SliceThickness": 2.5
-            }
-        },
-        {
-            "dataType": "anat",
-            "modalityLabel": "T2star",
-            "customLabels": "acq-3mm",
-            "criteria": {
-                "SeriesDescription": "t2_me2d*",
-                "ProtocolName": "t2_me2d*",
-                "SliceThickness": 3
             }
         },
         {

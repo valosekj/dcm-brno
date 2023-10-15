@@ -1,0 +1,169 @@
+{
+    "descriptions": [
+        {
+            "dataType": "anat",
+            "modalityLabel": "T1w",
+            "criteria": {
+                "SeriesDescription": "t1_tse_tra",
+                "ProtocolName": "t1_tse_tra"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "T2w",
+            "criteria": {
+                "SeriesDescription": "t2_tse_sag*",
+                "ProtocolName": "t2_tse_sag*"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "T2star",
+            "customLabels": "acq-2-5mm",
+            "criteria": {
+                "SeriesDescription": "t2_me2d*",
+                "ProtocolName": "t2_me2d*",
+                "SliceThickness": 2.5
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "T2star",
+            "customLabels": "acq-3mm",
+            "criteria": {
+                "SeriesDescription": "t2_me2d*",
+                "ProtocolName": "t2_me2d*",
+                "SliceThickness": 3
+            }
+        },
+        {
+            "dataType": "dwi",
+            "modalityLabel": "dwi",
+	          "customLabels": "acq-RESOLVE_dir-AP",
+            "criteria": {
+                "SeriesDescription": "resolve_AX_AP_p2",
+                "ProtocolName": "resolve_AX_AP_p2"
+                }
+        },
+        {
+            "dataType": "dwi",
+            "modalityLabel": "dwi",
+            "customLabels": "acq-RESOLVE_dir-PA",
+            "criteria": {
+                "SeriesDescription": "resolve_AX_PA_p2",
+                "ProtocolName": "resolve_AX_PA_p2"
+                }
+        },
+        {
+            "dataType": "dwi",
+            "modalityLabel": "dwi",
+            "customLabels": "acq-ZOOMit_dir-AP",
+            "criteria": {
+                "SeriesDescription": "*ZOOMit_AP*",
+                "ProtocolName": "*ZOOMit_AP*",
+                "ReconMatrixPE": "68",
+                "RepetitionTime": "6.7"
+                }
+        },
+        {
+            "dataType": "dwi",
+            "modalityLabel": "dwi",
+            "customLabels": "acq-ZOOMit_dir-PA",
+            "criteria": {
+                "SeriesDescription": "*ZOOMit_PA*",
+                "ProtocolName": "*ZOOMit_PA*",
+                "ReconMatrixPE": "68",
+                "RepetitionTime": "6.7"
+                }
+        },
+        {
+            "dataType": "dwi",
+            "modalityLabel": "dwi",
+            "customLabels": "acq-ZOOMitNOinterp_dir-AP",
+            "criteria": {
+                "SeriesDescription": "*ZOOMit_AP*",
+                "ProtocolName": "*ZOOMit_AP*",
+                "ReconMatrixPE": "34"
+                }
+        },
+        {
+            "dataType": "dwi",
+            "modalityLabel": "dwi",
+            "customLabels": "acq-ZOOMitNOinterp_dir-PA",
+            "criteria": {
+                "SeriesDescription": "*ZOOMit_PA*",
+                "ProtocolName": "*ZOOMit_PA*",
+                "ReconMatrixPE": "34"
+                }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "T1w",
+            "criteria": {
+                "SeriesDescription": "T1w",
+                "ProtocolName": "*T1w"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "T2w",
+            "criteria": {
+                "SeriesDescription": "T2w",
+                "ProtocolName": "*T2w"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "MTS",
+            "customLabels": "acq-T1w",
+            "criteria": {
+                "SeriesDescription": "GRE-T1*",
+                "ProtocolName": "*GRE-T1*"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "MTS",
+            "customLabels": "acq-MT",
+            "criteria": {
+                "Manufacturer": "Philips",
+                "SeriesDescription": "GRE-MT",
+                "ProtocolName": "WIP_GRE-MT"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "MTS",
+            "customLabels": "acq-MTon",
+            "criteria": {
+                "SeriesDescription": "GRE-MT1",
+                "ProtocolName": "GRE-MT1"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "MTS",
+            "customLabels": "acq-MToff",
+            "criteria": {
+                "SeriesDescription": "GRE-MT0",
+                "ProtocolName": "GRE-MT0"
+            }
+        },
+        {
+            "dataType": "anat",
+            "modalityLabel": "T2star",
+            "criteria": {
+                "SeriesDescription": "GRE-ME",
+                "ProtocolName": "GRE-ME"
+            }
+        },
+        {
+            "dataType": "dwi",
+            "modalityLabel": "dwi",
+            "criteria": {
+                "SeriesDescription": "DWI",
+                "ProtocolName": "*DWI"
+                }
+        }
+    ]
+}

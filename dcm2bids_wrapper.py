@@ -36,6 +36,8 @@ def get_parser():
                         help='Path where BIDS dataset will be saved. Example: <PATH_TO_DATASET>', required=True)
     parser.add_argument('-xlsx-table',
                         help="Path to the table.xlsx file containing 'MR B1' and 'MR B2' columns", required=True)
+    parser.add_argument('-dcm2bids-config',
+                        help='Path to the dcm2bids_config.json file', required=True)
     return parser
 
 
@@ -45,8 +47,8 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
-    # Get abs path to repo (i.e., path without dcm2bids_wrapper.py)
-    repo_path = sys.argv[0].rsplit('/', 1)[0]
+    # Get abs path to the dcm2bids_config.json file
+    config_path = os.path.abspath(args.dcm2bids_config)
 
     # Fetch input arguments
     dicom_folder_path = os.path.abspath(args.path_in)
@@ -73,7 +75,7 @@ def main():
                       ' -p ' + f'sub-{subject_id}' + \
                       ' -s ' + f'ses-{source_id_ses_01}' + \
                       ' -o ' + bids_folder + \
-                      ' -c ' + os.path.join(repo_path, 'dcm2bids_config.json')
+                      ' -c ' + config_path
             #   -d -- source DICOM directory
             #   -p -- output participant ID
             #   -s -- output session ID
@@ -94,7 +96,7 @@ def main():
                       ' -p ' + f'sub-{subject_id}' + \
                       ' -s ' + f'ses-{source_id_ses_02}' + \
                       ' -o ' + bids_folder + \
-                      ' -c ' + os.path.join(repo_path, 'dcm2bids_config.json')
+                      ' -c ' + config_path
             #   -d -- source DICOM directory
             #   -p -- output participant ID
             #   -s -- output session ID

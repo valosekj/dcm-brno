@@ -63,7 +63,7 @@ def main():
         source_id_ses_02 = row['MR B2']
 
         # Construct subject ID
-        subject_id = source_id_ses_01 + '_' + source_id_ses_02
+        subject_id = source_id_ses_01 + source_id_ses_02
 
         # session 1
         sub_dicom_folder_path = os.path.join(dicom_folder_path, 'sub-' + source_id_ses_01)

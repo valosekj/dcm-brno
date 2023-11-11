@@ -50,8 +50,7 @@
             "criteria": {
                 "SeriesDescription": "*ZOOMit_AP*",
                 "ProtocolName": "*ZOOMit_AP*",
-                "ReconMatrixPE": "68",
-                "RepetitionTime": "6.7"
+                "ReconMatrixPE": "68"
                 }
         },
         {
@@ -61,8 +60,7 @@
             "criteria": {
                 "SeriesDescription": "*ZOOMit_PA*",
                 "ProtocolName": "*ZOOMit_PA*",
-                "ReconMatrixPE": "68",
-                "RepetitionTime": "6.7"
+                "ReconMatrixPE": "68"
                 }
         },
         {

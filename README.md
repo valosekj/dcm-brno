@@ -1,5 +1,11 @@
 # dcm-brno
 
+## 0. Copy source subjects to /md3/dcm-brno/sourcedata
+
+```console
+./copy_source_subjects.sh
+```
+
 ## 0. DICOM to BIDS conversion
 
 ```console

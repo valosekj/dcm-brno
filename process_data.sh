@@ -102,8 +102,8 @@ segment_sc_nnUNet_if_does_not_exist(){
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
 
     if [[ $contrast == "t2" ]]; then
-    # Generate sagittal QC report
-    sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -d ${FILESEG}.nii.gz -p sct_deepseg_lesion -plane sagittal -qc ${PATH_QC} -qc-subject ${file}
+      # Generate sagittal QC report
+      sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -d ${FILESEG}.nii.gz -p sct_deepseg_lesion -plane sagittal -qc ${PATH_QC} -qc-subject ${file}
     fi
 
   fi

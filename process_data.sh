@@ -226,6 +226,7 @@ mv warp_anat2template.nii.gz warp_T2w2template.nii.gz
 
 # Compute cord CSA perlevel
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -perlevel 1 -vertfile ${file_t2}_seg_labeled.nii.gz -o ${PATH_RESULTS}/csa-SC_T2w_perlevel.csv -append 1
+# Compute cord CSA perslice
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -perslice 1 -o ${PATH_RESULTS}/csa-SC_T2w_perslice.csv -append 1
 # Normalize to PAM50 template
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_labeled.nii.gz -perslice 1 -normalize-PAM50 1 -o ${PATH_RESULTS}/${file_t2}_metrics_perslice_PAM50.csv

@@ -70,9 +70,7 @@ label_if_does_not_exist(){
   fi
 
   # Create labels in the cord at C3 and C5 mid-vertebral levels (needed for template registration)
-  if [[ $contrast == "t1" ]]; then
-      sct_label_utils -i ${file_seg}_labeled.nii.gz -vert-body 3,5 -o ${file}_label-disc_c3c5.nii.gz
-  fi
+  sct_label_utils -i ${file_seg}_labeled.nii.gz -vert-body 3,5 -o ${file}_label-disc_c3c5.nii.gz
 
 }
 
@@ -216,8 +214,17 @@ segment_sc_nnUNet_if_does_not_exist $file_t2 "t2"
 
 # Perform vertebral labeling and create mid-vertebral levels in the cord
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"
+file_label=${file_t2}_label-disc_c3c5
+# Generate QC report: https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
+sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils  -qc ${PATH_QC} -qc-subject ${file}
 
-# Compute cord CSA perlevel and perslice
+# Register to PAM50 template
+sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 -qc ${PATH_QC} -qc-subject ${file}
+# Rename warping fields for clarity
+mv warp_template2anat.nii.gz warp_template2T2w.nii.gz
+mv warp_anat2template.nii.gz warp_T2w2template.nii.gz
+
+# Compute cord CSA perlevel
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -perlevel 1 -vertfile ${file_t2}_seg_labeled.nii.gz -o ${PATH_RESULTS}/csa-SC_T2w_perlevel.csv -append 1
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -perslice 1 -o ${PATH_RESULTS}/csa-SC_T2w_perslice.csv -append 1
 # Normalize to PAM50 template
@@ -228,9 +235,9 @@ sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_label
 # ------------------------------------------------------------------------------
 file_t2s="${file}_T2star"
 
-# Bring T1w vertebral levels into T2s space
-sct_register_multimodal -i ${file_t1}_seg_labeled.nii.gz -d ${file_t2s}.nii.gz -o ${file_t1}_seg_labeled2${file_t2s}.nii.gz -identity 1 -x nn
-sct_qc -i ${file_t2s}.nii.gz -s ${file_t1}_seg_labeled2${file_t2s}.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${file}
+# Bring T2w vertebral levels into T2s space
+sct_register_multimodal -i ${file_t2}_seg_labeled.nii.gz -d ${file_t2s}.nii.gz -o ${file_t2}_seg_labeled2${file_t2s}.nii.gz -identity 1 -x nn
+sct_qc -i ${file_t2s}.nii.gz -s ${file_t2}_seg_labeled2${file_t2s}.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${file}
 
 # Segment gray matter (only if it does not exist)
 segment_gm_if_does_not_exist $file_t2s "t2s"
@@ -242,8 +249,8 @@ file_t2s_scseg=$FILESEG
 # Compute the gray matter and cord CSA perlevel
 # NB: Here we set -no-angle 1 because we do not want angle correction: it is too
 # unstable with GM seg, and t2s data were acquired orthogonal to the cord anyways.
-sct_process_segmentation -i ${file_t2s_seg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t1}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-GM_T2s_perlevel.csv -append 1
-sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t1}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-SC_T2s_perlevel.csv -append 1
+sct_process_segmentation -i ${file_t2s_seg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-GM_T2s_perlevel.csv -append 1
+sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-SC_T2s_perlevel.csv -append 1
 
 # DWI
 # ------------------------------------------------------------------------------

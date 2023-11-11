@@ -173,38 +173,38 @@ cd ${SUBJECT}/anat
 # We do a substitution '/' --> '_' in case there is a subfolder 'ses-0X/'
 file="${SUBJECT//[\/]/_}"
 
-# -------------------------------------------------------------------------
-# T1w
-# -------------------------------------------------------------------------
-file_t1="${file}_T1w"
-
-# Check the resolution of the T1w image
-# The following command returns the voxel size in mm, e.g. [1.0,  1.0,  1.0,  1.0]
-pixdim_val=$(sct_image -i ${file_t1}.nii.gz -header | grep pixdim | awk -F'[\t,]' '{printf "%s, %s, %s, %s]\n", $3, $4, $5, $6}')
-if [[ $pixdim_val == "[1.0,  1.0,  1.0,  1.0]" ]];then
-    echo "spine-generic resolution. Continuing...";
-    echo "$file" >> $PATH_LOG/spine-generic_protocol.log
-else
-    echo "non spine-generic resolution. Exiting...";
-    echo "$file" >> $PATH_LOG/non_spine-generic_protocol.log
-    exit 1;
-fi
-
-# Segment spinal cord (only if it does not exist)
-segment_if_does_not_exist $file_t1 "t1"
-
-# Perform vertebral labeling and create mid-vertebral levels in the cord
-label_if_does_not_exist ${file_t1} ${file_t1}_seg "t1"
-file_label=${file_t1}_label-disc_c3c5
-# Register to PAM50 template
-sct_register_to_template -i ${file_t1}.nii.gz -s ${file_t1}_seg.nii.gz -l ${file_label}.nii.gz -c t1 -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 -qc ${PATH_QC} -qc-subject ${file}
-# Rename warping fields for clarity
-mv warp_template2anat.nii.gz warp_template2T1w.nii.gz
-mv warp_anat2template.nii.gz warp_T1w2template.nii.gz
-
-# Compute cord CSA perlevel and perslice
-sct_process_segmentation -i ${file_t1}_seg.nii.gz -perlevel 1 -vertfile ${file_t1}_seg_labeled.nii.gz -o ${PATH_RESULTS}/csa-SC_T1w_perlevel.csv -append 1
-sct_process_segmentation -i ${file_t1}_seg.nii.gz -perslice 1 -o ${PATH_RESULTS}/csa-SC_T1w_perslice.csv -append 1
+## -------------------------------------------------------------------------
+## T1w
+## -------------------------------------------------------------------------
+#file_t1="${file}_T1w"
+#
+## Check the resolution of the T1w image
+## The following command returns the voxel size in mm, e.g. [1.0,  1.0,  1.0,  1.0]
+#pixdim_val=$(sct_image -i ${file_t1}.nii.gz -header | grep pixdim | awk -F'[\t,]' '{printf "%s, %s, %s, %s]\n", $3, $4, $5, $6}')
+#if [[ $pixdim_val == "[1.0,  1.0,  1.0,  1.0]" ]];then
+#    echo "spine-generic resolution. Continuing...";
+#    echo "$file" >> $PATH_LOG/spine-generic_protocol.log
+#else
+#    echo "non spine-generic resolution. Exiting...";
+#    echo "$file" >> $PATH_LOG/non_spine-generic_protocol.log
+#    exit 1;
+#fi
+#
+## Segment spinal cord (only if it does not exist)
+#segment_if_does_not_exist $file_t1 "t1"
+#
+## Perform vertebral labeling and create mid-vertebral levels in the cord
+#label_if_does_not_exist ${file_t1} ${file_t1}_seg "t1"
+#file_label=${file_t1}_label-disc_c3c5
+## Register to PAM50 template
+#sct_register_to_template -i ${file_t1}.nii.gz -s ${file_t1}_seg.nii.gz -l ${file_label}.nii.gz -c t1 -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 -qc ${PATH_QC} -qc-subject ${file}
+## Rename warping fields for clarity
+#mv warp_template2anat.nii.gz warp_template2T1w.nii.gz
+#mv warp_anat2template.nii.gz warp_T1w2template.nii.gz
+#
+## Compute cord CSA perlevel and perslice
+#sct_process_segmentation -i ${file_t1}_seg.nii.gz -perlevel 1 -vertfile ${file_t1}_seg_labeled.nii.gz -o ${PATH_RESULTS}/csa-SC_T1w_perlevel.csv -append 1
+#sct_process_segmentation -i ${file_t1}_seg.nii.gz -perslice 1 -o ${PATH_RESULTS}/csa-SC_T1w_perslice.csv -append 1
 
 # -------------------------------------------------------------------------
 # T2w

@@ -257,6 +257,9 @@ sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vert
 # ------------------------------------------------------------------------------
 cd ../dwi
 
+echo "Done"
+exit
+
 file_dwi="${file}_dwi"
 
 file_bval=${file_dwi}.bval

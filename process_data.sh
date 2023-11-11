@@ -76,8 +76,38 @@ label_if_does_not_exist(){
 
 }
 
-# Check if manual segmentation already exists. If it does, copy it locally. If
-# it does not, perform seg.
+# Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
+# it does not, perform segmentation using SCIseg nnUNet model
+# https://github.com/ivadomed/model_seg_sci/tree/r20231108
+segment_sc_nnUNet_if_does_not_exist(){
+  local file="$1"
+  local contrast="$2"   # note that contrast is used only for QC purposes
+
+  FILESEG="${file}_seg"
+  FILESEGMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/${folder_contrast}/${FILESEG}.nii.gz"
+  echo
+  echo "Looking for manual segmentation: $FILESEGMANUAL"
+  if [[ -e $FILESEGMANUAL ]]; then
+    echo "Found! Using manual segmentation."
+    rsync -avzh $FILESEGMANUAL ${FILESEG}.nii.gz
+    sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
+  else
+    echo "Not found. Proceeding with automatic segmentation using the SCIseg nnUNet model."
+    # Run SC segmentation
+    python ${PATH_NNUNET_SCRIPT} -i ${file}.nii.gz -o ${FILESEG}.nii.gz -path-model ${PATH_NNUNET_MODEL} -pred-type sc
+    # Generate axial QC report
+    sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
+
+    if [[ $contrast == "t2" ]]; then
+    # Generate sagittal QC report
+    sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -d ${FILESEG}.nii.gz -p sct_deepseg_lesion -plane sagittal -qc ${PATH_QC} -qc-subject ${file}
+    fi
+
+  fi
+}
+
+# Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
+# it does not, perform segmentation using sct_deepseg_sc.
 segment_if_does_not_exist(){
   local file="$1"
   local contrast="$2"

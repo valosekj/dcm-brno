@@ -211,8 +211,8 @@ file="${SUBJECT//[\/]/_}"
 # -------------------------------------------------------------------------
 file_t2="${file}_T2w"
 
-# Segment spinal cord (only if it does not exist)
-segment_if_does_not_exist $file_t2 "t2"
+# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model
+segment_sc_nnUNet_if_does_not_exist $file_t2 "t2"
 
 # Perform vertebral labeling and create mid-vertebral levels in the cord
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"
@@ -235,8 +235,8 @@ sct_qc -i ${file_t2s}.nii.gz -s ${file_t1}_seg_labeled2${file_t2s}.nii.gz -p sct
 # Segment gray matter (only if it does not exist)
 segment_gm_if_does_not_exist $file_t2s "t2s"
 file_t2s_seg=$FILESEG
-# Segment spinal cord (only if it does not exist)
-segment_if_does_not_exist $file_t2s "t2s"
+# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model
+segment_sc_nnUNet_if_does_not_exist $file_t2s "t2s"
 file_t2s_scseg=$FILESEG
 
 # Compute the gray matter and cord CSA perlevel

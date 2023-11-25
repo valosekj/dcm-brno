@@ -48,3 +48,11 @@ BIDS dataset using the `sct_run_batch` wrapper script:
 ```console
 sct_run_batch -config process_data_config.json
 ```
+
+## 2. Do manual corrections
+
+Intervertebral disc labels:
+
+```console
+$ python manual_correction.py -path-img data_to_correct -config dcm-brno_2023-11-11_disc_label_to_correct.yml -path-out dcm-brno/derivatives/labels
+```

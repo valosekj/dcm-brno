@@ -7,7 +7,7 @@
 # https://github.com/ivadomed/utilities/blob/main/quick_start_guides/nnU-Net_quick_start_guide.md#installation
 #
 # Usage:
-#   ./process_data.sh <SUBJECT>
+#   ./01_process_data.sh <SUBJECT>
 #
 #
 # Manual segmentations or labels should be located under:

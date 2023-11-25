@@ -225,7 +225,7 @@ segment_sc_nnUNet_if_does_not_exist $file_t2 "t2"
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"
 file_label=${file_t2}_label-disc_c3c5
 # Generate QC report: https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
-sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils  -qc ${PATH_QC} -qc-subject ${file}
+sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PATH_QC} -qc-subject ${file}
 
 # Register to PAM50 template
 sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 -qc ${PATH_QC} -qc-subject ${file}

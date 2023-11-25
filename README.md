@@ -3,14 +3,14 @@
 ## 0. Copy source subjects to /md3/dcm-brno/sourcedata
 
 ```console
-./copy_source_subjects.sh
+./00a_copy_source_subjects.sh
 ```
 
 ## 0. DICOM to BIDS conversion
 
 ```console
 $ conda activate dcm2bids
-$ python dcm2bids_wrapper.py -path-in /md3/dcm-brno/sourcedata -path-out /md3/dcm-brno -xlsx-table /md3/dcm-brno/code/LAP_longitudinal_anatomical_parametres.xlsx -dcm2bids-config dcm2bids_config.json
+$ python 00b_dcm2bids_wrapper.py -path-in /md3/dcm-brno/sourcedata -path-out /md3/dcm-brno -xlsx-table /md3/dcm-brno/code/LAP_longitudinal_anatomical_parametres.xlsx -dcm2bids-config dcm2bids_config.json
 ```
 
 ## 0. Download derivatives

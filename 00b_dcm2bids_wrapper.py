@@ -6,7 +6,7 @@
 # The participant.tsv can be created using create_participants_table.py script
 #
 # USAGE:
-#     dcm2bids_wrapper.py -path-in <PATH_TO_DATASET>/sourcedata
+#     00b_dcm2bids_wrapper.py -path-in <PATH_TO_DATASET>/sourcedata
 #                         -path-out <PATH_TO_DATASET>
 #                         -xlsx-table table.xlsx
 # ARGUMENTS:

@@ -1,9 +1,8 @@
 #
 # Convert dataset of DICOM images into BIDS using dcm2bids tool
-# The script accepts DICOM images stored across several directories, see -path-in flag
 #
-# The script utilizes the participant.tsv file
-# The participant.tsv can be created using create_participants_table.py script
+# The script uses XLXS table (provided by '-xlsx-table') to fetch 'MR B1' and 'MR B2' columns and then runs dcm2bids
+# for each subject
 #
 # USAGE:
 #     00b_dcm2bids_wrapper.py -path-in <PATH_TO_DATASET>/sourcedata

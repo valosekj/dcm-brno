@@ -11,7 +11,8 @@
 # ARGUMENTS:
 #     -path-in              Path to the folder with dicom folders, e.g., <PATH_TO_DATASET>/sourcedata
 #     -path-out             Path where BIDS dataset will be saved
-#     -participant-table    Path to the table.xlsx file containing 'MR B1' and 'MR B2' columns
+#     -xlsx-table           Path to the table.xlsx file containing 'MR B1' and 'MR B2' columns
+#     -dcm2bids-config      Path to the dcm2bids_config.json file
 #
 #
 # Authors: Jan Valosek

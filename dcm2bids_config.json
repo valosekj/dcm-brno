@@ -1,24 +1,24 @@
 {
     "descriptions": [
         {
-            "dataType": "anat",
-            "modalityLabel": "T1w",
+            "datatype": "anat",
+            "suffix": "T1w",
             "criteria": {
                 "SeriesDescription": "t1_tse_tra",
                 "ProtocolName": "t1_tse_tra"
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "T2w",
+            "datatype": "anat",
+            "suffix": "T2w",
             "criteria": {
                 "SeriesDescription": "t2_tse_sag*",
                 "ProtocolName": "t2_tse_sag*"
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "T2star",
+            "datatype": "anat",
+            "suffix": "T2star",
             "criteria": {
                 "SeriesDescription": "t2_me2d*",
                 "ProtocolName": "t2_me2d*",
@@ -26,27 +26,27 @@
             }
         },
         {
-            "dataType": "dwi",
-            "modalityLabel": "dwi",
-	          "customLabels": "acq-RESOLVE_dir-AP",
+            "datatype": "dwi",
+            "suffix": "dwi",
+            "custom_entities": "acq-RESOLVE_dir-AP",
             "criteria": {
                 "SeriesDescription": "resolve_AX_AP_p2",
                 "ProtocolName": "resolve_AX_AP_p2"
                 }
         },
         {
-            "dataType": "dwi",
-            "modalityLabel": "dwi",
-            "customLabels": "acq-RESOLVE_dir-PA",
+            "datatype": "dwi",
+            "suffix": "dwi",
+            "custom_entities": "acq-RESOLVE_dir-PA",
             "criteria": {
                 "SeriesDescription": "resolve_AX_PA_p2",
                 "ProtocolName": "resolve_AX_PA_p2"
                 }
         },
         {
-            "dataType": "dwi",
-            "modalityLabel": "dwi",
-            "customLabels": "acq-ZOOMit_dir-AP",
+            "datatype": "dwi",
+            "suffix": "dwi",
+            "custom_entities": "acq-ZOOMit_dir-AP",
             "criteria": {
                 "SeriesDescription": "*ZOOMit_AP*",
                 "ProtocolName": "*ZOOMit_AP*",
@@ -54,9 +54,9 @@
                 }
         },
         {
-            "dataType": "dwi",
-            "modalityLabel": "dwi",
-            "customLabels": "acq-ZOOMit_dir-PA",
+            "datatype": "dwi",
+            "suffix": "dwi",
+            "custom_entities": "acq-ZOOMit_dir-PA",
             "criteria": {
                 "SeriesDescription": "*ZOOMit_PA*",
                 "ProtocolName": "*ZOOMit_PA*",
@@ -64,9 +64,9 @@
                 }
         },
         {
-            "dataType": "dwi",
-            "modalityLabel": "dwi",
-            "customLabels": "acq-ZOOMitNOinterp_dir-AP",
+            "datatype": "dwi",
+            "suffix": "dwi",
+            "custom_entities": "acq-ZOOMitNOinterp_dir-AP",
             "criteria": {
                 "SeriesDescription": "*ZOOMit_AP*",
                 "ProtocolName": "*ZOOMit_AP*",
@@ -74,9 +74,9 @@
                 }
         },
         {
-            "dataType": "dwi",
-            "modalityLabel": "dwi",
-            "customLabels": "acq-ZOOMitNOinterp_dir-PA",
+            "datatype": "dwi",
+            "suffix": "dwi",
+            "custom_entities": "acq-ZOOMitNOinterp_dir-PA",
             "criteria": {
                 "SeriesDescription": "*ZOOMit_PA*",
                 "ProtocolName": "*ZOOMit_PA*",
@@ -84,34 +84,34 @@
                 }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "T1w",
+            "datatype": "anat",
+            "suffix": "T1w",
             "criteria": {
                 "SeriesDescription": "T1w",
                 "ProtocolName": "*T1w"
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "T2w",
+            "datatype": "anat",
+            "suffix": "T2w",
             "criteria": {
                 "SeriesDescription": "T2w",
                 "ProtocolName": "*T2w"
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "MTS",
-            "customLabels": "acq-T1w",
+            "datatype": "anat",
+            "suffix": "MTS",
+            "custom_entities": "acq-T1w",
             "criteria": {
                 "SeriesDescription": "GRE-T1*",
                 "ProtocolName": "*GRE-T1*"
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "MTS",
-            "customLabels": "acq-MT",
+            "datatype": "anat",
+            "suffix": "MTS",
+            "custom_entities": "acq-MT",
             "criteria": {
                 "Manufacturer": "Philips",
                 "SeriesDescription": "GRE-MT",
@@ -119,34 +119,34 @@
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "MTS",
-            "customLabels": "acq-MTon",
+            "datatype": "anat",
+            "suffix": "MTS",
+            "custom_entities": "acq-MTon",
             "criteria": {
                 "SeriesDescription": "GRE-MT1",
                 "ProtocolName": "GRE-MT1"
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "MTS",
-            "customLabels": "acq-MToff",
+            "datatype": "anat",
+            "suffix": "MTS",
+            "custom_entities": "acq-MToff",
             "criteria": {
                 "SeriesDescription": "GRE-MT0",
                 "ProtocolName": "GRE-MT0"
             }
         },
         {
-            "dataType": "anat",
-            "modalityLabel": "T2star",
+            "datatype": "anat",
+            "suffix": "T2star",
             "criteria": {
                 "SeriesDescription": "GRE-ME",
                 "ProtocolName": "GRE-ME"
             }
         },
         {
-            "dataType": "dwi",
-            "modalityLabel": "dwi",
+            "datatype": "dwi",
+            "suffix": "dwi",
             "criteria": {
                 "SeriesDescription": "DWI",
                 "ProtocolName": "*DWI"

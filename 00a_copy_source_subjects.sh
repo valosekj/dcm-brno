@@ -25,3 +25,10 @@ for subject in $list_of_subjects;do
 	    fi
 	done
 done
+
+# Check whether all subjects from list_of_subjects were copied to dcm-brno/sourcedata
+for subject in $list_of_subjects;do
+    if [ ! -d "dcm-brno/sourcedata/sub-${subject}" ]; then
+        echo "ERROR: $subject was not copied to dcm-brno/sourcedata."
+    fi
+done

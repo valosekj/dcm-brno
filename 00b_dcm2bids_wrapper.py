@@ -14,6 +14,9 @@
 #     -xlsx-table           Path to the table.xlsx file containing 'MR B1' and 'MR B2' columns
 #     -dcm2bids-config      Path to the dcm2bids_config.json file
 #
+# DEPENDENCIES:
+#     pip install pandas
+#     pip install openpyxl
 #
 # Authors: Jan Valosek
 #

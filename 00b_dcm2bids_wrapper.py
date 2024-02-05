@@ -94,16 +94,17 @@ def main():
         # Check if subject exists
         if os.path.exists(sub_dicom_folder_path):
             # Construct shell command
-            command = 'dcm2bids -d ' + sub_dicom_folder_path + \
-                      ' -p ' + f'sub-{subject_id}' + \
-                      ' -s ' + f'ses-{source_id_ses_02}' + \
-                      ' -o ' + bids_folder + \
-                      ' -c ' + config_path
-            #   -d -- source DICOM directory
-            #   -p -- output participant ID
-            #   -s -- output session ID
-            #   -c -- JSON configuration file
-            #   -o -- output BIDS directory
+            command = 'dcm2bids' + \
+                      ' --dicom_dir ' + sub_dicom_folder_path + \
+                      ' --participant ' + f'sub-{subject_id}' + \
+                      ' --session ' + f'ses-{source_id_ses_02}' + \
+                      ' --output_dir ' + bids_folder + \
+                      ' --config ' + config_path
+            #   --dicom_dir -- source DICOM directory
+            #   --participant -- output participant ID
+            #   --session -- output session ID
+            #   --config -- JSON configuration file
+            #   --output_dir -- output BIDS directory
             print('Running dcm2bids for {}'.format(sub_dicom_folder_path))
             # Run shell command (NB - conda dcm2bids env has to be activated)
             os.system(command)

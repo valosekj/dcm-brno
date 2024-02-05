@@ -71,6 +71,12 @@ def get_parser():
                         help="Path to single-subject CSV file for session 1.")
     parser.add_argument('-ses2', required=True, type=str,
                         help="Path to single-subject CSV file for session 2.")
+    parser.add_argument('-ses3', required=True, type=str,
+                        help="Path to single-subject CSV file for session 3.")
+    parser.add_argument('-ses4', required=True, type=str,
+                        help="Path to single-subject CSV file for session 4.")
+    parser.add_argument('-ses5', required=True, type=str,
+                        help="Path to single-subject CSV file for session 5.")
     parser.add_argument('-single-subject-sex', required=False, type=str, choices=['M', 'F'], default=None,
                         help="Sex of the single subject. Options: 'M', 'F'.")
     parser.add_argument('-path-out', required=False, type=str, default='figures',
@@ -196,7 +202,9 @@ def fetch_subject_and_session(filename_path):
     return subjectID, sessionID
 
 
-def create_lineplot(df, df_ses1, df_ses2, ses1, ses2, number_of_subjects, path_out, sex=None):
+def create_lineplot(df, df_ses1, df_ses2, df_ses3, df_ses4, df_ses5,
+                    ses1, ses2, ses3, ses4, ses5,
+                    number_of_subjects, path_out, sex=None):
     """
     Create lineplot for individual metrics per vertebral levels.
     Note: we are plotting slices not levels to avoid averaging across levels.
@@ -227,25 +235,36 @@ def create_lineplot(df, df_ses1, df_ses2, ses1, ses2, number_of_subjects, path_o
         else:
             # Plot spine-generic multi-subject data
             sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df, errorbar='sd', linewidth=2, color='black',
-                         label=f'spine-generic all subjects (N = {number_of_subjects})')
+                         label=f'spine-generic (N = {number_of_subjects})')
 
         # Plot single subject data session 1
-        sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df_ses1, linewidth=2, color='green',
+        sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df_ses1, linewidth=2, color='green', alpha=0.5,
                      label=f'{ses1} (session1)')
-        # Plot single subject data session 2 in dashed line
-        sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df_ses2, linewidth=2, color='darkorange',
-                     linestyle='dashed', label=f'{ses2} (session2)')
+        # Plot single subject data session 2
+        sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df_ses2, linewidth=2, color='darkorange', alpha=0.5,
+                     label=f'{ses2} (session2)')
+        # Plot single subject data session 3
+        sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df_ses3, linewidth=2, color='blue', alpha=0.5,
+                     label=f'{ses3} (session3)')
+        # Plot single subject data session 4
+        sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df_ses4, linewidth=2, color='red', alpha=0.5,
+                     label=f'{ses4} (session4)')
+        # Plot single subject data session 5
+        sns.lineplot(ax=axs[index], x="Slice (I->S)", y=metric, data=df_ses5, linewidth=2, color='purple', alpha=0.5,
+                      label=f'{ses5} (session5)')
 
         ymin, ymax = axs[index].get_ylim()
 
         # Add legend
-        if index == 1:
-            axs[index].legend(loc='upper right', fontsize=TICKS_FONT_SIZE)
+        if index == 2 or index == 5:
+            # Place legend next to the plot
+            axs[index].legend(loc='center left', bbox_to_anchor=(1, 0.5))
         else:
             axs[index].get_legend().remove()
 
         # Add master title
-        plt.suptitle(f'Morphometric measures for {ses1} (session1) and {ses2} (session2) in PAM50 template space',
+        plt.suptitle(f'Morphometric measures in PAM50 template space - single subject, five sessions '
+                     f'(courtois-neuromod sub-01)',
                      fontweight='bold', fontsize=LABELS_FONT_SIZE, y=0.92)
 
         # Add labels
@@ -292,18 +311,40 @@ def create_lineplot(df, df_ses1, df_ses2, ses1, ses2, number_of_subjects, path_o
     print('Figure saved: ' + path_filename)
 
 
-def compute_cv(df, metric):
+def compute_cv(df):
     """
     Compute coefficient of variation (CV) of a given metric.
     Args:
         df (pd.dataFrame): dataframe with CSA values
-        metric (str): column name of the dataframe to compute CV
     Returns:
         cv (float): coefficient of variation
     """
-    cv = df[metric].std() / df[metric].mean()
+    # Calculate IQR and median
+    q1 = df.quantile(0.25)
+    q3 = df.quantile(0.75)
+    iqr = q3 - q1
+    median = df.median()
+    # Calculate CV
+    cv = iqr / median
     cv = cv * 100
     return cv
+
+
+def median_absolute_deviation(df):
+    """
+    Compute median absolute deviation (MAD) of a given metric.
+    Args:
+        df (pd.dataFrame): dataframe with CSA values
+    Returns:
+        mad (float): median absolute deviation
+    """
+    # Calculate median
+    median = df.median()
+    # Calculate absolute deviation from the median
+    abs_deviation = abs(df - median)
+    # Calculate MAD
+    mad = abs_deviation.median()
+    return mad
 
 
 def main():
@@ -314,6 +355,9 @@ def main():
     path_participants_tsv = args.participant_file
     path_ses1 = args.ses1
     path_ses2 = args.ses2
+    path_ses3 = args.ses3
+    path_ses4 = args.ses4
+    path_ses5 = args.ses5
     single_subject_sex = args.single_subject_sex
     path_out_figures = os.path.abspath(args.path_out)
 
@@ -327,6 +371,9 @@ def main():
     # Load single subject data from both sessions
     df_ses1 = load_single_subject_data(path_ses1, df_spine_generic_min, df_spine_generic_max)
     df_ses2 = load_single_subject_data(path_ses2, df_spine_generic_min, df_spine_generic_max)
+    df_ses3 = load_single_subject_data(path_ses3, df_spine_generic_min, df_spine_generic_max)
+    df_ses4 = load_single_subject_data(path_ses4, df_spine_generic_min, df_spine_generic_max)
+    df_ses5 = load_single_subject_data(path_ses5, df_spine_generic_min, df_spine_generic_max)
 
     # Check if df_single_subject is not empty, if so, print warning and exit
     if df_ses1.empty or df_ses2.empty:
@@ -336,9 +383,9 @@ def main():
     # Get session IDs from filenames
     _, ses1 = fetch_subject_and_session(path_ses1)
     _, ses2 = fetch_subject_and_session(path_ses2)
-
-    ses1 = ses1.replace('ses-', '')
-    ses2 = ses2.replace('ses-', '')
+    _, ses3 = fetch_subject_and_session(path_ses3)
+    _, ses4 = fetch_subject_and_session(path_ses4)
+    _, ses5 = fetch_subject_and_session(path_ses5)
 
     if single_subject_sex:
         number_of_subjects = str(len(df_normative_data[df_normative_data['sex'] == single_subject_sex]))
@@ -348,8 +395,24 @@ def main():
         print(f'Number of subjects: {number_of_subjects}')
 
     # Create plots
-    create_lineplot(df_normative_data, df_ses1, df_ses2, ses1, ses2, number_of_subjects, path_out_figures,
+    create_lineplot(df_normative_data, df_ses1, df_ses2, df_ses3, df_ses4, df_ses5,
+                    ses1, ses2, ses3, ses4, ses5,
+                    number_of_subjects, path_out_figures,
                     sex=single_subject_sex)
+
+    # Compute coefficient of variation (CV) between sessions
+    for metric in METRICS:
+        # Get metric values for each session, reset index
+        df_ses1_metric = df_ses1[metric].reset_index(drop=True)
+        df_ses2_metric = df_ses2[metric].reset_index(drop=True)
+        # Compute absolute difference between sessions
+        df_diff = abs(df_ses1_metric - df_ses2_metric)
+        # Compute CV
+        cv = compute_cv(df_diff)
+        print(f'CV for {metric}: {cv:.2f}%')
+        # Compute Median Absolute Deviation using a custom function
+        mad = median_absolute_deviation(df_diff)
+        print(f'MAD for {metric}: {mad:.2f}')
 
 
 if __name__ == '__main__':

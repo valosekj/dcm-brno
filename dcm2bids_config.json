@@ -28,24 +28,6 @@
         {
             "datatype": "dwi",
             "suffix": "dwi",
-            "custom_entities": "acq-RESOLVE_dir-AP",
-            "criteria": {
-                "SeriesDescription": "resolve_AX_AP_p2",
-                "ProtocolName": "resolve_AX_AP_p2"
-                }
-        },
-        {
-            "datatype": "dwi",
-            "suffix": "dwi",
-            "custom_entities": "acq-RESOLVE_dir-PA",
-            "criteria": {
-                "SeriesDescription": "resolve_AX_PA_p2",
-                "ProtocolName": "resolve_AX_PA_p2"
-                }
-        },
-        {
-            "datatype": "dwi",
-            "suffix": "dwi",
             "custom_entities": "acq-ZOOMit_dir-AP",
             "criteria": {
                 "SeriesDescription": "*ZOOMit_AP*",

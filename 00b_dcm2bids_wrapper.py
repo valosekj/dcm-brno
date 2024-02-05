@@ -22,8 +22,17 @@
 #
 
 import os
+import sys
 import argparse
 import pandas as pd
+import logging
+
+
+# Initialize logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)  # default: logging.DEBUG, logging.INFO
+hdlr = logging.StreamHandler(sys.stdout)
+logging.root.addHandler(hdlr)
 
 
 def get_parser():
@@ -60,6 +69,13 @@ def main():
     # Read "MR B1" and "MR B2" columns from the input xlsx file
     subject_df = pd.read_excel(xlsx_file_path, sheet_name='LAP', usecols=['MR B1', 'MR B2'])
 
+    # Dump log file there
+    fname_log = f'dcm2bids.log'
+    if os.path.exists(fname_log):
+        os.remove(fname_log)
+    fh = logging.FileHandler(os.path.join(os.path.abspath(bids_folder), fname_log))
+    logging.root.addHandler(fh)
+
     # Loop across rows
     for index, row in subject_df.iterrows():
         source_id_ses_01 = row['MR B1']
@@ -83,11 +99,11 @@ def main():
             #   -s -- output session ID
             #   -c -- JSON configuration file
             #   -o -- output BIDS directory
-            print('Running dcm2bids for {}'.format(sub_dicom_folder_path))
+            logger.info('Running dcm2bids for {}'.format(sub_dicom_folder_path))
             # Run shell command (NB - conda dcm2bids env has to be activated)
             os.system(command)
         else:
-            print('Subject {} does not exist in {}'.format(source_id_ses_01, dicom_folder_path))
+            logger.info('Subject {} does not exist in {}'.format(source_id_ses_01, dicom_folder_path))
 
         # session 2
         sub_dicom_folder_path = os.path.join(dicom_folder_path,  'sub-' + source_id_ses_02)
@@ -105,11 +121,11 @@ def main():
             #   --session -- output session ID
             #   --config -- JSON configuration file
             #   --output_dir -- output BIDS directory
-            print('Running dcm2bids for {}'.format(sub_dicom_folder_path))
+            logger.info('Running dcm2bids for {}'.format(sub_dicom_folder_path))
             # Run shell command (NB - conda dcm2bids env has to be activated)
             os.system(command)
         else:
-            print('Subject {} does not exist in {}'.format(source_id_ses_02, dicom_folder_path))
+            logger.info('Subject {} does not exist in {}'.format(source_id_ses_02, dicom_folder_path))
 
 
 if __name__ == "__main__":

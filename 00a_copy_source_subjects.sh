@@ -4,9 +4,12 @@
 # "dcm-brno/sourcedata"
 #
 # Usage:
-#   cd /md3/
+#   cd ~/code/dcm-brno
 #   ./00a_copy_source_subjects.sh
 #
+
+cd /md3
+mkdir -p dcm-brno/sourcedata
 
 folders="DCM-PRO DCM-PRO_longitudinal DCM-PRO_NOLOST"
 

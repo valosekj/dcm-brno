@@ -59,11 +59,7 @@ def main():
     for index, row in lap_table_df.iterrows():
         mr_b1 = row['MR B1']
         mr_b2 = row['MR B2']
-        #print(f'Checking if {mr_b1} and {mr_b2} are in the clinical table')
-        if mr_b1 in clinical_table_df.values and mr_b2 in clinical_table_df.values:
-            pass
-            #print(f'{mr_b1} and {mr_b2} are in the clinical table')
-        else:
+        if not (mr_b1 in clinical_table_df.values and mr_b2 in clinical_table_df.values):
             print(f'{mr_b1} and {mr_b2} are not in the clinical table')
 
 

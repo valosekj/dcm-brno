@@ -57,13 +57,37 @@ start=`date +%s`
 # FUNCTIONS
 # ------------------------------------------------------------------------------
 
+# Project discs on SC segmentation using sct_label_utils (to avoid SC straightening done by sct_label_vertebrae)
+project_discs_on_sc_seg(){
+  local file="$1"
+  local file_seg="$2"
+
+  # Copy manual disc labels from derivatives/labels if they exist
+  FILELABEL="${file}_label-disc"
+  FILELABELMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/anat/${FILELABEL}.nii.gz"
+  echo "Looking for manual disc labels: $FILELABELMANUAL"
+  if [[ -e $FILELABELMANUAL ]]; then
+    echo "Found! Using manual disc labels."
+    rsync -avzh $FILELABELMANUAL ${FILELABEL}.nii.gz
+
+    # We use sct_label_utils instead of sct_label_vertebrae to avoid SC straightening
+    # Context: https://github.com/spinalcordtoolbox/spinalcordtoolbox/pull/4072
+    sct_label_utils -i ${file_seg}.nii.gz -disc ${FILELABEL}.nii.gz -o ${file_seg}_labeled_discs.nii.gz
+    # Generate QC report to assess labeled segmentation
+    sct_qc -i ${file}.nii.gz -s ${file_seg}_labeled_discs.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
+  else
+    echo "File ${FILELABELMANUAL}.nii.gz does not exist" >> ${PATH_LOG}/missing_files.log
+    echo "ERROR: No manual disc labels found."
+  fi
+}
+
 # Check if manual label already exists. If it does, copy it locally. If it does
 # not, perform labeling.
 label_if_does_not_exist(){
   local file="$1"
   local file_seg="$2"
   local contrast="$3"
-  # Update global variable with segmentation file name
+  # Copy manual disc labels from derivatives/labels if they exist
   FILELABEL="${file}_label-disc"
   FILELABELMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/anat/${FILELABEL}.nii.gz"
   echo "Looking for manual disc labels: $FILELABELMANUAL"
@@ -221,19 +245,16 @@ file_t2="${file}_T2w"
 # Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model
 segment_sc_nnUNet_if_does_not_exist $file_t2 "t2"
 
-# Perform vertebral labeling and create mid-vertebral levels in the cord
+# Project discs on SC segmentation using sct_label_utils (to avoid SC straightening done by sct_label_vertebrae)
+project_discs_on_sc_seg ${file_t2} ${file_t2}_seg
+
+# Perform vertebral labeling (using sct_label_vertebrae) and create mid-vertebral levels in the cord
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"
 file_label=${file_t2}_label-disc_c3c5
 # Generate QC report: https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
 sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PATH_QC} -qc-subject ${file}
 
-# Project discs on SC segmentation
-# Label T2w axial spinal cord segmentation. Either using manual disc labels or using disc labels from sagittal image.
-# Note: here we use sct_label_utils instead of sct_label_vertebrae to avoid SC straightening
-# Context: https://github.com/spinalcordtoolbox/spinalcordtoolbox/pull/4072
-sct_label_utils -i ${file_t2}_seg.nii.gz -disc ${file_t2}_label-disc.nii.gz -o ${file_t2}_seg_labeled2.nii.gz
-# Generate QC report to assess labeled segmentation
-sct_qc -i ${file_t2}.nii.gz -s ${file_t2}_seg_labeled2.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
+echo "Done"
 
 exit
 

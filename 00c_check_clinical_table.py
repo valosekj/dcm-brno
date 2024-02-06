@@ -62,6 +62,14 @@ def main():
         if not (mr_b1 in clinical_table_df.values and mr_b2 in clinical_table_df.values):
             print(f'{mr_b1} and {mr_b2} are not in the clinical table')
 
+    # Iterate over the rows of the clinical_table_df and check if the MR B1 and MR B2 are in the same row in the
+    # lap_table_df
+    for index, row in clinical_table_df.iterrows():
+        mr_b1 = row['MR B1']
+        mr_b2 = row['MR B2']
+        if not (mr_b1 in lap_table_df.values and mr_b2 in lap_table_df.values):
+            print(f'{mr_b1} and {mr_b2} are not in the lap table')
+
 
 if __name__ == "__main__":
     main()

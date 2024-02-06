@@ -37,8 +37,21 @@ def main():
     lap_table = os.path.abspath(args.lap_table)
 
     # Read "MR B1" and "MR B2" columns from the input xlsx files
+    # Check if the clinical table contains the 'FUP MR měření B provedeno (ano/ne)' column, if so, read it
     # `header=1` skips the first row
-    clinical_table_df = pd.read_excel(clinical_table, sheet_name='Databáze', usecols=['MR B1', 'MR B2'], header=1)
+    if 'FUP MR měření B provedeno (ano/ne)' in pd.read_excel(clinical_table, sheet_name='Databáze', header=1).columns:
+        clinical_table_df = pd.read_excel(clinical_table, sheet_name='Databáze',
+                                          usecols=['FUP MR měření B provedeno (ano/ne)',
+                                                   'MR B1',
+                                                   'MR B2'],
+                                          header=1)
+    else:
+        clinical_table_df = pd.read_excel(clinical_table, sheet_name='Databáze', usecols=['MR B1', 'MR B2'], header=1)
+
+    # Keep only 'FUP MR měření B provedeno (ano/ne)' == 'ano' (yes)
+    if 'FUP MR měření B provedeno (ano/ne)' in clinical_table_df.columns:
+        clinical_table_df = clinical_table_df[clinical_table_df['FUP MR měření B provedeno (ano/ne)'] == 'ano']
+
     lap_table_df = pd.read_excel(lap_table, sheet_name='LAP', usecols=['MR B1', 'MR B2'])
 
     # Iterate over the rows of the lap_table_df and check if the MR B1 and MR B2 are in the same row in the

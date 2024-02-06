@@ -227,6 +227,16 @@ file_label=${file_t2}_label-disc_c3c5
 # Generate QC report: https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
 sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PATH_QC} -qc-subject ${file}
 
+# Project discs on SC segmentation
+# Label T2w axial spinal cord segmentation. Either using manual disc labels or using disc labels from sagittal image.
+# Note: here we use sct_label_utils instead of sct_label_vertebrae to avoid SC straightening
+# Context: https://github.com/spinalcordtoolbox/spinalcordtoolbox/pull/4072
+sct_label_utils -i ${file_t2}_seg.nii.gz -disc ${file_t2}_label-disc.nii.gz -o ${file_t2}_seg_labeled2.nii.gz
+# Generate QC report to assess labeled segmentation
+sct_qc -i ${file_t2}.nii.gz -s ${file_t2}_seg_labeled2.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
+
+exit
+
 # Register to PAM50 template
 sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 -qc ${PATH_QC} -qc-subject ${file}
 # Rename warping fields for clarity

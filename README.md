@@ -21,12 +21,12 @@ $ git clone https://github.com/valosekj/dcm-brno_derivatives
 $ mv dcm-brno_derivatives derivatives
 ```
 
-## 0. Create symlinks for subjects with multiple runs
+## 0. Copy images for subjects with multiple runs
 
 Copy images for subjects with multiple runs (context: [T2w](https://github.com/valosekj/dcm-brno/issues/2), 
 [T2star](https://github.com/valosekj/dcm-brno/issues/3)):
 
-Commands T2w: https://github.com/valosekj/dcm-brno/issues/2
+- commands T2w: https://github.com/valosekj/dcm-brno/issues/2
 
 ## 1. Process data
 

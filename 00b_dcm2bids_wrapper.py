@@ -5,9 +5,12 @@
 # for each subject
 #
 # USAGE:
-#     00b_dcm2bids_wrapper.py -path-in <PATH_TO_DATASET>/sourcedata
-#                         -path-out <PATH_TO_DATASET>
-#                         -xlsx-table table.xlsx
+#     00b_dcm2bids_wrapper.py
+#           -path-in <PATH_TO_DATASET>/sourcedata
+#           -path-out <PATH_TO_DATASET>
+#           -xlsx-table table.xlsx
+#           -dcm2bids-config dcm2bids_config.json
+#
 # ARGUMENTS:
 #     -path-in              Path to the folder with dicom folders, e.g., <PATH_TO_DATASET>/sourcedata
 #     -path-out             Path where BIDS dataset will be saved

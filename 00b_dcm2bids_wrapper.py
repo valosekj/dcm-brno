@@ -70,7 +70,18 @@ def main():
     xlsx_file_path = os.path.abspath(args.xlsx_table)
 
     # Read "MR B1" and "MR B2" columns from the input xlsx file
-    subject_df = pd.read_excel(xlsx_file_path, sheet_name='LAP', usecols=['MR B1', 'MR B2'])
+    subject_df = pd.read_excel(xlsx_file_path,
+                               sheet_name='Databáze',
+                               usecols=['FUP MR měření B provedeno (ano/ne)',
+                                        'MR B1',
+                                        'MR B2'],
+                               header=1)
+
+    # Keep only 'FUP MR měření B provedeno (ano/ne)' == 'ano' (yes)
+    subject_df = subject_df[subject_df['FUP MR měření B provedeno (ano/ne)'] == 'ano']
+
+    # Print number of rows (subjects)
+    logger.info(f'Number of subjects: {len(subject_df)}')
 
     # Dump log file there
     fname_log = f'dcm2bids.log'

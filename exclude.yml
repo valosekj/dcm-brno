@@ -4,3 +4,4 @@ T2w:
   - sub-2825B4881B_ses-2825B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
   - sub-2825B4881B_ses-4881B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
   - sub-3782B6193B_ses-3782B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
+  - sub-1838B6577B_ses-1838B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144

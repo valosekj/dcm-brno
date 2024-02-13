@@ -115,7 +115,7 @@ segment_sc_nnUNet_if_does_not_exist(){
   local contrast="$2"   # note that contrast is used only for QC purposes
 
   FILESEG="${file}_seg"
-  FILESEGMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/${folder_contrast}/${FILESEG}.nii.gz"
+  FILESEGMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/anat/${FILESEG}.nii.gz"
   echo
   echo "Looking for manual segmentation: $FILESEGMANUAL"
   if [[ -e $FILESEGMANUAL ]]; then

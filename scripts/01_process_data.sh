@@ -75,8 +75,12 @@ project_discs_on_sc_seg(){
     sct_label_utils -i ${file_seg}.nii.gz -disc ${FILELABEL}.nii.gz -o ${file_seg}_labeled_discs.nii.gz
     # Generate QC report to assess labeled segmentation
     sct_qc -i ${file}.nii.gz -s ${file_seg}_labeled_discs.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
+    # Add into to log file
+    echo "${FILELABEL}.nii.gz -- using manual disc labels" >> "${PATH_LOG}/T2w_disc_labels.log"
   else
     echo "File ${FILELABELMANUAL} does not exist" >> ${PATH_LOG}/missing_files.log
+    # Add into to log file
+    echo "${FILELABEL}.nii.gz -- no disc labels" >> "${PATH_LOG}/T2w_disc_labels.log"
     echo "ERROR: No manual disc labels found."
   fi
 }

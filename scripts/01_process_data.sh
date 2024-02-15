@@ -125,7 +125,9 @@ segment_sc_nnUNet_if_does_not_exist(){
   if [[ -e $FILESEGMANUAL ]]; then
     echo "Found! Using manual segmentation."
     rsync -avzh $FILESEGMANUAL ${FILESEG}.nii.gz
+    # Generate axial QC report
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
+    # Add into to log file
     echo "${FILESEG}.nii.gz -- using manual segmentation" >> "${PATH_LOG}/T2w_SC_segmentations.log"
   else
     echo "Not found. Proceeding with automatic segmentation using the SCIseg nnUNet model."
@@ -133,7 +135,7 @@ segment_sc_nnUNet_if_does_not_exist(){
     python ${PATH_NNUNET_SCRIPT} -i ${file}.nii.gz -o ${FILESEG}.nii.gz -path-model ${PATH_NNUNET_MODEL} -pred-type sc
     # Generate axial QC report
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
-
+    # Add into to log file
     echo "${FILESEG}.nii.gz -- segmenting automatically" >> "${PATH_LOG}/T2w_SC_segmentations.log"
 
     if [[ $contrast == "t2" ]]; then

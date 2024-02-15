@@ -263,6 +263,10 @@ file_label=${file_t2}_label-disc_c3c5
 # Generate QC report: https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
 sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PATH_QC} -qc-subject ${file}
 
+echo "Done"
+
+exit
+
 # Register to PAM50 template
 sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 -qc ${PATH_QC} -qc-subject ${file}
 # Rename warping fields for clarity
@@ -275,10 +279,6 @@ sct_process_segmentation -i ${file_t2}_seg.nii.gz -perlevel 1 -vert 2:7 -vertfil
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -perslice 1 -o ${PATH_RESULTS}/csa-SC_T2w_perslice.csv -append 1
 # Normalize to PAM50 template
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_labeled.nii.gz -perslice 1 -normalize-PAM50 1 -o ${PATH_RESULTS}/${file_t2}_metrics_perslice_PAM50.csv
-
-echo "Done"
-
-exit
 
 # -------------------------------------------------------------------------
 # T2s

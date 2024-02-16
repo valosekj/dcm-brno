@@ -110,7 +110,7 @@ segment_sc_SCIseg_if_does_not_exist(){
     # Generate axial QC report
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
     # Generate lesion QC report -- SC seg has to be provided to crop the image
-    sct_qc -i ${file}.nii.gz -s ${FILESEG} -d ${file}_lesion.nii.gz -p sct_deepseg_lesion -qc ${PATH_QC} -qc-subject ${file} -plane axial
+    sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -d ${file}_lesion.nii.gz -p sct_deepseg_lesion -qc ${PATH_QC} -qc-subject ${file} -plane axial
     # Add into to log file
     echo "${FILESEG}.nii.gz -- segmenting automatically" >> "${PATH_LOG}/T2w_SC_segmentations.log"
 

@@ -2,9 +2,8 @@
 #
 # Process data.
 #
-# Note: conda environment with nnUNetV2 is required to run this script.
-# For details how to install nnUNetV2, see:
-# https://github.com/ivadomed/utilities/blob/main/quick_start_guides/nnU-Net_quick_start_guide.md#installation
+# Requirements:
+#   SCT v6.2 -- this version contains the SCIseg model as part of 'sct_deepseg -task seg_sc_lesion_t2w_sci'
 #
 # Usage:
 #   ./01_process_data.sh <SUBJECT>
@@ -84,9 +83,8 @@ label_if_does_not_exist(){
 }
 
 # Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
-# it does not, perform segmentation using SCIseg nnUNet model
-# https://github.com/ivadomed/model_seg_sci/tree/r20231108
-segment_sc_nnUNet_if_does_not_exist(){
+# it does not, perform segmentation using SCIseg nnUNet model (part of SCT v6.2).
+segment_sc_SCIseg_if_does_not_exist(){
   local file="$1"
   local contrast="$2"   # note that contrast is used only for QC purposes
 
@@ -104,7 +102,11 @@ segment_sc_nnUNet_if_does_not_exist(){
   else
     echo "Not found. Proceeding with automatic segmentation using the SCIseg nnUNet model."
     # Run SC segmentation
-    python ${PATH_NNUNET_SCRIPT} -i ${file}.nii.gz -o ${FILESEG}.nii.gz -path-model ${PATH_NNUNET_MODEL} -pred-type sc
+    sct_deepseg -i ${file}.nii.gz -o ${file}_seg.nii.gz -task seg_sc_lesion_t2w_sci
+    # Rename outputs
+    mv ${file}_seg_sc_seg.nii.gz ${FILESEG}
+    mv ${file}_seg_sc_seg.nii.gz mv ${file}_lesion.nii.gz
+
     # Generate axial QC report
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
     # Add into to log file
@@ -223,8 +225,8 @@ file="${SUBJECT//[\/]/_}"
 # -------------------------------------------------------------------------
 file_t2="${file}_T2w"
 
-# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model
-segment_sc_nnUNet_if_does_not_exist $file_t2 "t2"
+# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
+segment_sc_SCIseg_if_does_not_exist $file_t2 "t2"
 
 # Perform vertebral labeling (using sct_label_vertebrae) and create mid-vertebral levels in the cord
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"
@@ -261,8 +263,8 @@ sct_qc -i ${file_t2s}.nii.gz -s ${file_t2}_seg_labeled2${file_t2s}.nii.gz -p sct
 # Segment gray matter (only if it does not exist)
 segment_gm_if_does_not_exist $file_t2s "t2s"
 file_t2s_seg=$FILESEG
-# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model
-segment_sc_nnUNet_if_does_not_exist $file_t2s "t2s"
+# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
+segment_sc_SCIseg_if_does_not_exist $file_t2s "t2s"
 file_t2s_scseg=$FILESEG
 
 # Compute the gray matter and cord CSA perlevel

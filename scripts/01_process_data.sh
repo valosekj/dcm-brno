@@ -104,8 +104,8 @@ segment_sc_SCIseg_if_does_not_exist(){
     # Run SC segmentation
     sct_deepseg -i ${file}.nii.gz -o ${file}_seg.nii.gz -task seg_sc_lesion_t2w_sci
     # Rename outputs
-    mv ${file}_seg_sc_seg.nii.gz ${FILESEG}
-    mv ${file}_seg_sc_seg.nii.gz mv ${file}_lesion.nii.gz
+    mv ${file}_seg_sc_seg.nii.gz ${FILESEG}.nii.gz
+    mv ${file}_seg_sc_seg.nii.gz ${file}_lesion.nii.gz
 
     # Generate axial QC report
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}

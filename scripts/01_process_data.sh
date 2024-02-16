@@ -67,10 +67,14 @@ label_if_does_not_exist(){
     rsync -avzh $FILELABELMANUAL ${FILELABEL}.nii.gz
     # Generate labeled segmentation using init disc labels
     sct_label_vertebrae -i ${file}.nii.gz -s ${file_seg}.nii.gz -discfile ${FILELABEL}.nii.gz -c ${contrast} -qc ${PATH_QC} -qc-subject ${file}
+    # Add into to log file
+    echo "${FILELABEL}.nii.gz -- using manual disc labels" >> "${PATH_LOG}/T2w_disc_labels.log"
   else
     echo "Manual disc labels not found. Proceeding with automatic labeling."
     # Generate labeled segmentation
     sct_label_vertebrae -i ${file}.nii.gz -s ${file_seg}.nii.gz -c ${contrast} -qc ${PATH_QC} -qc-subject ${file}
+    # Add into to log file
+    echo "${FILELABEL}.nii.gz -- using automatic labeling" >> "${PATH_LOG}/T2w_disc_labels.log"
   fi
 
   # Create labels in the cord at C3 and C5 mid-vertebral levels (needed for template registration)

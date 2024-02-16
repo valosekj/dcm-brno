@@ -57,34 +57,6 @@ start=`date +%s`
 # FUNCTIONS
 # ------------------------------------------------------------------------------
 
-# Project discs on SC segmentation using sct_label_utils (to avoid SC straightening done by sct_label_vertebrae)
-project_discs_on_sc_seg(){
-  local file="$1"
-  local file_seg="$2"
-
-  # Copy manual disc labels from derivatives/labels if they exist
-  FILELABEL="${file}_label-disc"
-  FILELABELMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/anat/${FILELABEL}.nii.gz"
-  echo "Looking for manual disc labels: $FILELABELMANUAL"
-  if [[ -e $FILELABELMANUAL ]]; then
-    echo "Found! Using manual disc labels."
-    rsync -avzh $FILELABELMANUAL ${FILELABEL}.nii.gz
-
-    # We use sct_label_utils instead of sct_label_vertebrae to avoid SC straightening
-    # Context: https://github.com/spinalcordtoolbox/spinalcordtoolbox/pull/4072
-    sct_label_utils -i ${file_seg}.nii.gz -disc ${FILELABEL}.nii.gz -o ${file_seg}_labeled_discs.nii.gz
-    # Generate QC report to assess labeled segmentation
-    sct_qc -i ${file}.nii.gz -s ${file_seg}_labeled_discs.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
-    # Add into to log file
-    echo "${FILELABEL}.nii.gz -- using manual disc labels" >> "${PATH_LOG}/T2w_disc_labels.log"
-  else
-    echo "File ${FILELABELMANUAL} does not exist" >> ${PATH_LOG}/missing_files.log
-    # Add into to log file
-    echo "${FILELABEL}.nii.gz -- no disc labels" >> "${PATH_LOG}/T2w_disc_labels.log"
-    echo "ERROR: No manual disc labels found."
-  fi
-}
-
 # Check if manual label already exists. If it does, copy it locally. If it does
 # not, perform labeling.
 label_if_does_not_exist(){
@@ -253,9 +225,6 @@ file_t2="${file}_T2w"
 
 # Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model
 segment_sc_nnUNet_if_does_not_exist $file_t2 "t2"
-
-# Project discs on SC segmentation using sct_label_utils (to avoid SC straightening done by sct_label_vertebrae)
-project_discs_on_sc_seg ${file_t2} ${file_t2}_seg
 
 # Perform vertebral labeling (using sct_label_vertebrae) and create mid-vertebral levels in the cord
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"

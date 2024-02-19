@@ -1,6 +1,13 @@
 #!/bin/bash
 
-cd /Users/valosek/data/results/dcm-brno-reproducibility_2023-11-29_only_T2w_SC_QC/results/
+# Check if the user has provided the path to the results, if not, print the usage and exit
+if [ -z "$1" ]; then
+    echo "Usage: $0 PATH_RESULTS"
+    echo "Example: $0 /Users/user/results/dcm-brno_2024-02-19"
+    exit 1
+fi
+
+PATH_RESULTS=$1
 
 for file in *perslice_PAM50.csv;do
     subject=${file:0:14}
@@ -9,7 +16,7 @@ for file in *perslice_PAM50.csv;do
     echo "Processing ${subject} ${session1} ${session2} ..."
     python /Users/valosek/code/dcm-brno/generate_figures_PAM50_two_sessions.py \
     -path-HC ${SCT_DIR}/data/PAM50_normalized_metrics \
-    -ses1 /Users/valosek/data/results/dcm-brno-reproducibility_2023-11-29_only_T2w_SC_QC/results/${subject}_ses-${session1}_T2w_metrics_perslice_PAM50.csv \
-    -ses2 /Users/valosek/data/results/dcm-brno-reproducibility_2023-11-29_only_T2w_SC_QC/results/${subject}_ses-${session2}_T2w_metrics_perslice_PAM50.csv \
-    -path-out /Users/valosek/data/results/dcm-brno-reproducibility_2023-11-29_only_T2w_SC_QC/figures
+    -ses1 ${PATH_RESULTS}/results/${subject}_ses-${session1}_T2w_metrics_perslice_PAM50.csv \
+    -ses2 ${PATH_RESULTS}/results/${subject}_ses-${session2}_T2w_metrics_perslice_PAM50.csv \
+    -path-out ${PATH_RESULTS}/figures
 done

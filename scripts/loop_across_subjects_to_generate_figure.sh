@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Usage:
+#    cd ${HOME}/code/dcm-brno/scripts
+#    loop_across_subjects_to_generate_figure.sh PATH_RESULTS
+#
+
 
 # Check if the user has provided the path to the results, if not, print the usage and exit
 if [ -z "$1" ]; then
@@ -9,7 +15,7 @@ fi
 
 PATH_RESULTS=$1
 
-for file in *perslice_PAM50.csv;do
+for file in ${PATH_RESULTS}/results/*perslice_PAM50.csv;do
     subject=${file:0:14}
     session1=${file:4:5}
     session2=${file:9:5}

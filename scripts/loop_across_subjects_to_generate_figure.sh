@@ -13,6 +13,13 @@ for file in *perslice_PAM50.csv;do
     subject=${file:0:14}
     session1=${file:4:5}
     session2=${file:9:5}
+
+    # Check if the subject is listed in the exclusion list (exclude.yml), if so, skip it
+    if grep -q $subject ../exclude.yml; then
+        echo "Subject ${subject} is listed in the exclusion list. Skipping."
+        continue
+    fi
+
     echo "Processing ${subject} ${session1} ${session2} ..."
     python /Users/valosek/code/dcm-brno/generate_figures_PAM50_two_sessions.py \
     -path-HC ${SCT_DIR}/data/PAM50_normalized_metrics \

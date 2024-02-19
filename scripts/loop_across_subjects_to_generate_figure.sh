@@ -16,9 +16,10 @@ fi
 PATH_RESULTS=$1
 
 for file in ${PATH_RESULTS}/results/*perslice_PAM50.csv;do
-    subject=${file:0:14}
-    session1=${file:4:5}
-    session2=${file:9:5}
+    filename="${file##*/}"
+    subject=${filename:0:14}
+    session1=${filename:4:5}
+    session2=${filename:9:5}
 
     # Check if the subject is listed in the exclusion list (exclude.yml), if so, skip it
     if grep -q $subject ${HOME}/code/dcm-brno/exclude.yml; then

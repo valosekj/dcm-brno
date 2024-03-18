@@ -1,3 +1,4 @@
+# https://github.com/valosekj/dcm-brno/issues/11
 T2w:
   - sub-2296B4806B_ses-2296B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
   - sub-2315B4686B_ses-2315B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144

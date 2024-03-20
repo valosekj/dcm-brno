@@ -12,6 +12,8 @@ import pandas as pd
 import logging
 import shutil
 
+from utils import read_xlsx_file
+
 DISC = '/md3'
 
 # Folders with the dicom data
@@ -60,12 +62,7 @@ def main():
     logging.root.addHandler(fh)
 
     # Read "MR B1" and "MR B2" columns from the input xlsx file
-    subject_df = pd.read_excel(xlsx_file_path,
-                               sheet_name='Databáze',
-                               usecols=['FUP MR měření B provedeno (ano/ne)',
-                                        'MR B1',
-                                        'MR B2'],
-                               header=1)
+    subject_df = read_xlsx_file(xlsx_file_path)
 
     # Keep only 'FUP MR měření B provedeno (ano/ne)' == 'ano' (yes)
     subject_df = subject_df[subject_df['FUP MR měření B provedeno (ano/ne)'] == 'ano']

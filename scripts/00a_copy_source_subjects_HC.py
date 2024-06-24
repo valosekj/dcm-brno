@@ -73,23 +73,27 @@ def main():
     fh = logging.FileHandler(os.path.join(DISC, 'dcm-brno/sourcedata', fname_log))
     logging.root.addHandler(fh)
 
+    # Get the list of HC subjects in the input folder
+    list_of_subjects = os.listdir(in_path)
+    # Sort the list
+    list_of_subjects.sort()
+    logger.info(f'The following subjects found in {in_path}: {list_of_subjects}')
+
+    # Print number of rows (subjects)
+    logger.info(f'Number of subjects in "{in_path}": {len(list_of_subjects)}')
+
     # Read the transcript table if it exists
     if os.path.isfile(transcript_table_path):
         transcript_table = pd.read_csv(transcript_table_path, sep='\t')
-        logger.info(f"Transcript table read from {transcript_table_path}.")
+        logger.info(f"Transcript table read from {transcript_table_path}")
     else:
         logger.info(f"ERROR: The transcript table {transcript_table_path} does not exist.")
         sys.exit(1)
 
-    # Get the list of HC subjects in the input folder
-    list_of_subjects = [os.path.basename(f) for f in os.listdir(in_path) if os.path.isdir(f)]
-
-    # Print number of rows (subjects)
-    logger.info(f'Number of subjects: {len(list_of_subjects)}')
-
     # Iterate through the subjects found in the input folder
     for subject_tmp in list_of_subjects:
-        subject = transcript_table[transcript_table['SUB_ID'] == subject_tmp]['DICOM_ID'].values
+        subject = transcript_table[transcript_table['SUB_ID'] == subject_tmp]['DICOM_ID'].values[0]
+        logger.info(f'Processing: {subject_tmp}, {subject}')
         # Iterate through the folders
         for folder in FOLDERS:
             source_path = os.path.join(DISC, folder, 'dicom', f'sub-{subject}')
@@ -97,29 +101,31 @@ def main():
             # Copy the subject data if it does not exist in dcm-brno/sourcedata
             if os.path.isdir(source_path) and not os.path.isdir(dest_path):
                 # Copy source images
-                logger.info(f"{subject} exists in {folder}.")
+                logger.info(f"{subject} exists in {os.path.join(DISC, folder)} --> copying the subject...")
                 shutil.copytree(source_path, dest_path)
                 # Copy derivatives/labels
                 derivatives_path = os.path.join(in_path, subject_tmp, 'ses-01', 'anat')
                 dest_path = os.path.join(DISC, 'dcm-brno', 'derivatives', 'labels', f'sub-{subject}', f'ses-{subject}',
                                          'anat')
+                os.makedirs(dest_path, exist_ok=True)
                 # Get all files under derivatives_path
                 files = [f for f in os.listdir(derivatives_path) if os.path.isfile(os.path.join(derivatives_path, f))]
                 # Copy the files from '-hc-path' to dcm-brno/derivatives/labels
                 for file in files:
                     # Copy and rename
                     # Example: sub-0001_ses-01_T1w_gmseg-manual.nii.gz --> sub-2613B_ses-2613B_T1w_gmseg-manual.nii.gz
-                    out_file = (file.replace(f'sub-{subject_tmp}', f'sub-{subject}').
-                                replace(f'ses-{subject_tmp}', f'ses-{subject}'))
+                    out_file = (file.replace(f'{subject_tmp}', f'sub-{subject}').
+                                replace(f'ses-01', f'ses-{subject}'))
+                    print(out_file)
                     shutil.copy(os.path.join(derivatives_path, file),
                                 os.path.join(dest_path, out_file))
-                    logger.info(f"Copying {derivatives_path}/{file} to {dest_path}/{out_file}.")
+                    logger.info(f"Copying {derivatives_path}/{file} to {dest_path}/{out_file}")
 
     # Check whether all subjects from list_of_subjects were copied to dcm-brno/sourcedata
     for subject_tmp in list_of_subjects:
         subject = transcript_table[transcript_table['SUB_ID'] == subject_tmp]['DICOM_ID'].values
         if not os.path.isdir(os.path.join(DISC, 'dcm-brno', 'sourcedata', f'sub-{subject}')):
-            logger.info(f"ERROR: {subject} was not copied to dcm-brno/sourcedata.")
+            logger.info(f"ERROR: {subject} was not copied to dcm-brno/sourcedata")
 
 
 if __name__ == "__main__":

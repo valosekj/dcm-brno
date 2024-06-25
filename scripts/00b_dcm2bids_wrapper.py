@@ -100,8 +100,9 @@ def main():
 
         # session 1
         sub_dicom_folder_path = os.path.join(dicom_folder_path, 'sub-' + source_id_ses_01)
-        # Check if subject exists
+        # Check if the dicom folder exists
         if os.path.exists(sub_dicom_folder_path):
+            # Check if subject exists in the output BIDS folder, if so, skip
             if not os.path.exists(os.path.join(bids_folder, 'sub-' + subject_id, 'ses-' + source_id_ses_01)):
                 # Construct shell command
                 command = 'dcm2bids -d ' + sub_dicom_folder_path + \
@@ -124,8 +125,9 @@ def main():
 
         # session 2
         sub_dicom_folder_path = os.path.join(dicom_folder_path,  'sub-' + source_id_ses_02)
-        # Check if subject exists
+        # Check if the dicom folder exists
         if os.path.exists(sub_dicom_folder_path):
+            # Check if subject exists in the output BIDS folder, if so, skip
             if not os.path.exists(os.path.join(bids_folder, 'sub-' + subject_id, 'ses-' + source_id_ses_02)):
                 # Construct shell command
                 command = 'dcm2bids' + \

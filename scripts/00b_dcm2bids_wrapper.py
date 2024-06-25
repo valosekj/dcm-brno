@@ -23,6 +23,9 @@
 #     pip install pandas
 #     pip install openpyxl
 #
+# NOTE: The script requires the dcm2bids conda environment to be activated:
+#    conda activate dcm2bids
+#
 # Authors: Jan Valosek
 #
 

@@ -123,7 +123,7 @@ def main():
 
     # Check whether all subjects from list_of_subjects were copied to dcm-brno/sourcedata
     for subject_tmp in list_of_subjects:
-        subject = transcript_table[transcript_table['SUB_ID'] == subject_tmp]['DICOM_ID'].values
+        subject = transcript_table[transcript_table['SUB_ID'] == subject_tmp]['DICOM_ID'].values[0]
         if not os.path.isdir(os.path.join(DISC, 'dcm-brno', 'sourcedata', f'sub-{subject}')):
             logger.info(f"ERROR: {subject} was not copied to dcm-brno/sourcedata")
 

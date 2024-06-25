@@ -4,6 +4,8 @@
 # The script uses XLXS table (provided by '-xlsx-table') to fetch 'MR B1' and 'MR B2' columns and then runs dcm2bids
 # for each subject
 #
+# NOTE: The script is run only on subjects with two MRI sessions (MR B1 and MR B2)
+#
 # USAGE:
 #     00b_dcm2bids_wrapper.py
 #           -path-in <PATH_TO_DATASET>/sourcedata

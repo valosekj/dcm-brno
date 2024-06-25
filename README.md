@@ -2,8 +2,16 @@
 
 ## 0. Copy source subjects to /md3/dcm-brno/sourcedata
 
+DCM and NMDC patients with two sessions:
+
 ```console
 ./00a_copy_source_subjects.sh
+```
+
+HC controls used the GM segmentation study:
+
+```console
+./00a_copy_source_subjects_hc.sh
 ```
 
 ## 0. DICOM to BIDS conversion

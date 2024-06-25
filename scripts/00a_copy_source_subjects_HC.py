@@ -2,7 +2,7 @@
 # Copy dicom data from "DCM-PRO", "DCM-PRO_longitudinal", "DCM-PRO_NOLOST", and "DCM-PRO_NOLOST_2024-02-08"
 # (all located at /md3) to "dcm-brno/sourcedata" (also located at /md3).
 #
-# NOTE: the script is designed to selectively copy only the HC subjects used for GM segmentation study. Subject IDs
+# NOTE: the script is designed to selectively copy only the HC subjects used for the GM segmentation study. Subject IDs
 # (SUB_ID) of these subjects are fetched from /md2/T1w_CNN/derivatives/labels. Then, the subject IDs are converted to
 # the source IDs (DICOM_ID) using the transform table (`-transcript-table` argument).
 #

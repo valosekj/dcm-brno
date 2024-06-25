@@ -4,7 +4,7 @@
 #
 # NOTE: the script is designed to selectively copy only the HC subjects used for the GM segmentation study. Subject IDs
 # (SUB_ID) of these subjects are fetched from /md2/T1w_CNN/derivatives/labels. Then, the subject IDs are converted to
-# the source IDs (DICOM_ID) using the transform table (`-transcript-table` argument).
+# the source IDs (DICOM_ID) using the transcript table (`-transcript-table` argument).
 #
 # NOTE: The HC subjects also have manual GT segmentations. These segmentations are renamed and copied to
 # dcm-brno/derivatives/labels.
@@ -79,7 +79,7 @@ def main():
     list_of_subjects.sort()
     logger.info(f'The following subjects found in {in_path}: {list_of_subjects}')
 
-    # Print number of rows (subjects)
+    # Print number of subjects
     logger.info(f'Number of subjects in "{in_path}": {len(list_of_subjects)}')
 
     # Read the transcript table if it exists

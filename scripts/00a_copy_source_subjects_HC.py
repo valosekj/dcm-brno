@@ -67,7 +67,7 @@ def main():
     os.makedirs(os.path.join(DISC, 'dcm-brno/sourcedata'), exist_ok=True)
 
     # Dump log file there
-    fname_log = f'copy_source_data' + pd.Timestamp.now().strftime("%Y%m%d-%H%M%S") + '.log'
+    fname_log = f'copy_source_data_HC_' + pd.Timestamp.now().strftime("%Y%m%d-%H%M%S") + '.log'
     if os.path.exists(fname_log):
         os.remove(fname_log)
     fh = logging.FileHandler(os.path.join(DISC, 'dcm-brno/sourcedata', fname_log))

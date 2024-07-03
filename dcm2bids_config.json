@@ -1,5 +1,5 @@
 {
-    "dcm2niixOptions": "-b y -ba y -z y -f '%3s_%f_%p_%t_%b'",
+    "dcm2niixOptions": "-m y -b y -ba y -z y -f '%3s_%f_%p_%t_%b'",
     "descriptions": [
         {
             "datatype": "anat",

@@ -9,6 +9,10 @@ T2w:
   - sub-2702B6403B_ses-2702B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
   - sub-2247B6492B_ses-2247B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
 
+# https://github.com/valosekj/dcm-brno/issues/12
+T1w:
+  - sub-2389B_ses-2389B_T1w        # only 21 slices; see https://github.com/valosekj/dcm-brno/issues/12#issue-2389256248
+
 # https://github.com/valosekj/dcm-brno/issues/9
 Surgery:
   - sub-2247B6492B_ses-6492B_T2w.nii.gz

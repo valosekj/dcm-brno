@@ -7,9 +7,9 @@
 # runs dcm2bids for each subject.
 #
 # USAGE:
-#     00b_dcm2bids_wrapper.py
-#           -path-in <PATH_TO_DATASET>/sourcedata, e.g., /md3/dcm-brno/sourcedata
-#           -path-out <PATH_TO_DATASET>, e.g., /md3/dcm-brno
+#     00b_dcm2bids_wrapper_HC.py
+#           -path-in <PATH_TO_DATASET>/sourcedata       # e.g., /md3/dcm-brno/sourcedata
+#           -path-out <PATH_TO_DATASET>                 # e.g., /md3/dcm-brno
 #           -transcript-table table.tsv
 #           -dcm2bids-config dcm2bids_config.json
 #

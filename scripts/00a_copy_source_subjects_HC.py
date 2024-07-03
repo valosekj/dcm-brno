@@ -116,6 +116,8 @@ def main():
                     # Example: sub-0001_ses-01_T1w_gmseg-manual.nii.gz --> sub-2613B_ses-2613B_T1w_gmseg-manual.nii.gz
                     out_file = (file.replace(f'{subject_tmp}', f'sub-{subject}').
                                 replace(f'ses-01', f'ses-{subject}'))
+                    # Remove '-manual' from out_file
+                    out_file = out_file.replace('-manual', '')
                     print(out_file)
                     shutil.copy(os.path.join(derivatives_path, file),
                                 os.path.join(dest_path, out_file))

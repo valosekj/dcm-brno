@@ -94,16 +94,6 @@
         {
             "datatype": "anat",
             "suffix": "MTS",
-            "custom_entities": "acq-MT",
-            "criteria": {
-                "Manufacturer": "Philips",
-                "SeriesDescription": "GRE-MT",
-                "ProtocolName": "WIP_GRE-MT"
-            }
-        },
-        {
-            "datatype": "anat",
-            "suffix": "MTS",
             "custom_entities": "acq-MTon",
             "criteria": {
                 "SeriesDescription": "GRE-MT1",

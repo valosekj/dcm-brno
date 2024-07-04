@@ -85,7 +85,7 @@
         {
             "datatype": "anat",
             "suffix": "MTS",
-            "custom_entities": "acq-T1w",
+            "custom_entities": "flip-2_mt-off",
             "criteria": {
                 "SeriesDescription": "GRE-T1*",
                 "ProtocolName": "*GRE-T1*"
@@ -94,7 +94,7 @@
         {
             "datatype": "anat",
             "suffix": "MTS",
-            "custom_entities": "acq-MTon",
+            "custom_entities": "flip-1_mt-on",
             "criteria": {
                 "SeriesDescription": "GRE-MT1",
                 "ProtocolName": "GRE-MT1"
@@ -103,7 +103,7 @@
         {
             "datatype": "anat",
             "suffix": "MTS",
-            "custom_entities": "acq-MToff",
+            "custom_entities": "flip-1_mt-off",
             "criteria": {
                 "SeriesDescription": "GRE-MT0",
                 "ProtocolName": "GRE-MT0"

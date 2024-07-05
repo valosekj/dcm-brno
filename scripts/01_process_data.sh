@@ -327,13 +327,13 @@ file_bvec=${file_dwi}.bvec
 # Separate b=0 and DWI volumes; the command will create also a file with the mean DWI ('_dwi_mean.nii.gz')
 sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
 
-# Segment spinal cord (only if it does not exist) using the contrast-agnostic model (part of SCT v6.2)
-# Note: this is just an initial segmentation to crop the data
-segment_sc_CA_if_does_not_exist "${file_dwi}"_dwi_mean "dwi"
-file_dwi_seg=$FILESEG
+# Get the centerline
+# Comparison "contrast-agnostic SC" vs "sct_get_centerline":
+# https://github.com/valosekj/dcm-brno/issues/13
+sct_get_centerline -i "${file_dwi}"_dwi_mean.nii.gz -c dwi
 
-# Crop data for faster processing
-sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 15x15x0 -o "${file_dwi}"_crop.nii.gz
+# Crop data around the centerline for faster processing
+sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi}"_dwi_mean_centerline.nii.gz -dilate 25x25x0 -o "${file_dwi}"_crop.nii.gz
 file_dwi="${file_dwi}_crop"
 
 # Motion correction on the cropped data

@@ -22,7 +22,26 @@
 # PATH_RESULTS="~/results"
 # PATH_LOG="~/log"
 # PATH_QC="~/qc"
-#
+
+# Parameters
+vertebral_levels="2:6"  # Vertebral levels to extract metrics from. "2:6" means from C2 to C6 (included)
+# List of tracts to extract
+# Legend: https://spinalcordtoolbox.com/overview/concepts/pam50.html#white-and-gray-matter-atlas
+# Inspiration: Valosek et al., 2021, DOI: 10.1111/ene.15027
+# https://github.com/valosekj/valosek_2021_paper/blob/main/extract_metrics_dMRI.sh
+tracts=(
+  "51"\     # white matter
+  "52"\     # gray matter
+  "53"\     # dorsal columns
+  "54"\     # lateral columns
+  "55"\     # ventral columns
+  "0,1"\    # left and right fasciculus gracilis
+  "2,3"\    # left and right fasciculus cuneatus
+  "4,5"\    # left and right lateral corticospinal tract
+  "12,13"\  # left and right spinal lemniscus (spinothalamic and spinoreticular tracts)
+  "30,31"\  # ventral GM horns
+  "34,35"\  # dorsal GM horns
+)
 
 # Uncomment for full verbose
 set -x

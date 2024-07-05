@@ -281,18 +281,27 @@ file_t2s="${file}_T2star"
 sct_register_multimodal -i ${file_t2}_seg_labeled.nii.gz -d ${file_t2s}.nii.gz -o ${file_t2}_seg_labeled2${file_t2s}.nii.gz -identity 1 -x nn
 sct_qc -i ${file_t2s}.nii.gz -s ${file_t2}_seg_labeled2${file_t2s}.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${file}
 
-# Segment gray matter (only if it does not exist)
-segment_gm_if_does_not_exist $file_t2s "t2s"
-file_t2s_seg=$FILESEG
-# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
-segment_sc_SCIseg_if_does_not_exist $file_t2s "t2s"
-file_t2s_scseg=$FILESEG
-
-# Compute the gray matter and cord CSA perlevel
-# NB: Here we set -no-angle 1 because we do not want angle correction: it is too
-# unstable with GM seg, and t2s data were acquired orthogonal to the cord anyways.
-sct_process_segmentation -i ${file_t2s_seg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-GM_T2s_perlevel.csv -append 1
-sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-SC_T2s_perlevel.csv -append 1
+## -------------------------------------------------------------------------
+## T2s
+## ------------------------------------------------------------------------------
+#file_t2s="${file}_T2star"
+#
+## Bring T2w vertebral levels into T2s space
+#sct_register_multimodal -i ${file_t2}_seg_labeled.nii.gz -d ${file_t2s}.nii.gz -o ${file_t2}_seg_labeled2${file_t2s}.nii.gz -identity 1 -x nn
+#sct_qc -i ${file_t2s}.nii.gz -s ${file_t2}_seg_labeled2${file_t2s}.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${file}
+#
+## Segment gray matter (only if it does not exist)
+#segment_gm_if_does_not_exist $file_t2s "t2s"
+#file_t2s_seg=$FILESEG
+## Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
+#segment_sc_SCIseg_if_does_not_exist $file_t2s "t2s"
+#file_t2s_scseg=$FILESEG
+#
+## Compute the gray matter and cord CSA perlevel
+## NB: Here we set -no-angle 1 because we do not want angle correction: it is too
+## unstable with GM seg, and t2s data were acquired orthogonal to the cord anyways.
+#sct_process_segmentation -i ${file_t2s_seg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-GM_T2s_perlevel.csv -append 1
+#sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-SC_T2s_perlevel.csv -append 1
 
 # DWI
 # ------------------------------------------------------------------------------

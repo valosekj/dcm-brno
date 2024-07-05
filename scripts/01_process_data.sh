@@ -333,7 +333,8 @@ sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
 sct_get_centerline -i "${file_dwi}"_dwi_mean.nii.gz -c dwi
 
 # Crop data around the centerline for faster processing
-sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi}"_dwi_mean_centerline.nii.gz -dilate 25x25x0 -o "${file_dwi}"_crop.nii.gz
+# The effect of `-dilate`: https://github.com/valosekj/dcm-brno/issues/14#issuecomment-2210748905
+sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi}"_dwi_mean_centerline.nii.gz -dilate 35x35x0 -o "${file_dwi}"_crop.nii.gz
 file_dwi="${file_dwi}_crop"
 
 # Motion correction on the cropped data

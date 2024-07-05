@@ -90,6 +90,8 @@ label_if_does_not_exist(){
     echo "Found! Using manual disc labels."
     rsync -avzh $FILELABELMANUAL ${FILELABEL}.nii.gz
     # Generate labeled segmentation using init disc labels
+    # Comparison "sct_label_vertebrae -discfile" vs "sct_label_utils -disc":
+    # https://github.com/valosekj/dcm-brno/issues/10
     sct_label_vertebrae -i ${file}.nii.gz -s ${file_seg}.nii.gz -discfile ${FILELABEL}.nii.gz -c ${contrast} -qc ${PATH_QC} -qc-subject ${file}
     # Add into to log file
     echo "${FILELABEL}.nii.gz found --> using manual disc labels" >> "${PATH_LOG}/T2w_disc_labels.log"

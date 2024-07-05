@@ -73,6 +73,7 @@ start=`date +%s`
 
 # Check if manual label already exists. If it does, copy it locally. If it does
 # not, perform labeling.
+# Create labels in the cord at C3 and C5 mid-vertebral levels (needed for template registration)
 label_if_does_not_exist(){
   local file="$1"
   local file_seg="$2"
@@ -245,18 +246,23 @@ file="${SUBJECT//[\/]/_}"
 # T2w
 # -------------------------------------------------------------------------
 file_t2="${file}_T2w"
+echo "👉 Processing: ${file_t2}"
 
 # Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
 segment_sc_SCIseg_if_does_not_exist $file_t2 "t2"
 
-# Perform vertebral labeling (using sct_label_vertebrae) and create mid-vertebral levels in the cord
+# Perform vertebral labeling (using sct_label_vertebrae) and create C3 and C5 mid-vertebral levels in the cord
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"
 file_label=${file_t2}_label-disc_c3c5
-# Generate QC report: https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
+# Generate QC report for C3 and C5 mid-vertebral levels
+# https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
 sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PATH_QC} -qc-subject ${file}
 
-# Register to PAM50 template
-sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 -qc ${PATH_QC} -qc-subject ${file}
+# Register to PAM50 template using C3 and C5 mid-vertebral levels
+# TODO: consider removing step 3 (https://github.com/sct-pipeline/spine-park/blob/e3cc60adec6aff45e8f9b716aaa58fd8860effbd/batch_processing.sh#L146 uses only step 1 and 2)
+sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 \
+                         -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 \
+                         -qc ${PATH_QC} -qc-subject ${file}
 # Rename warping fields for clarity
 mv warp_template2anat.nii.gz warp_template2T2w.nii.gz
 mv warp_anat2template.nii.gz warp_T2w2template.nii.gz
@@ -268,18 +274,7 @@ sct_process_segmentation -i ${file_t2}_seg.nii.gz -perslice 1 -o ${PATH_RESULTS}
 # Normalize to PAM50 template
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_labeled.nii.gz -perslice 1 -normalize-PAM50 1 -o ${PATH_RESULTS}/${file_t2}_metrics_perslice_PAM50.csv
 
-echo "Done"
-
-exit
-
-# -------------------------------------------------------------------------
-# T2s
-# ------------------------------------------------------------------------------
-file_t2s="${file}_T2star"
-
-# Bring T2w vertebral levels into T2s space
-sct_register_multimodal -i ${file_t2}_seg_labeled.nii.gz -d ${file_t2s}.nii.gz -o ${file_t2}_seg_labeled2${file_t2s}.nii.gz -identity 1 -x nn
-sct_qc -i ${file_t2s}.nii.gz -s ${file_t2}_seg_labeled2${file_t2s}.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${file}
+echo "✅ Done: ${file_t2}"
 
 ## -------------------------------------------------------------------------
 ## T2s
@@ -398,11 +393,11 @@ done
 # End
 # ------------------------------------------------------------------------------
 # Display useful info for the log
-end=`date +%s`
-runtime=$((end-start))
+end="$(date +%s)"
+runtime="$((end-start))"
 echo
 echo "~~~"
-echo "SCT version: `sct_version`"
-echo "Ran on:      `uname -nsr`"
-echo "Duration:    $(($runtime / 3600))hrs $((($runtime / 60) % 60))min $(($runtime % 60))sec"
+echo "SCT version: $(sct_version)"
+echo "Ran on:      $(uname -nsr)"
+echo "Duration:    $((runtime / 3600))hrs $(( (runtime / 60) % 60))min $((runtime % 60))sec"
 echo "~~~"

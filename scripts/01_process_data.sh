@@ -142,8 +142,8 @@ segment_sc_SCIseg_if_does_not_exist(){
 }
 
 # Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
-# it does not, perform segmentation using sct_deepseg_sc.
-segment_if_does_not_exist(){
+# it does not, perform segmentation using the contrast-agnostic model (part of SCT v6.2)
+segment_sc_CA_if_does_not_exist(){
   local file="$1"
   local contrast="$2"
   # Find contrast
@@ -164,7 +164,7 @@ segment_if_does_not_exist(){
   else
     echo "Not found. Proceeding with automatic segmentation."
     # Segment spinal cord
-    sct_deepseg_sc -i ${file}.nii.gz -c $contrast -qc ${PATH_QC} -qc-subject ${file}
+    sct_deepseg -i ${file}.nii.gz -task seg_sc_contrast_agnostic -qc ${PATH_QC} -qc-subject ${file}
   fi
 }
 
@@ -307,16 +307,23 @@ file_bval=${file_dwi}.bval
 file_bvec=${file_dwi}.bvec
 # Separate b=0 and DW images
 sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
-# Get centerline
-sct_get_centerline -i ${file_dwi}_dwi_mean.nii.gz -c dwi -qc ${PATH_QC} -qc-subject ${file}
-# Create mask to help motion correction and for faster processing
-sct_create_mask -i ${file_dwi}_dwi_mean.nii.gz -p centerline,${file_dwi}_dwi_mean_centerline.nii.gz -size 30mm
-# Motion correction
-sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_dwi}.bvec -m mask_${file_dwi}_dwi_mean.nii.gz -x spline
+
+# Segment spinal cord (only if it does not exist) using the contrast-agnostic model (part of SCT v6.2)
+# Note: this is just an initial segmentation to crop the data
+segment_sc_CA_if_does_not_exist ${file_dwi_mean} "dwi"
+file_dwi_seg=$FILESEG
+
+# Crop data for faster processing
+sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 15x15x0 -o "${file_dwi}"_crop.nii.gz
+file_dwi="${file_dwi}_crop"
+
+# Motion correction on the cropped data
+sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline
 file_dwi=${file_dwi}_moco
 file_dwi_mean=${file_dwi}_dwi_mean
-# Segment spinal cord (only if it does not exist)
-segment_if_does_not_exist ${file_dwi_mean} "dwi"
+
+# Segment spinal cord (only if it does not exist) using the contrast-agnostic model (part of SCT v6.2)
+segment_sc_CA_if_does_not_exist ${file_dwi_mean} "dwi"
 file_dwi_seg=$FILESEG
 # Register template->dwi (using template-T1w as initial transformation)
 sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz -param step=1,type=seg,algo=centermass:step=2,type=im,algo=syn,metric=CC,iter=5,gradStep=0.5 -initwarp ../anat/warp_template2T1w.nii.gz -initwarpinv ../anat/warp_T1w2template.nii.gz

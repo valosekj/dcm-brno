@@ -359,7 +359,7 @@ sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
 mv warp_PAM50_t12${file_dwi_mean}.nii.gz warp_template2dwi.nii.gz
 mv warp_${file_dwi_mean}2PAM50_t1.nii.gz warp_dwi2template.nii.gz
 
-# Warp template
+# Warp template and white matter atlas to DWI space
 sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -ofolder label_${file_dwi} -qc ${PATH_QC} -qc-subject ${SUBJECT}
 
 # Compute DTI metrics on the cropped moco data; the following files will be created: ${file_dwi}_FA, ${file_dwi}_MD, ...

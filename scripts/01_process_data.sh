@@ -368,8 +368,8 @@ sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval}
 # Compute DTI metrics in various tracts
 dti_metrics=(FA MD RD AD)
 for dti_metric in ${dti_metrics[@]}; do
+  file_out=${PATH_RESULTS}/DWI_${dti_metric}.csv
   for tract in ${tracts[@]}; do
-    file_out=${PATH_RESULTS}/DWI_${dti_metric}_${tract//,/-}.csv
     sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas \
                        -l ${tract} -combine 1 -method map \
                        -vert "${vertebral_levels}" -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -perlevel 1 \

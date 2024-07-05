@@ -384,14 +384,9 @@ echo "✅ Done: ${file_dwi}"
 # Verify presence of output files and write log file if error
 # ------------------------------------------------------------------------------
 FILES_TO_CHECK=(
-  "anat/${file}_T1w_seg.nii.gz"
-  "anat/${file}_T2w_seg.nii.gz"
-  "anat/label_axT1w/template/PAM50_levels.nii.gz"
-  "anat/${file}_T2star_gmseg.nii.gz"
-  "dwi/dti_FA.nii.gz"
-  "dwi/dti_MD.nii.gz"
-  "dwi/dti_RD.nii.gz"
-  "dwi/label/atlas/PAM50_atlas_00.nii.gz"
+  "anat/${file_t2}_seg.nii.gz"
+  "anat/warp_template2T2w.nii.gz"
+  "dwi/${file_dwi}_FA.nii.gz"
 )
 for file_to_check in ${FILES_TO_CHECK[@]}; do
   if [[ ! -e $file ]]; then

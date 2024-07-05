@@ -3,7 +3,7 @@
 # Process data.
 #
 # Requirements:
-#   SCT v6.2 -- this version contains the SCIseg model as part of 'sct_deepseg -task seg_sc_lesion_t2w_sci'
+#   SCT v6.2 -- this version contains the SCIseg and contrast-agnostic models as part of 'sct_deepseg'
 #
 # Usage:
 #   ./01_process_data.sh <SUBJECT>
@@ -13,8 +13,12 @@
 # PATH_DATA/derivatives/labels/SUBJECT/<CONTRAST>/
 #
 # Author: Jan Valosek
-# Inspired by: https://github.com/spine-generic/spine-generic/blob/master/process_data.sh
 #
+# Inspired by:
+# https://github.com/spine-generic/spine-generic/blob/master/process_data.sh
+# https://github.com/sct-pipeline/spine-park/blob/main/batch_processing.sh
+#
+
 
 # The following global variables are retrieved from the caller sct_run_batch
 # but could be overwritten by uncommenting the lines below:

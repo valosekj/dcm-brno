@@ -296,16 +296,25 @@ sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vert
 
 # DWI
 # ------------------------------------------------------------------------------
+# Steps:
+#   - average DWI volumes
+#   - segment spinal cord on averaged DWI scan (this is just an initial segmentation to crop the data)
+#   - crop data for faster processing
+#   - motion correction
+#   - average DWI moco volumes
+#   - segment spinal cord on averaged DWI moco scan
+#   - register to PAM50 template via T2w registration
+#   - warp atlas to DWI space
+#   - compute DTI model on the cropped moco data
 cd ../dwi
 
-echo "Done"
-exit
-
-file_dwi="${file}_dwi"
+# ZOOMit AP phase encoding
+file_dwi="${file}_acq-ZOOMit_dir-AP_dwi"
+echo "👉 Processing: ${file_dwi}"
 
 file_bval=${file_dwi}.bval
 file_bvec=${file_dwi}.bvec
-# Separate b=0 and DW images
+# Separate b=0 and DWI volumes; the command will create also a file with the mean DWI ('_dwi_mean.nii.gz')
 sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
 
 # Segment spinal cord (only if it does not exist) using the contrast-agnostic model (part of SCT v6.2)
@@ -325,37 +334,42 @@ file_dwi_mean=${file_dwi}_dwi_mean
 # Segment spinal cord (only if it does not exist) using the contrast-agnostic model (part of SCT v6.2)
 segment_sc_CA_if_does_not_exist ${file_dwi_mean} "dwi"
 file_dwi_seg=$FILESEG
-# Register template->dwi (using template-T1w as initial transformation)
-sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz -param step=1,type=seg,algo=centermass:step=2,type=im,algo=syn,metric=CC,iter=5,gradStep=0.5 -initwarp ../anat/warp_template2T1w.nii.gz -initwarpinv ../anat/warp_T1w2template.nii.gz
+
+# Register template->dwi (using template-T2w as initial transformation)
+# Note: in general for DWI we use the PAM50_t1 contrast, which is close to the dwi contrast; see SCT Course for details
+sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
+                        -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz \
+                        -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz \
+                        -param step=1,type=seg,algo=centermass:step=2,type=seg,algo=bsplinesyn,slicewise=1,iter=3 \
+                        -initwarp ../anat/warp_template2T2w.nii.gz -initwarpinv ../anat/warp_T2w2template.nii.gz \
+                        -qc "${PATH_QC}"
+
 # Rename warping field for clarity
 mv warp_PAM50_t12${file_dwi_mean}.nii.gz warp_template2dwi.nii.gz
 mv warp_${file_dwi_mean}2PAM50_t1.nii.gz warp_dwi2template.nii.gz
+
 # Warp template
-sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -qc ${PATH_QC} -qc-subject ${file}
-# Create mask around the spinal cord (for faster computing)
-sct_maths -i ${file_dwi_seg}.nii.gz -dilate 1 -shape ball -o ${file_dwi_seg}_dil.nii.gz
+sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -ofolder label_${file_dwi} -qc ${PATH_QC} -qc-subject ${SUBJECT}
 
-# Compute DTI model
-sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -m ${file_dwi_seg}_dil.nii.gz
+# Compute DTI metrics on the cropped moco data; the following files will be created: ${file_dwi}_FA, ${file_dwi}_MD, ...
+sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -o ${file_dwi}_
 
-# Compute FA, MD and RD in white matter (WM) between C2 and C5 vertebral levels
-sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 51 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_FA.csv -append 1
-sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 51 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_MD.csv -append 1
-sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 51 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_RD.csv -append 1
-# Compute FA, MD and RD in lateral corticospinal tracts (LCST) between C2 and C5 vertebral levels
-sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 4,5 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_FA_LCST.csv -append 1 -combine 1
-sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 4,5 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_MD_LCST.csv -append 1 -combine 1
-sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 4,5 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_RD_LCST.csv -append 1 -combine 1
-# Compute FA, MD and RD in dorsal columns (DC) between C2 and C5 vertebral levels
-sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 53 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_FA_DC.csv -append 1
-sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 53 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_MD_DC.csv -append 1
-sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 53 -vert 2:5 -method map -o ${PATH_RESULTS}/DWI_RD_DC.csv -append 1
-
-# See this file for more info about labels and tracts:
-# https://github.com/spinalcordtoolbox/spinalcordtoolbox/blob/master/documentation/source/overview/concepts/info_label-atlas.txt
+# Compute DTI metrics in various tracts
+dti_metrics=(FA MD RD AD)
+for dti_metric in ${dti_metrics[@]}; do
+  for tract in ${tracts[@]}; do
+    file_out=${PATH_RESULTS}/DWI_${dti_metric}_${tract//,/-}.csv
+    sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas \
+                       -l ${tract} -combine 1 -method map \
+                       -vert "${vertebral_levels}" -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -perlevel 1 \
+                       -o ${file_out} -append 1
+  done
+done
 
 # Go back to parent folder
 cd ..
+
+echo "✅ Done: ${file_dwi}"
 
 # ------------------------------------------------------------------------------
 # Verify presence of output files and write log file if error

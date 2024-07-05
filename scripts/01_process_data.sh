@@ -327,7 +327,7 @@ sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
 
 # Segment spinal cord (only if it does not exist) using the contrast-agnostic model (part of SCT v6.2)
 # Note: this is just an initial segmentation to crop the data
-segment_sc_CA_if_does_not_exist ${file_dwi_mean} "dwi"
+segment_sc_CA_if_does_not_exist "${file_dwi}"_dwi_mean "dwi"
 file_dwi_seg=$FILESEG
 
 # Crop data for faster processing

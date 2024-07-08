@@ -337,6 +337,11 @@ sct_get_centerline -i "${file_dwi}"_dwi_mean.nii.gz -c dwi
 sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi}"_dwi_mean_centerline.nii.gz -dilate 35x35x0 -o "${file_dwi}"_crop.nii.gz
 file_dwi="${file_dwi}_crop"
 
+# Remove the last six slices due to strong signal dropout
+# Context: https://github.com/valosekj/dcm-brno/issues/16#issuecomment-2214198715
+sct_crop_image -i "${file_dwi}".nii.gz  -zmin 6 -zmax -1 -o "${file_dwi}_crop".nii.gz
+file_dwi="${file_dwi}_crop"
+
 # Motion correction on the cropped data
 sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline
 file_dwi=${file_dwi}_moco

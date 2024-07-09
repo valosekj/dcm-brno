@@ -324,6 +324,9 @@ echo "👉 Processing: ${file_dwi}"
 
 file_bval=${file_dwi}.bval
 file_bvec=${file_dwi}.bvec
+
+# TODO: try patch2self denoising
+
 # Separate b=0 and DWI volumes; the command will create also a file with the mean DWI ('_dwi_mean.nii.gz')
 sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
 

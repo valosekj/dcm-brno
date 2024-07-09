@@ -141,7 +141,7 @@ segment_sc_SCIseg_if_does_not_exist(){
     echo "${FILESEG}.nii.gz NOT found --> segmenting automatically" >> "${PATH_LOG}/T2w_SC_segmentations.log"
 
     if [[ $contrast == "t2" ]]; then
-      # Generate sagittal QC report
+      # Generate sagittal SC QC report (https://github.com/ivadomed/canproco/issues/37#issuecomment-1644497220)
       sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -d ${FILESEG}.nii.gz -p sct_deepseg_lesion -plane sagittal -qc ${PATH_QC} -qc-subject ${file}
     fi
 

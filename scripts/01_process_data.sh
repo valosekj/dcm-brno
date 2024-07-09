@@ -346,18 +346,11 @@ sct_crop_image -i "${file_dwi}".nii.gz  -zmin 6 -zmax -1 -o "${file_dwi}_crop".n
 file_dwi="${file_dwi}_crop"
 
 # Motion correction on the cropped data
-# For ses-4725B and ses-4647B, we use the cross-correlation metric
-# Context:
+# Context for 'metric=CC':
+# https://github.com/sct-pipeline/spine-park/commit/924e332c3b4836baa087ea740a7837120d0b7cbf
 # https://forum.spinalcordmri.org/t/spacing-error-when-running-sct-dmri-moco/487
 # https://github.com/valosekj/dcm-brno/issues/16#issuecomment-2217795988
-if [[ $SUBJECT =~ "ses-zh4725B" ]] || [[ $SUBJECT =~ "ses-zh4647B" ]]; then
-  # cross-correlation
-  metric="CC"
-else
-  # mutual information (default)
-  metric="MI"
-fi
-sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline -param metric=${metric}
+sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline -param metric=CC
 file_dwi=${file_dwi}_moco
 file_dwi_mean=${file_dwi}_dwi_mean
 

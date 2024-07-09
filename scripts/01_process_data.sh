@@ -87,7 +87,7 @@ label_if_does_not_exist(){
   FILELABELMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/anat/${FILELABEL}.nii.gz"
   echo "Looking for manual disc labels: $FILELABELMANUAL"
   if [[ -e $FILELABELMANUAL ]]; then
-    echo "Found! Using manual disc labels."
+    echo "✅ Found! Using manual disc labels."
     rsync -avzh $FILELABELMANUAL ${FILELABEL}.nii.gz
     # Generate labeled segmentation using init disc labels
     # Comparison "sct_label_vertebrae -discfile" vs "sct_label_utils -disc":
@@ -96,7 +96,7 @@ label_if_does_not_exist(){
     # Add into to log file
     echo "${FILELABEL}.nii.gz found --> using manual disc labels" >> "${PATH_LOG}/T2w_disc_labels.log"
   else
-    echo "Manual disc labels not found. Proceeding with automatic labeling."
+    echo "❌ Manual disc labels not found. Proceeding with automatic labeling."
     # Generate labeled segmentation
     sct_label_vertebrae -i ${file}.nii.gz -s ${file_seg}.nii.gz -c ${contrast} -qc ${PATH_QC} -qc-subject ${file}
     # Add into to log file
@@ -119,14 +119,14 @@ segment_sc_SCIseg_if_does_not_exist(){
   echo
   echo "Looking for manual segmentation: $FILESEGMANUAL"
   if [[ -e $FILESEGMANUAL ]]; then
-    echo "Found! Using manual segmentation."
+    echo "✅ Found! Using manual segmentation."
     rsync -avzh $FILESEGMANUAL ${FILESEG}.nii.gz
     # Generate axial QC report
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
     # Add into to log file
     echo "${FILESEG}.nii.gz found --> using manual segmentation" >> "${PATH_LOG}/T2w_SC_segmentations.log"
   else
-    echo "Not found. Proceeding with automatic segmentation using the SCIseg nnUNet model."
+    echo "❌ Not found. Proceeding with automatic segmentation using the SCIseg nnUNet model."
     # Run SC segmentation
     sct_deepseg -i ${file}.nii.gz -o ${file}_seg.nii.gz -task seg_sc_lesion_t2w_sci
     # Rename outputs
@@ -165,11 +165,11 @@ segment_sc_CA_if_does_not_exist(){
   echo
   echo "Looking for manual segmentation: $FILESEGMANUAL"
   if [[ -e $FILESEGMANUAL ]]; then
-    echo "Found! Using manual segmentation."
+    echo "✅ Found! Using manual segmentation."
     rsync -avzh $FILESEGMANUAL ${FILESEG}.nii.gz
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
   else
-    echo "Not found. Proceeding with automatic segmentation."
+    echo "❌ Not found. Proceeding with automatic segmentation."
     # Segment spinal cord
     sct_deepseg -i ${file}.nii.gz -task seg_sc_contrast_agnostic -qc ${PATH_QC} -qc-subject ${file}
   fi
@@ -185,11 +185,11 @@ segment_gm_if_does_not_exist(){
   FILESEGMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/anat/${FILESEG}-manual.nii.gz"
   echo "Looking for manual segmentation: $FILESEGMANUAL"
   if [[ -e $FILESEGMANUAL ]]; then
-    echo "Found! Using manual segmentation."
+    echo "✅ Found! Using manual segmentation."
     rsync -avzh $FILESEGMANUAL ${FILESEG}.nii.gz
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_gm -qc ${PATH_QC} -qc-subject ${file}
   else
-    echo "Not found. Proceeding with automatic segmentation."
+    echo "❌ Not found. Proceeding with automatic segmentation."
     # Segment spinal cord
     sct_deepseg_gm -i ${file}.nii.gz -qc ${PATH_QC} -qc-subject ${file}
   fi

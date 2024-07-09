@@ -385,6 +385,8 @@ sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -ofolde
 # https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1773810021
 sct_qc -i ${file_dwi_mean}.nii.gz -s label_${file_dwi}/template/PAM50_levels.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${SUBJECT}
 
+# TODO: consider also bringing DWI to PAM50 space to generate group statistics
+
 # Compute DTI metrics on the cropped moco data; the following files will be created: ${file_dwi}_FA, ${file_dwi}_MD, ...
 sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -o ${file_dwi}_
 

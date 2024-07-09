@@ -264,7 +264,7 @@ file_label=${file_t2}_label-disc_c3c5
 # https://github.com/spinalcordtoolbox/spinalcordtoolbox/issues/4166#issuecomment-1793499115
 sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PATH_QC} -qc-subject ${file}
 
-# Register to PAM50 template using C3 and C5 mid-vertebral levels
+# Register T2w to PAM50 template using C3 and C5 mid-vertebral levels
 # TODO: consider removing step 3 (https://github.com/sct-pipeline/spine-park/blob/e3cc60adec6aff45e8f9b716aaa58fd8860effbd/batch_processing.sh#L146 uses only step 1 and 2)
 sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 \
                          -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 \
@@ -358,7 +358,7 @@ file_dwi_mean=${file_dwi}_dwi_mean
 segment_sc_CA_if_does_not_exist ${file_dwi_mean} "dwi"
 file_dwi_seg=$FILESEG
 
-# Register template->dwi (using template-T2w as initial transformation)
+# Register template->dwi (using T2w-to-template as initial transformation)
 # Note: in general for DWI we use the PAM50_t1 contrast, which is close to the dwi contrast; see SCT Course for details
 sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
                         -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz \

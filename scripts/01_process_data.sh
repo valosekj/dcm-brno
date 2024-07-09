@@ -251,6 +251,12 @@ file="${SUBJECT//[\/]/_}"
 # -------------------------------------------------------------------------
 # T2w
 # -------------------------------------------------------------------------
+# Steps:
+#   - segment spinal cord using the SCIseg nnUNet model (part of SCT v6.2)
+#   - perform vertebral labeling and create C3 and C5 mid-vertebral levels in the cord
+#   - register T2w to PAM50 template using C3 and C5 mid-vertebral levels
+#   - compute cord CSA perlevel and perslice
+
 file_t2="${file}_T2w"
 echo "👉 Processing: ${file_t2}"
 

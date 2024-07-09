@@ -407,7 +407,7 @@ done
 # Go back to parent folder
 cd ..
 
-echo "✅ Done: ${file_dwi}"
+echo "✅ Done: ${file_bval/.bval/}"
 
 # ------------------------------------------------------------------------------
 # Verify presence of output files and write log file if error

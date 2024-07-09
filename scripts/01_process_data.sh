@@ -418,7 +418,7 @@ FILES_TO_CHECK=(
   "dwi/${file_dwi}_FA.nii.gz"
 )
 for file_to_check in ${FILES_TO_CHECK[@]}; do
-  if [[ ! -e $file ]]; then
+  if [[ ! -e $file_to_check ]]; then
     echo "${SUBJECT}/${file_to_check} does not exist" >> $PATH_LOG/_error_check_output_files.log
   fi
 done

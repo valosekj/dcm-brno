@@ -371,11 +371,8 @@ sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
                         -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz \
                         -param step=1,type=seg,algo=centermass:step=2,type=seg,algo=bsplinesyn,slicewise=1,iter=3 \
                         -initwarp ../anat/warp_template2T2w.nii.gz -initwarpinv ../anat/warp_T2w2template.nii.gz \
+                        -owarp warp_template2dwi.nii.gz -owarpinv warp_dwi2template.nii.gz \
                         -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
-
-# Rename warping field for clarity
-mv warp_PAM50_t12${file_dwi_mean}.nii.gz warp_template2dwi.nii.gz
-mv warp_${file_dwi_mean}2PAM50_t1.nii.gz warp_dwi2template.nii.gz
 
 # Warp template and white matter atlas to DWI space
 sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -ofolder label_${file_dwi} -qc ${PATH_QC} -qc-subject ${SUBJECT}

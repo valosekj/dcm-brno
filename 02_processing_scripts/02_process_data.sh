@@ -6,7 +6,7 @@
 #   SCT v6.2 -- this version contains the SCIseg and contrast-agnostic models as part of 'sct_deepseg'
 #
 # Usage:
-#   ./01_process_data.sh <SUBJECT>
+#   ./02_process_data.sh <SUBJECT>
 #
 #
 # Manual segmentations or labels should be located under:

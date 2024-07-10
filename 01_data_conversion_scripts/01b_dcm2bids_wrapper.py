@@ -7,7 +7,7 @@
 # NOTE: The script is run only on subjects with two MRI sessions (MR B1 and MR B2)
 #
 # USAGE:
-#     00b_dcm2bids_wrapper.py
+#     01b_dcm2bids_wrapper.py
 #           -path-in <PATH_TO_DATASET>/sourcedata
 #           -path-out <PATH_TO_DATASET>
 #           -xlsx-table table.xlsx

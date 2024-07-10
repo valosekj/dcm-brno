@@ -13,22 +13,3 @@ T2w:
 T1w:
   - sub-2389B_ses-2389B_T1w        # only 21 slices; see https://github.com/valosekj/dcm-brno/issues/12#issue-2389256248
 
-# https://github.com/valosekj/dcm-brno/issues/9
-Surgery:
-  - sub-2247B6492B_ses-6492B_T2w.nii.gz
-  - sub-2255B6372B_ses-6372B_T2w.nii.gz
-  - sub-2320B6468B_ses-6468B_T2w.nii.gz
-  - sub-2340B6562B_ses-6562B_T2w.nii.gz
-  - sub-2349B6345B_ses-6345B_T2w.nii.gz
-  - sub-2391B6466B_ses-6466B_T2w.nii.gz
-  - sub-2606B6390B_ses-6390B_T2w.nii.gz
-  - sub-2610B6476B_ses-6476B_T2w.nii.gz
-  - sub-2702B6403B_ses-6403B_T2w.nii.gz
-  - sub-2778B6482B_ses-6482B_T2w.nii.gz
-  - sub-3056B6483B_ses-6483B_T2w.nii.gz
-  - sub-3060B6384B_ses-6384B_T2w.nii.gz
-  - sub-3120B6558B_ses-6558B_T2w.nii.gz
-  - sub-3227B6487B_ses-6487B_T2w.nii.gz
-  - sub-3758B6378B_ses-6378B_T2w.nii.gz
-  - sub-3998B6406B_ses-6406B_T2w.nii.gz
-  - sub-3013B6405B_ses-6405B_T2w.nii.gz

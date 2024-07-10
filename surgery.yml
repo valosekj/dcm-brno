@@ -1,0 +1,23 @@
+# Disc labeling is difficult for some subjects after the surgery:
+#   https://github.com/valosekj/dcm-brno/issues/9
+# But, for C3 analysis, it should be fine as surgery is not in the C3 region.
+surgery:
+ - 1860B6472B
+ - 2255B6372B
+ - 2284B4723B
+ - 2320B6468B
+ - 2340B6562B
+ - 2349B6345B
+ - 2391B6466B
+ - 2606B6390B
+ - 2610B6476B
+ - 2778B6482B
+ - 3013B6405B
+ - 3056B6483B
+ - 3060B6384B
+ - 3120B6558B
+ - 3227B6487B
+ - 3758B6378B
+ - 3759B6530B
+ - 3998B6406B
+ - 4088B6310B

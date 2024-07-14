@@ -13,3 +13,6 @@ T2w:
 T1w:
   - sub-2389B_ses-2389B_T1w        # only 21 slices; see https://github.com/valosekj/dcm-brno/issues/12#issue-2389256248
 
+DWI:
+  - sub-3758B6378B_ses-6378B_acq-ZOOMit_dir-AP_dwi  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245
+  - sub-3998B6406B_ses-6406B_acq-ZOOMit_dir-AP_dwi  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245

@@ -17,7 +17,7 @@ surgery:
  - sub-3060B6384B
  - sub-3120B6558B
  - sub-3227B6487B
- - sub-3758B6378B
+# - sub-3758B6378B  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245
  - sub-3759B6530B
- - sub-3998B6406B
+# - sub-3998B6406B  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245
  - sub-4088B6310B

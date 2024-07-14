@@ -2,22 +2,22 @@
 #   https://github.com/valosekj/dcm-brno/issues/9
 # But, for C3 analysis, it should be fine as surgery is not in the C3 region.
 surgery:
- - 1860B6472B
- - 2255B6372B
- - 2284B4723B
- - 2320B6468B
- - 2340B6562B
- - 2349B6345B
- - 2391B6466B
- - 2606B6390B
- - 2610B6476B
- - 2778B6482B
- - 3013B6405B
- - 3056B6483B
- - 3060B6384B
- - 3120B6558B
- - 3227B6487B
- - 3758B6378B
- - 3759B6530B
- - 3998B6406B
- - 4088B6310B
+ - sub-1860B6472B
+ - sub-2255B6372B
+ - sub-2284B4723B
+ - sub-2320B6468B
+ - sub-2340B6562B
+ - sub-2349B6345B
+ - sub-2391B6466B
+ - sub-2606B6390B
+ - sub-2610B6476B
+ - sub-2778B6482B
+ - sub-3013B6405B
+ - sub-3056B6483B
+ - sub-3060B6384B
+ - sub-3120B6558B
+ - sub-3227B6487B
+ - sub-3758B6378B
+ - sub-3759B6530B
+ - sub-3998B6406B
+ - sub-4088B6310B

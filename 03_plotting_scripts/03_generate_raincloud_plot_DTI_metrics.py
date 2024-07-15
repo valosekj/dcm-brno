@@ -171,7 +171,6 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
                  fontsize=LABEL_FONT_SIZE)
 
     plt.tight_layout()
-    plt.show()
     # Save figure into the same directory as the input CSV file
     output_file = f'{os.path.dirname(csv_file_path)}/{metric}_rainplot.png'
     plt.savefig(output_file, dpi=300)

@@ -89,7 +89,6 @@ def get_parser():
     return parser
 
 
-def create_rainplot(df, metric, csv_file_path):
 def compute_stattests(df):
     """
     Compute the normality test and Wilcoxon signed-rank test (nonparametric, paired) between sessions 1 and 2 for each

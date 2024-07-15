@@ -107,10 +107,12 @@ def compute_stattests(df):
         print(f'{tract_name}: Wilcoxon signed-rank test p-value'
               f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
 
+def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     """
     Create Raincloud plots (violionplot + boxplot + individual points)
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
     :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
+    :param number_of_subjects: number of unique subjects
     :param csv_file_path: path to the input CSV file (it is used to save the output figure)
     """
     fig_size = (15, 5)
@@ -227,14 +229,16 @@ def main():
     df = df[df['VertLevel'] == 3]
 
     # Print number of unique subjects
-    print(f'Number of unique subjects after dropping: {df["Participant"].nunique()}')
+    number_of_subjects = df["Participant"].nunique()
+    print(f'CSV file: Number of unique subjects after dropping: {number_of_subjects}')
+
     # Compute the normality test and paired test for each tract between sessions 1 and 2
     compute_stattests(df)
 
     # -------------------------------
     # Plotting
     # -------------------------------
-    create_rainplot(df, metric, csv_file_path)
+    create_rainplot(df, metric, number_of_subjects, csv_file_path)
 
 
 if __name__ == '__main__':

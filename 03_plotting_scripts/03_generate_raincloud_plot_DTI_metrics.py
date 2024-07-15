@@ -30,7 +30,7 @@ from utils import read_csv_file, read_yaml_file, fetch_participant_and_session, 
 
 
 LABEL_FONT_SIZE = 14
-TICK_FONT_SIZE = 10
+TICK_FONT_SIZE = 9
 
 # List of tracts to extract
 # Legend: https://spinalcordtoolbox.com/overview/concepts/pam50.html#white-and-gray-matter-atlas

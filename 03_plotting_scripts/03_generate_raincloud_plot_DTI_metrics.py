@@ -55,7 +55,8 @@ def get_parser():
 
     parser = argparse.ArgumentParser(
         description='Create Raincloud plots (violionplot + boxplot + individual points) for DTI metrics (FA, MD, RD, '
-                    'AD) for subjects with surgery between sessions 1 (before surgery) and 2 (after surgery).',
+                    'AD) for subjects with surgery between sessions 1 (before surgery) and 2 (after surgery).'
+                    'The figure will be saved in the same directory as the input CSV file.',
         prog=os.path.basename(__file__).strip('.py')
     )
     parser.add_argument(
@@ -70,8 +71,8 @@ def get_parser():
         metavar="<file>",
         required=False,
         type=str,
-        default='~/code/dcm-brno/surgery.yml',
-        help='Path to the YML file listing subjects with surgery.'
+        default='~/code/dcm-brno/exclude.yml',
+        help='Path to the YML file listing subjects to exclude.'
     )
 
     return parser

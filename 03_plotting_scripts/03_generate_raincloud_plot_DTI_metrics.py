@@ -9,15 +9,25 @@ Authors: Jan Valosek
 """
 
 import os
+import sys
 import argparse
 
+import ptitprince as pt
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-import ptitprince as pt
 from scipy.stats import normaltest, wilcoxon, ttest_rel
 
-from utils import read_csv_file, read_yaml_file, fetch_participant_and_session
+# Get the name of the directory where this script is present
+current = os.path.dirname(os.path.realpath(__file__))
+# Get the parent directory name
+parent = os.path.dirname(current)
+# Add the parent directory to the sys.path to import the utils module
+sys.path.append(parent)
+
+from utils import read_csv_file, read_yaml_file, fetch_participant_and_session, format_pvalue
+
+
 
 LABEL_FONT_SIZE = 14
 TICK_FONT_SIZE = 10

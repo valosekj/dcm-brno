@@ -184,11 +184,14 @@ def main():
     # Print number of unique subjects
     print(f'Number of unique subjects before dropping: {df["Participant"].nunique()}')
 
-    # Get the list of subjects with surgery from the input YML file
-    subjects_with_surgery = read_yaml_file(file_path=yml_file_path, key='surgery')
+    # Get the list of subjects to exclude
+    subjects_to_exclude = read_yaml_file(file_path=yml_file_path, key='DWI')
 
-    # Keep only subjects with surgery
-    df = df[df['Participant'].isin(subjects_with_surgery)]
+    # Remove session (after the first '_') from the list of subjects to exclude
+    subjects_to_exclude = [subject.split('_')[0] for subject in subjects_to_exclude]
+
+    # Remove subjects to exclude
+    df = df[~df['Participant'].isin(subjects_to_exclude)]
 
     # Keep only C3
     df = df[df['VertLevel'] == 3]

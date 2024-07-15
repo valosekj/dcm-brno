@@ -11,18 +11,23 @@ The figures are saved in "-path-out".
 """
 
 import os
-import re
 import sys
 import argparse
 import logging
-import yaml
 
 import pandas as pd
 import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from utils import read_xlsx_file
+# Get the name of the directory where this script is present
+current = os.path.dirname(os.path.realpath(__file__))
+# Get the parent directory name
+parent = os.path.dirname(current)
+# Add the parent directory to the sys.path to import the utils module
+sys.path.append(parent)
+
+from utils import read_xlsx_file, read_yaml_file, fetch_participant_and_session
 
 METRICS = ['MEAN(area)', 'MEAN(diameter_AP)', 'MEAN(diameter_RL)', 'MEAN(compression_ratio)', 'MEAN(eccentricity)',
            'MEAN(solidity)']
@@ -48,6 +53,11 @@ TITLE_FONT_SIZE = 16
 LABELS_FONT_SIZE = 14
 TICKS_FONT_SIZE = 12
 
+# NOTE: for some reason, the color order must be swapped here (compared to the DTI plotting script). Maybe due to the
+# `.invert_xaxis` method?
+color_palette = [(0.984313725490196, 0.5019607843137255, 0.4470588235294118),       # red
+                 (0.5529411764705883, 0.8274509803921568, 0.7803921568627451)]     # green
+
 # Initialize logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # default: logging.DEBUG, logging.INFO
@@ -62,168 +72,147 @@ def get_parser():
     parser = argparse.ArgumentParser(
         description='Load "csa-SC_T2w_perlevel" CSV file with shape metrics perlevel located under "-path-in/results" '
                     'and generate group figure comparing sessions 1 vs session 2.'
-                    'The figure is saved in "-path-out".')
-    parser.add_argument('-path-in', required=True,
-                        help='Path to the "csa-SC_T2w_perlevel" CSV file produced by sct_run_batch. '
-                             'Example: "/Users/user/results/dcm-brno_2024-02-19/results/"csa-SC_T2w_perlevel"')
-    parser.add_argument('-path-out', required=True,
-                        help='Path to the output directory where the group figure will be saved. '
-                             'Example: "/Users/user/results/dcm-brno_2024-02-19/figure_T2w_C2"')
-    parser.add_argument('-xlsx-table',
-                        help="Path to the table.xlsx file containing 'MR B1' and 'MR B2' columns", required=True)
+                    'The figure will be saved in the same directory as the input CSV file.')
+    parser.add_argument(
+        '-i',
+        metavar="<file>",
+        required=True,
+        type=str,
+        help='Path to the "csa-SC_T2w_perlevel" CSV file produced by sct_run_batch. '
+             'Example: "/Users/user/results/dcm-brno_2024-02-19/results/"csa-SC_T2w_perlevel"')
+    parser.add_argument(
+'-xlsx-table',
+        metavar="<file>",
+        required=True,
+        type=str,
+        help="Path to the table.xlsx file containing 'MR B1' and 'MR B2' columns")
+    parser.add_argument(
+        '-yml-file',
+        metavar="<file>",
+        required=False,
+        type=str,
+        default='~/code/dcm-brno/exclude.yml',
+        help='Path to the YML file listing subjects to exclude.'
+    )
     return parser
 
 
-def read_exclude_yml(exclude_yml_path):
+
+def read_metrics(csv_file_path, subject_df):
     """
-    Read the exclude.yml file and return a list of subjects to be excluded.
-
-    Args:
-    exclude_yml_path (str): Path to the exclude.yml file.
-
-    Returns:
-    list: List of subjects to be excluded.
+    Read shape metrics (CSA, diameter_AP, ...) from the "csa-SC_T2w_perlevel" CSV file
+    Compute compression ratio (CR) as MEAN(diameter_AP) / MEAN(diameter_RL)
+    Keep only VertLevel 3 (C3)
     """
-    # Read the exclude.yml file using pyaml
-    with open(exclude_yml_path, 'r') as stream:
-        exclude_dict = yaml.safe_load(stream)
-
-    # Extract the list of subjects to be excluded
-    exclude_list = exclude_dict['T2w']
-    # Keep only subject IDs (e.g., 'sub-2390B4949B'), i.e., remove session IDs (e.g., '2390B', '4949B')
-    exclude_list = [subject[:14] for subject in exclude_list]
-
-    return exclude_list
-
-
-def read_metrics(path_in, subject_df):
     # Read the "csa-SC_T2w_perlevel" CSV file
-    df_metrics = pd.read_csv(path_in, dtype=METRICS_DTYPE)
+    logger.info(f"Reading {csv_file_path}...")
+    df = pd.read_csv(csv_file_path, dtype=METRICS_DTYPE)
 
-    # Add columns 'SessionID', 'SubjectID', and 'Session' to df_metrics with dtype string
-    df_metrics['SessionID'] = ''
-    df_metrics['SubjectID'] = ''
-    df_metrics['Session'] = ''
-    # Add column 'Surgery' to df_metrics with dtype bool
-    df_metrics['Surgery'] = False
+    # Fetch participant and session using lambda function
+    df['Participant'], df['Session'] = zip(*df['Filename'].map(lambda x: fetch_participant_and_session(x)))
 
     # Compute compression ratio (CR) as MEAN(diameter_AP) / MEAN(diameter_RL)
-    df_metrics['MEAN(compression_ratio)'] = df_metrics['MEAN(diameter_AP)'] / df_metrics['MEAN(diameter_RL)']
+    df['MEAN(compression_ratio)'] = df['MEAN(diameter_AP)'] / df['MEAN(diameter_RL)']
 
-    # Drop Timestamp, SCT Version, and DistancePMJ columns
-    df_metrics = df_metrics.drop(columns=['Timestamp', 'SCT Version', 'DistancePMJ'])
+    # Drop columns
+    df.drop(columns=['Filename', 'Timestamp', 'SCT Version', 'DistancePMJ'], inplace=True)
 
-    # Keep only VertLevel 2
-    df_metrics = df_metrics[df_metrics['VertLevel'] == 2]
+    # Keep only C3 (to be consistent with DWI analysis)
+    df = df[df['VertLevel'] == 3]
 
-    # Add new columns 'SessionID', 'SubjectID', and 'Session' to df_metrics
-    # Loop across rows in df_metrics
-    for index, row in df_metrics.iterrows():
-        filename = row['Filename']
-        # Extract session_id, e.g., 'ses-1234B' from the filename using regular expression
-        session_id = re.search(r'ses-\d{4}[A-Z]', filename).group(0)
-        session_id = session_id.replace('ses-', '')  # Remove 'ses-' prefix
-        df_metrics.at[index, 'SessionID'] = session_id
-
-        # Extract subject_id, e.g., 'sub-1836B6029B' from the filename using regular expression
-        # NOTE: subject_id is needed for 'sns.lineplot' to connect points of the same subject between sessions
-        subject_id = re.search(r'sub-\d{4}[A-Z]\d{4}[A-Z]', filename).group(0)
-        df_metrics.at[index, 'SubjectID'] = subject_id
-
-        # Check whether the session_id is in MR B1 or MR B2 column in the subject_df
-        if session_id in subject_df['MR B1'].values:
-            # Add a new column 'Session' with value 'MR B1'
-            df_metrics.at[index, 'Session'] = 'MR B1'
-        elif session_id in subject_df['MR B2'].values:
-            # Add a new column 'Session' with value 'MR B2'
-            df_metrics.at[index, 'Session'] = 'MR B2'
-
-        # Check if the session_id had surgery (meaning that the 'Datum operace' column contains a date)
-        if (subject_df.loc[subject_df['MR B1'] == session_id, 'Datum operace'].notnull()).any():
-            df_metrics.at[index, 'Surgery'] = True
-        elif (subject_df.loc[subject_df['MR B2'] == session_id, 'Datum operace'].notnull()).any():
-            df_metrics.at[index, 'Surgery'] = True
-        else:
-            df_metrics.at[index, 'Surgery'] = False
-
-    return df_metrics
+    return df
 
 
-def generate_figure(df_metrics, path_out):
+def generate_figure(df, number_of_subjects, path_in):
     """
-    Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics.
+    Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics (CSA, diameter_AP, ..)
+    :param df: DataFrame with shape metrics
+    :param number_of_subjects: Number of unique subjects
+    :param path_in: Path to the input directory (will be used to save the figure)
     """
 
     # Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics
     mpl.rcParams['font.family'] = 'Arial'
 
-    # Loop across no surgery and surgery
-    for surgery in [False, True]:
+    fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+    axs = axes.ravel()
+    # Loop across metrics
+    for index, metric in enumerate(METRICS):
+        kwargs = dict(x='Session', y=metric, ax=axs[index], data=df)
+        # Plot the violin plot
+        # NOTE: I'm passing hue='Session' (i.e., the same as x='Session') to prevent the following warning:
+        #   "Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x`
+        #    variable to `hue` and set `legend=False` for the same effect."
+        sns.violinplot(palette=color_palette,
+                       hue='Session',
+                       legend=False,
+                       **kwargs)      # palette="Blues"
+        # Plot swarmplot on top of the violin plot
+        sns.swarmplot(color='black',
+                      alpha=0.5,
+                      **kwargs)
+        # Plot lineplot connecting points of the same subject between sessions
+        sns.lineplot(units='Participant',
+                     estimator=None,
+                     legend=False,
+                     linewidth=0.5,
+                     color='black',
+                     alpha=0.5,
+                     **kwargs)
 
-        num_of_subjects = len(df_metrics[df_metrics['Surgery'] == surgery]['SubjectID'].unique())
-        logger.info(f"Surgery: {surgery} , number of subjects: {num_of_subjects}")
+        # Invert x-axis to have MR B1 on the left and MR B2 on the right
+        axs[index].invert_xaxis()
 
-        fig, axes = plt.subplots(2, 3, figsize=(14, 8))
-        axs = axes.ravel()
-        # Loop across metrics
-        for index, metric in enumerate(METRICS):
-            kwargs = dict(x='Session', y=metric, ax=axs[index], data=df_metrics[df_metrics['Surgery'] == surgery])
-            # Plot the violin plot
-            # NOTE: I'm passing hue='Session' (i.e., the same as x='Session') to prevent the following warning:
-            #   "Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x`
-            #    variable to `hue` and set `legend=False` for the same effect."
-            sns.violinplot(palette="Blues", hue='Session', legend=False, **kwargs)
-            # Plot swarmplot on top of the violin plot
-            sns.swarmplot(color='black', alpha=0.5, **kwargs)
-            # Plot lineplot connecting points of the same subject between sessions
-            sns.lineplot(units='SubjectID', estimator=None, legend=False, linewidth=0.5, color='black', alpha=0.5,
-                         **kwargs)
+        axs[index].set_xlabel('')
+        axs[index].set_ylabel(METRIC_TO_AXIS[metric], fontsize=LABELS_FONT_SIZE)
+        axs[index].tick_params(axis='both', which='major', labelsize=TICKS_FONT_SIZE)
 
-            # Invert x-axis to have MR B1 on the left and MR B2 on the right
-            axs[index].invert_xaxis()
+    # Set main title with number of subjects
+    fig.suptitle(f'Shape metrics at C3 level (i.e., above the compression)\n'
+                 f'Number of subjects: {number_of_subjects}',
+                 fontsize=TITLE_FONT_SIZE)
 
-            # Set main title with number of subjects
-            fig.suptitle(f'Shape metrics at C2 level (i.e., above the compression)\n'
-                         f'Number of subjects: {num_of_subjects}, '
-                         f'Surgery: {surgery}',
-                         fontsize=TITLE_FONT_SIZE)
-
-            axs[index].set_xlabel('')
-            axs[index].set_ylabel(METRIC_TO_AXIS[metric], fontsize=LABELS_FONT_SIZE)
-            axs[index].tick_params(axis='both', which='major', labelsize=TICKS_FONT_SIZE)
-
-        # Save the figure
-        fig.tight_layout()
-        fname_out = os.path.join(path_out, f'group_violin_plots_sessions1_vs_session2_surgery_{surgery}.png')
-        fig.savefig(fname_out, dpi=300)
-        plt.close(fig)
-        logger.info(f"Group figure saved to {fname_out}")
+    # Save the figure
+    fig.tight_layout()
+    fname_out = os.path.join(path_in, f'T2w_violin_plots.png')
+    fig.savefig(fname_out, dpi=300)
+    plt.close(fig)
+    logger.info(f'Figure saved to {fname_out}')
 
 
 def main():
+
     # Parse the command line arguments
     parser = get_parser()
     args = parser.parse_args()
 
-    path_in = os.path.abspath(args.path_in)
-    path_out = os.path.abspath(args.path_out)
+    # -------------------------------
+    # Parse input args, check if the files exist
+    # -------------------------------
+    # CSV with metrics
+    csv_file_path = os.path.abspath(os.path.expanduser(args.i))
+    # Exclude file
+    yml_file_path = os.path.abspath(os.path.expanduser(args.yml_file))
 
-    # Check if the path to the input CSV file is valid
-    if not os.path.isfile(path_in):
-        print(f"File {path_in} does not exist.")
-        sys.exit(1)
+    if not os.path.isfile(csv_file_path):
+        raise ValueError(f'ERROR: {args.i} does not exist.')
 
-    # Create the output directory if it does not exist
-    if not os.path.exists(path_out):
-        os.makedirs(path_out)
+    if not os.path.isfile(yml_file_path):
+        raise ValueError(f'ERROR: {args.yml_file} does not exist.')
+
+    # Get the path to the input directory
+    path_in = os.path.dirname(csv_file_path)
 
     # Dump log file there
-    fname_log = os.path.join(path_out, 'generate_group_violion_plots_sessions1_vs_session2.log')
+    fname_log = os.path.join(path_in, 'T2w_violin_plots.log')
     if os.path.exists(fname_log):
         os.remove(fname_log)
     fh = logging.FileHandler(os.path.join(path_in, fname_log))
     logging.root.addHandler(fh)
 
+    # -------------------------------
+    # Read and prepare the data
+    # -------------------------------
     xlsx_file_path = os.path.abspath(args.xlsx_table)
     # Check if the path to the xlsx file is valid
     if not os.path.exists(xlsx_file_path):
@@ -231,7 +220,7 @@ def main():
         sys.exit(1)
 
     # Read the xlsx file
-    logger.info(f"Reading {xlsx_file_path}.")
+    logger.info(f"Reading {xlsx_file_path}...")
     subject_df = read_xlsx_file(xlsx_file_path, columns_to_read=['FUP MR měření B provedeno (ano/ne)',
                                                                  'Datum operace', 'MR B1', 'MR B2'])
 
@@ -240,22 +229,26 @@ def main():
     # Print number of rows (subjects)
     logger.info(f'Clinical table: Number of subjects with two sessions: {len(subject_df)}')
 
-    # Read the exclude.yml file listing subjects to be excluded (due to e.g., poor image quality)
-    exclude_yml_path = f"{os.getenv('HOME')}/code/dcm-brno/exclude.yml"
-    exclude_list = read_exclude_yml(exclude_yml_path)
+    df = read_metrics(csv_file_path, subject_df)
+    # Print number of unique subjects
+    logger.info(f'CSV file: Number of unique subjects before dropping: {df["Participant"].nunique()}')
 
-    df_metrics = read_metrics(path_in, subject_df)
-    # Get number of subjects based on unique SubjectID
-    num_of_subjects = len(df_metrics['SubjectID'].unique())
-    logger.info(f'CSV file with metrics: Number of subjects: {num_of_subjects}')
+    # Get the list of subjects to exclude
+    subjects_to_exclude = read_yaml_file(file_path=yml_file_path, key='T2w')
+    # Remove session (after the first '_') from the list of subjects to exclude
+    subjects_to_exclude = [subject.split('_')[0] for subject in subjects_to_exclude]
 
-    # Exclude subjects from df_metrics based on exclude_list
-    df_metrics = df_metrics[~df_metrics['SubjectID'].isin(exclude_list)]
-    # Get number of subjects based on unique SubjectID after excluding subjects
-    num_of_subjects = len(df_metrics['SubjectID'].unique())
-    logger.info(f'CSV file with metrics after excluding subjects: Number of subjects: {num_of_subjects}')
+    # Remove subjects to exclude
+    df = df[~df['Participant'].isin(subjects_to_exclude)]
 
-    generate_figure(df_metrics, path_out)
+    # Print number of unique subjects
+    number_of_subjects = df["Participant"].nunique()
+    logger.info(f'CSV file: Number of unique subjects after dropping: {number_of_subjects}')
+
+    # -------------------------------
+    # Plotting
+    # -------------------------------
+    generate_figure(df, number_of_subjects, path_in)
 
 
 if __name__ == "__main__":

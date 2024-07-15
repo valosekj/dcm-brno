@@ -133,6 +133,11 @@ def create_rainplot(df, metric, csv_file_path):
     # Add horizontal dashed grid lines
     ax.yaxis.grid(True, linestyle='--', which='major', color='grey', alpha=.3)
 
+    # Add title
+    plt.title(f'{metric} at C3 level (i.e., above the compression)\n'
+                 f'Number of subjects: {number_of_subjects}',
+                 fontsize=LABEL_FONT_SIZE)
+
     plt.tight_layout()
     plt.show()
     # Save figure into the same directory as the input CSV file

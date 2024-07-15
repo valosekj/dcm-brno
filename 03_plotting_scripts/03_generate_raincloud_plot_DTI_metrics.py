@@ -38,7 +38,7 @@ TICK_FONT_SIZE = 10
 label_to_tract = {
     "0,1": "Fasciculus\nGracilis",
     "2,3": "Fasciculus\nCuneatus",
-    "4,5": "Lateral \nCST",              # CST = corticospinal tract
+    "4,5": "Lateral Corticospinal\nTracts",
     "12,13": "Spinal\nLemniscus",        # (spinothalamic and spinoreticular tracts)
     "30,31": "Ventral\nGM Horns",
     "34,35": "Dorsal\nGM Horns",

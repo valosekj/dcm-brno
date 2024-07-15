@@ -187,7 +187,9 @@ def main():
     # -------------------------------
     # Parse input args, check if the files exist
     # -------------------------------
+    # CSV with metrics
     csv_file_path = os.path.abspath(os.path.expanduser(args.i))
+    # Exclude file
     yml_file_path = os.path.abspath(os.path.expanduser(args.yml_file))
 
     if not os.path.isfile(csv_file_path):
@@ -203,6 +205,7 @@ def main():
     # Read and prepare the data
     # -------------------------------
     # Read the CSV file with DTI metrics
+    print(f'Reading {csv_file_path}...')
     df = read_csv_file(csv_file_path, columns_to_read=['Filename', 'VertLevel', 'Label', 'MAP()'])
 
     # Fetch participant and session using lambda function

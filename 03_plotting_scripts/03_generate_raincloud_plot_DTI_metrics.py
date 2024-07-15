@@ -14,6 +14,7 @@ import argparse
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import ptitprince as pt
+from scipy.stats import normaltest, wilcoxon, ttest_rel
 
 from utils import read_csv_file, read_yaml_file, fetch_participant_and_session
 
@@ -77,6 +78,35 @@ def get_parser():
 
 
 def create_rainplot(df, metric, csv_file_path):
+def compute_stattests(df):
+    """
+    Compute the normality test and Wilcoxon signed-rank test (nonparametric, paired) between sessions 1 and 2 for each
+    tract.
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
+    """
+
+    # Loop through each tract
+    for tract in label_to_tract.values():
+        # Extract data for each tract
+        data_session1 = df[(df['Label'] == tract) & (df['Session'] == 'Session 1')]['MAP()']
+        data_session2 = df[(df['Label'] == tract) & (df['Session'] == 'Session 2')]['MAP()']
+
+        tract_name = tract.replace('\n', ' ')
+
+        # Compute the normality test
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
+        stat, p = normaltest(data_session1)
+        print(f'{tract_name}, session 1: Normality test p-value'
+              f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
+        stat, p = normaltest(data_session2)
+        print(f'{tract_name}, session 2: Normality test p-value'
+              f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
+
+        # Compute the Wilcoxon signed-rank test
+        stat, p = ttest_rel(data_session1, data_session2)
+        print(f'{tract_name}: Wilcoxon signed-rank test p-value'
+              f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
+
     """
     Create Raincloud plots (violionplot + boxplot + individual points)
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
@@ -198,6 +228,8 @@ def main():
 
     # Print number of unique subjects
     print(f'Number of unique subjects after dropping: {df["Participant"].nunique()}')
+    # Compute the normality test and paired test for each tract between sessions 1 and 2
+    compute_stattests(df)
 
     # -------------------------------
     # Plotting

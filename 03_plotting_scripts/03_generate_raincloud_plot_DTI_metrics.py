@@ -11,6 +11,7 @@ Authors: Jan Valosek
 import os
 import argparse
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import ptitprince as pt
@@ -116,6 +117,9 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     :param number_of_subjects: number of unique subjects
     :param csv_file_path: path to the input CSV file (it is used to save the output figure)
     """
+
+    mpl.rcParams['font.family'] = 'Arial'
+
     fig_size = (15, 5)
     plt.subplots(figsize=fig_size)
     ax = pt.RainCloud(data=df,

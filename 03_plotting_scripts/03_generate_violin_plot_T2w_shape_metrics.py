@@ -20,6 +20,8 @@ import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+from scipy.stats import normaltest, ttest_rel, wilcoxon
+
 # Get the name of the directory where this script is present
 current = os.path.dirname(os.path.realpath(__file__))
 # Get the parent directory name
@@ -124,6 +126,38 @@ def read_metrics(csv_file_path, subject_df):
 
 
 def generate_figure(df, number_of_subjects, path_in):
+def compute_statistics(df):
+    """
+    Compute the normality test and paired test for each shape metrics between sessions 1 and 2
+    :param df: DataFrame with shape metrics
+    :return: Dictionary with p-values for each metric
+    """
+
+    stats_dict = {}
+
+    for metric in METRICS:
+        # Extract data separately for sessions 1 and 2
+        data_session1 = df[df['Session'] == 'Session 1'][metric]
+        data_session2 = df[df['Session'] == 'Session 2'][metric]
+
+        # Compute the normality test
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
+        stat, p = normaltest(data_session1)
+        print(f'{metric}, session 1: Normality test p-value'
+              f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
+        stat, p = normaltest(data_session2)
+        print(f'{metric}, session 2: Normality test p-value'
+              f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
+
+        # Compute the Wilcoxon signed-rank test (nonparametric, paired)
+        stat, p = wilcoxon(data_session1, data_session2)
+        stats_dict[metric] = p
+        print(f'{metric}: Wilcoxon signed-rank test p-value'
+              f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
+
+    return stats_dict
+
+
     """
     Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics (CSA, diameter_AP, ..)
     :param df: DataFrame with shape metrics
@@ -244,6 +278,12 @@ def main():
     # Print number of unique subjects
     number_of_subjects = df["Participant"].nunique()
     logger.info(f'CSV file: Number of unique subjects after dropping: {number_of_subjects}')
+
+    # -------------------------------
+    # Statistical tests
+    # -------------------------------
+    # Compute the normality test and paired test for each shape metrics between sessions 1 and 2
+    stats_dict = compute_statistics(df)
 
     # -------------------------------
     # Plotting

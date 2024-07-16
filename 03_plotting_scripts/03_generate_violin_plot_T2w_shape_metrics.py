@@ -29,7 +29,7 @@ parent = os.path.dirname(current)
 # Add the parent directory to the sys.path to import the utils module
 sys.path.append(parent)
 
-from utils import read_xlsx_file, read_yaml_file, fetch_participant_and_session
+from utils import read_xlsx_file, read_yaml_file, fetch_participant_and_session, format_pvalue
 
 METRICS = ['MEAN(area)', 'MEAN(diameter_AP)', 'MEAN(diameter_RL)', 'MEAN(compression_ratio)', 'MEAN(eccentricity)',
            'MEAN(solidity)']
@@ -125,7 +125,6 @@ def read_metrics(csv_file_path, subject_df):
     return df
 
 
-def generate_figure(df, number_of_subjects, path_in):
 def compute_statistics(df):
     """
     Compute the normality test and paired test for each shape metrics between sessions 1 and 2
@@ -158,10 +157,12 @@ def compute_statistics(df):
     return stats_dict
 
 
+def generate_figure(df, number_of_subjects, stats_dict, path_in):
     """
     Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics (CSA, diameter_AP, ..)
     :param df: DataFrame with shape metrics
     :param number_of_subjects: Number of unique subjects
+    :param stats_dict: Dictionary with p-values for each metric
     :param path_in: Path to the input directory (will be used to save the figure)
     """
 
@@ -196,6 +197,11 @@ def compute_statistics(df):
 
         # Invert x-axis to have MR B1 on the left and MR B2 on the right
         axs[index].invert_xaxis()
+
+        # If the p-value is less than 0.05, add the significance annotation
+        if stats_dict[metric] < 0.05:
+            axs[index].annotate('*', xy=(0.5, 0.9), xycoords='axes fraction', ha='center', va='center',
+                                fontsize=30, color='black')
 
         axs[index].set_xlabel('')
         axs[index].set_ylabel(METRIC_TO_AXIS[metric], fontsize=LABELS_FONT_SIZE)
@@ -288,7 +294,8 @@ def main():
     # -------------------------------
     # Plotting
     # -------------------------------
-    generate_figure(df, number_of_subjects, path_in)
+    # violionplot + swarmplot + lineplot
+    generate_figure(df, number_of_subjects, stats_dict, path_in)
 
 
 if __name__ == "__main__":

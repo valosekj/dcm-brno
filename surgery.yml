@@ -1,6 +1,11 @@
 # Disc labeling is difficult for some subjects after the surgery:
 #   https://github.com/valosekj/dcm-brno/issues/9
 # But, for C3 analysis, it should be fine as surgery is not in the C3 region.
+#
+# NOTE: this file is NOT used to exclude subjects. It is used to list subjects that have undergone surgery. To exclude
+#  subjects, use exclude.yml.
+#
+
 surgery:
  - sub-1860B6472B
  - sub-2255B6372B
@@ -17,7 +22,7 @@ surgery:
  - sub-3060B6384B
  - sub-3120B6558B
  - sub-3227B6487B
-# - sub-3758B6378B  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245
+ - sub-3758B6378B  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245
  - sub-3759B6530B
-# - sub-3998B6406B  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245
+ - sub-3998B6406B  # https://github.com/valosekj/dcm-brno/issues/17#issuecomment-2227452245
  - sub-4088B6310B

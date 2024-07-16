@@ -16,7 +16,7 @@ import argparse
 import logging
 
 import pandas as pd
-import seaborn as sns
+import seaborn as sns       # seaborn>=0.13.0 is required to properly create the figure
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 

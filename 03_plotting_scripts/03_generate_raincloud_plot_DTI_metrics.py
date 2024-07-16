@@ -132,7 +132,7 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     Create Raincloud plots (violionplot + boxplot + individual points)
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
     :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
-    :param number_of_subjects: number of unique subjects
+    :param number_of_subjects: number of unique subjects (will be shown in the title)
     :param csv_file_path: path to the input CSV file (it is used to save the output figure)
     """
 
@@ -342,7 +342,9 @@ def main():
     # -------------------------------
     # Plotting
     # -------------------------------
+    # Raincloud plot (violionplot + boxplot + individual points)
     create_rainplot(df, metric, number_of_subjects, csv_file_path)
+
     # violionplot + swarmplot + lineplot
     create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path)
 

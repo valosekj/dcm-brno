@@ -208,7 +208,7 @@ def generate_figure(df, number_of_subjects, stats_dict, path_in):
         axs[index].tick_params(axis='both', which='major', labelsize=TICKS_FONT_SIZE)
 
     # Set main title with number of subjects
-    fig.suptitle(f'Shape metrics at C3 level (i.e., above the compression)\n'
+    fig.suptitle(f'Shape metrics at C3 level (above the compression)\n'
                  f'Number of subjects: {number_of_subjects}',
                  fontsize=TITLE_FONT_SIZE)
 

@@ -191,7 +191,7 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     ax.yaxis.grid(True, linestyle='--', which='major', color='grey', alpha=.3)
 
     # Add title
-    plt.title(f'{metric} at C3 level (i.e., above the compression)\n'
+    plt.title(f'{metric} at C3 level (above the compression)\n'
                  f'Number of subjects: {number_of_subjects}',
                  fontsize=LABEL_FONT_SIZE)
 

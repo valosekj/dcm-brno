@@ -112,7 +112,7 @@ label_if_does_not_exist(){
 # it does not, perform segmentation using SCIseg nnUNet model (part of SCT v6.2).
 segment_sc_SCIseg_if_does_not_exist(){
   local file="$1"
-  local contrast="$2"   # note that contrast is used only for QC purposes
+  local contrast="$2"   # note that contrast is used only for QC purposes and logging
 
   FILESEG="${file}_seg"
   FILESEGMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/anat/${FILESEG}.nii.gz"
@@ -124,7 +124,7 @@ segment_sc_SCIseg_if_does_not_exist(){
     # Generate axial QC report
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
     # Add into to log file
-    echo "${FILESEG}.nii.gz found --> using manual segmentation" >> "${PATH_LOG}/T2w_SC_segmentations.log"
+    echo "${FILESEG}.nii.gz found --> using manual segmentation" >> "${PATH_LOG}/${contrast}_SC_segmentations.log"
   else
     echo "❌ Not found. Proceeding with automatic segmentation using the SCIseg nnUNet model."
     # Run SC segmentation
@@ -138,7 +138,7 @@ segment_sc_SCIseg_if_does_not_exist(){
     # Generate lesion QC report -- SC seg has to be provided to crop the image
     sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -d ${file}_lesion.nii.gz -p sct_deepseg_lesion -qc ${PATH_QC} -qc-subject ${file} -plane axial
     # Add into to log file
-    echo "${FILESEG}.nii.gz NOT found --> segmenting automatically" >> "${PATH_LOG}/T2w_SC_segmentations.log"
+    echo "${FILESEG}.nii.gz NOT found --> segmenting automatically" >> "${PATH_LOG}/${contrast}_SC_segmentations.log"
 
     if [[ $contrast == "t2" ]]; then
       # Generate sagittal SC QC report (https://github.com/ivadomed/canproco/issues/37#issuecomment-1644497220)

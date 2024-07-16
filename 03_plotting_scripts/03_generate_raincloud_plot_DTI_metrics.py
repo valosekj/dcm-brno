@@ -1,6 +1,10 @@
 """
-Create Raincloud plots (violionplot + boxplot + individual points) for DTI metrics (FA, MD, RD, AD) for subjects with
-surgery between sessions 1 (before surgery) and 2 (after surgery).
+Generate plots for DTI metrics (FA, MD, RD, AD) for subjects with surgery between sessions 1 (before surgery) and 2
+(after surgery).
+
+The script generates:
+ - Raincloud plots (violionplot + boxplot + individual points)
+ - violionplot + swarmplot + lineplot
 
 Example usage:
     python 03_generate_raincloud_plot_DTI_metrics.py -i results/DWI_FA.csv
@@ -36,17 +40,17 @@ TICK_FONT_SIZE = 9
 # Legend: https://spinalcordtoolbox.com/overview/concepts/pam50.html#white-and-gray-matter-atlas
 # Inspiration: Valosek et al., 2021, DOI: 10.1111/ene.15027
 label_to_tract = {
-    "0,1": "Fasciculus\nGracilis",
-    "2,3": "Fasciculus\nCuneatus",
-    "4,5": "Lateral Corticospinal\nTracts",
-    "12,13": "Spinal\nLemniscus",        # (spinothalamic and spinoreticular tracts)
-    "30,31": "Ventral\nGM Horns",
-    "34,35": "Dorsal\nGM Horns",
     "white matter": "White\nMatter",
     "gray matter": "Gray\nMatter",
     "dorsal columns": "Dorsal\nColumns",
     "ventral funiculi": "Ventral\nColumns",
     "lateral funiculi": "Lateral\nColumns",
+    "0,1": "Fasciculus\nGracilis",
+    "2,3": "Fasciculus\nCuneatus",
+    "4,5": "Lateral Corticospinal\nTracts",
+    "12,13": "Spinal\nLemniscus",        # (spinothalamic and spinoreticular tracts)
+    "30,31": "Ventral\nGM Horns",
+    "34,35": "Dorsal\nGM Horns"
 }
 
 metric_to_axis = {
@@ -198,6 +202,80 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     plt.close()
 
 
+def create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path):
+    """
+    Create violionplot + swarmplot + lineplot comparing sessions 1 vs session2 for DTI metrics
+    :param df: dataframe with DTI metrics for individual subjects and individual tracts
+    :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
+    :param number_of_subjects: number of unique subjects (will be shown in the title)
+    :param stats_dict: dictionary with p-values for each metric
+    :param csv_file_path: path to the input CSV file (it is used to save the output figure)
+    """
+
+    # NOTE: for some reason, the color order must be swapped here (compared to the Raincloud plot). Maybe due to the
+    # `.invert_xaxis` method?
+    color_palette = [(0.984313725490196, 0.5019607843137255, 0.4470588235294118),  # red
+                     (0.5529411764705883, 0.8274509803921568, 0.7803921568627451)]  # green
+
+    import seaborn as sns  # seaborn>=0.13.0 is required to properly create the figure
+
+    # Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics
+    mpl.rcParams['font.family'] = 'Arial'
+
+    fig, axes = plt.subplots(2, 6, figsize=(14, 8))
+    axs = axes.ravel()
+    # Loop across metrics
+    for index, tract in enumerate(label_to_tract.values()):
+        kwargs = dict(x='Session', y='MAP()', ax=axs[index], data=df[df['Label'] == tract])
+        # Plot the violin plot
+        # NOTE: I'm passing hue='Session' (i.e., the same as x='Session') to prevent the following warning:
+        #   "Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x`
+        #    variable to `hue` and set `legend=False` for the same effect."
+        sns.violinplot(palette=color_palette,
+                       hue='Session',
+                       legend=False,
+                       **kwargs)      # palette="Blues"
+        # Plot swarmplot on top of the violin plot
+        sns.swarmplot(color='black',
+                      alpha=0.5,
+                      **kwargs)
+        # Plot lineplot connecting points of the same subject between sessions
+        sns.lineplot(units='Participant',
+                     estimator=None,
+                     legend=False,
+                     linewidth=0.5,
+                     color='black',
+                     alpha=0.5,
+                     **kwargs)
+
+        # Invert x-axis to have MR B1 on the left and MR B2 on the right
+        axs[index].invert_xaxis()
+
+        # If the p-value is less than 0.05, add the significance annotation
+        if stats_dict[tract] < 0.05:
+            axs[index].annotate('*', xy=(0.5, 0.9), xycoords='axes fraction', ha='center', va='center',
+                                fontsize=30, color='black')
+
+        axs[index].set_xlabel('')
+        axs[index].set_ylabel(tract.replace('\n', ' '), fontsize=TICK_FONT_SIZE)
+        axs[index].tick_params(axis='both', which='major', labelsize=TICK_FONT_SIZE)
+
+    axs[11].remove()  # remove the last unused subplot
+
+    # Set main title with number of subjects
+    fig.suptitle(f'{metric} at C3 level (above the compression)\n'
+                 f'Number of subjects: {number_of_subjects}',
+                 fontsize=LABEL_FONT_SIZE)
+
+    # Save the figure
+    fig.tight_layout()
+    fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_violin_plots.png')
+    fig.savefig(fname_out, dpi=300)
+    plt.close(fig)
+    print(f'Figure saved to {fname_out}')
+
+
+
 def main():
     # Parse the command line arguments
     parser = get_parser()
@@ -264,6 +342,8 @@ def main():
     # Plotting
     # -------------------------------
     create_rainplot(df, metric, number_of_subjects, csv_file_path)
+    # violionplot + swarmplot + lineplot
+    create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path)
 
 
 if __name__ == '__main__':

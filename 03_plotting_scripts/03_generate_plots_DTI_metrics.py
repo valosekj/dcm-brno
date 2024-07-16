@@ -7,7 +7,7 @@ The script generates:
  - violionplot + swarmplot + lineplot
 
 Example usage:
-    python 03_generate_raincloud_plot_DTI_metrics.py -i results/DWI_FA.csv
+    python 03_generate_plots_DTI_metrics.py -i results/DWI_FA.csv
 
 Authors: Jan Valosek
 """

@@ -55,7 +55,7 @@ TITLE_FONT_SIZE = 16
 LABELS_FONT_SIZE = 14
 TICKS_FONT_SIZE = 12
 
-# NOTE: for some reason, the color order must be swapped here (compared to the DTI plotting script). Maybe due to the
+# NOTE: for some reason, the color order must be swapped here (compared to the DTI Raincloud plot). Maybe due to the
 # `.invert_xaxis` method?
 color_palette = [(0.984313725490196, 0.5019607843137255, 0.4470588235294118),       # red
                  (0.5529411764705883, 0.8274509803921568, 0.7803921568627451)]     # green
@@ -159,7 +159,8 @@ def compute_statistics(df):
 
 def generate_figure(df, number_of_subjects, stats_dict, path_in):
     """
-    Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics (CSA, diameter_AP, ..)
+    Generate 3x2 group figure (violionplot + swarmplot + lineplot) comparing sessions 1 vs session2 for 6 shape metrics
+    (CSA, diameter_AP, ..)
     :param df: DataFrame with shape metrics
     :param number_of_subjects: Number of unique subjects
     :param stats_dict: Dictionary with p-values for each metric

@@ -89,16 +89,19 @@ def get_parser():
     return parser
 
 
-def compute_stattests(df):
+def compute_statistics(df):
     """
     Compute the normality test and Wilcoxon signed-rank test (nonparametric, paired) between sessions 1 and 2 for each
     tract.
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
+    :param df: DataFrame with shape metrics
+    :return: Dictionary with p-values for each metric
     """
+
+    stats_dict = dict()
 
     # Loop through each tract
     for tract in label_to_tract.values():
-        # Extract data for each tract
+        # Extract data for each tract, separately for sessions 1 and 2
         data_session1 = df[(df['Label'] == tract) & (df['Session'] == 'Session 1')]['MAP()']
         data_session2 = df[(df['Label'] == tract) & (df['Session'] == 'Session 2')]['MAP()']
 
@@ -113,10 +116,13 @@ def compute_stattests(df):
         print(f'{tract_name}, session 2: Normality test p-value'
               f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
 
-        # Compute the Wilcoxon signed-rank test
-        stat, p = ttest_rel(data_session1, data_session2)
+        # Compute the Wilcoxon signed-rank test (nonparametric, paired)
+        stat, p = wilcoxon(data_session1, data_session2)
+        stats_dict[tract] = p
         print(f'{tract_name}: Wilcoxon signed-rank test p-value'
               f'{format_pvalue(p, alpha=0.05, decimal_places=3, include_space=True, include_equal=True)}')
+
+    return stats_dict
 
 def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     """
@@ -248,8 +254,11 @@ def main():
     number_of_subjects = df["Participant"].nunique()
     print(f'CSV file: Number of unique subjects after dropping: {number_of_subjects}')
 
+    # -------------------------------
+    # Statistical tests
+    # -------------------------------
     # Compute the normality test and paired test for each tract between sessions 1 and 2
-    compute_stattests(df)
+    stats_dict = compute_statistics(df)
 
     # -------------------------------
     # Plotting

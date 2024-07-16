@@ -16,7 +16,6 @@ import os
 import sys
 import argparse
 
-import ptitprince as pt
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -136,6 +135,8 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     :param number_of_subjects: number of unique subjects
     :param csv_file_path: path to the input CSV file (it is used to save the output figure)
     """
+
+    import ptitprince as pt     # seaborn==0.11 is required for the ptitprince package (https://github.com/pog87/PtitPrince/blob/master/requirements.txt)
 
     mpl.rcParams['font.family'] = 'Arial'
 

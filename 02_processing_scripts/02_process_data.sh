@@ -297,7 +297,7 @@ fi
 # ------------------------------------------------------------------------------
 # Steps:
 #   - average DWI volumes
-#   - segment spinal cord on averaged DWI scan (this is just an initial segmentation to crop the data)
+#   - get centerline on averaged DWI scan (this is just an initial segmentation to crop the data)
 #   - crop data for faster processing
 #   - motion correction
 #   - average DWI moco volumes

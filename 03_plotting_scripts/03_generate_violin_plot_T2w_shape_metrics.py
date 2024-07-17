@@ -170,7 +170,7 @@ def generate_figure(df, number_of_subjects, stats_dict, path_in):
     # Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics
     mpl.rcParams['font.family'] = 'Arial'
 
-    fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+    fig, axes = plt.subplots(2, 3, figsize=(10, 8))
     axs = axes.ravel()
     # Loop across metrics
     for index, metric in enumerate(METRICS):

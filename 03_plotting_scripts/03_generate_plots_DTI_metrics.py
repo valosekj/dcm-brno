@@ -246,6 +246,7 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path)
         sns.violinplot(palette=color_palette,
                        hue='Session',
                        legend=False,
+                       cut=0,
                        **kwargs)      # palette="Blues"
         # Plot swarmplot on top of the violin plot
         sns.swarmplot(color='black',

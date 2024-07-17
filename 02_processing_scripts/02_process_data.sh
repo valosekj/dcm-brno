@@ -264,28 +264,35 @@ echo "✅ Done: ${file_t2}"
 #   - segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
 #   - compute the gray matter and cord CSA perlevel
 
-file_t2s="${file}_T2star"
-echo "👉 Processing: ${file_t2s}"
+# Skip T2s processing for problematic subjects listed in exclude.yml
+# Note: we have to skip the analysis because we still want to perform DWI processing
+if [[ ! $file =~ "sub-3056B6483B_ses-6483B" ]] && [[ ! $file =~ "sub-3758B6378B_ses-6378B" ]] && [[ ! $file =~ "sub-3998B6406B_ses-6406B" ]]; then
 
-# Bring T2w vertebral levels into T2s space
-sct_register_multimodal -i ${file_t2}_seg_labeled.nii.gz -d ${file_t2s}.nii.gz -o ${file_t2}_seg_labeled2${file_t2s}.nii.gz -identity 1 -x nn
-sct_qc -i ${file_t2s}.nii.gz -s ${file_t2}_seg_labeled2${file_t2s}.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${file}
+    file_t2s="${file}_T2star"
+    echo "👉 Processing: ${file_t2s}"
 
-# Segment gray matter (only if it does not exist)
-segment_gm_if_does_not_exist $file_t2s "t2s"
-file_t2s_seg=$FILESEG
-# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
-segment_sc_SCIseg_if_does_not_exist $file_t2s "t2s"
-file_t2s_scseg=$FILESEG
+    # Bring T2w vertebral levels into T2s space
+    sct_register_multimodal -i ${file_t2}_seg_labeled.nii.gz -d ${file_t2s}.nii.gz -o ${file_t2}_seg_labeled2${file_t2s}.nii.gz -identity 1 -x nn
+    sct_qc -i ${file_t2s}.nii.gz -s ${file_t2}_seg_labeled2${file_t2s}.nii.gz -p sct_label_vertebrae -qc ${PATH_QC} -qc-subject ${file}
 
-# Compute the gray matter and cord CSA perlevel
-# NB: Here we set -no-angle 1 because we do not want angle correction: it is too
-# unstable with GM seg, and t2s data were acquired orthogonal to the cord anyways.
-sct_process_segmentation -i ${file_t2s_seg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-GM_T2s_perlevel.csv -append 1
-sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-SC_T2s_perlevel.csv -append 1
+    # Segment gray matter (only if it does not exist)
+    segment_gm_if_does_not_exist $file_t2s "t2s"
+    file_t2s_seg=$FILESEG
+    # Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
+    segment_sc_SCIseg_if_does_not_exist $file_t2s "t2s"
+    file_t2s_scseg=$FILESEG
 
-echo "✅ Done: ${file_t2s}"
+    # Compute the gray matter and cord CSA perlevel
+    # NB: Here we set -no-angle 1 because we do not want angle correction: it is too
+    # unstable with GM seg, and t2s data were acquired orthogonal to the cord anyways.
+    sct_process_segmentation -i ${file_t2s_seg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-GM_T2s_perlevel.csv -append 1
+    sct_process_segmentation -i ${file_t2s_scseg}.nii.gz -perlevel 1 -vert 3:4 -vertfile ${file_t2}_seg_labeled2${file_t2s}.nii.gz -o ${PATH_RESULTS}/csa-SC_T2s_perlevel.csv -append 1
 
+    echo "✅ Done: ${file_t2s}"
+else
+    echo "⚠️ Skipping T2s processing for ${file}."
+    echo "⚠️ Skipping T2s processing for ${file}." >> $PATH_LOG/skipped_processing.log
+fi
 # DWI
 # ------------------------------------------------------------------------------
 # Steps:

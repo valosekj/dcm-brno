@@ -269,8 +269,11 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path)
                                 fontsize=30, color='black')
 
         axs[index].set_xlabel('')
-        axs[index].set_ylabel(tract.replace('\n', ' '), fontsize=TICK_FONT_SIZE)
+        axs[index].set_ylabel(metric_to_axis[metric], fontsize=TICK_FONT_SIZE)
         axs[index].tick_params(axis='both', which='major', labelsize=TICK_FONT_SIZE)
+
+        # Add title
+        axs[index].set_title(tract.replace('\n', ' '), fontsize=LABEL_FONT_SIZE-2)
 
     axs[11].remove()  # remove the last unused subplot
 

@@ -252,7 +252,7 @@ def main():
     path_in = os.path.dirname(csv_file_path)
 
     # Dump log file there
-    fname_log = os.path.join(path_in, 'T2w_violin_plots.log')
+    fname_log = os.path.join(path_in, f'{args.exclude_key}_violin_plots.log')
     if os.path.exists(fname_log):
         os.remove(fname_log)
     fh = logging.FileHandler(os.path.join(path_in, fname_log))

@@ -59,6 +59,14 @@ metric_to_axis = {
     'RD': 'Radial diffusivity [$× 10^{-3} mm^{2}/s$]',
     }
 
+# scaling factor (for display)
+scaling_factor = {
+    'FA': 1,
+    'MD': 1000,
+    'AD': 1000,
+    'RD': 1000,
+    }
+
 color_palette = [(0.5529411764705883, 0.8274509803921568, 0.7803921568627451),      # green
                  (0.984313725490196, 0.5019607843137255, 0.4470588235294118)]       # red
 
@@ -222,6 +230,9 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path)
 
     # Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics
     mpl.rcParams['font.family'] = 'Arial'
+
+    # Scale the 'MAP()' column (containing FA, MD, ...) by the scaling factor
+    df['MAP()'] = df['MAP()'] * scaling_factor[metric]
 
     fig, axes = plt.subplots(2, 6, figsize=(14, 8))
     axs = axes.ravel()

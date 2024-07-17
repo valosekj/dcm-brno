@@ -164,14 +164,14 @@ def compute_statistics(df):
     return stats_dict
 
 
-def generate_figure(df, number_of_subjects, stats_dict, path_in):
+def generate_figure(df, number_of_subjects, stats_dict, fname_out):
     """
     Generate 3x2 group figure (violionplot + swarmplot + lineplot) comparing sessions 1 vs session2 for 6 shape metrics
     (CSA, diameter_AP, ..)
     :param df: DataFrame with shape metrics
     :param number_of_subjects: Number of unique subjects
     :param stats_dict: Dictionary with p-values for each metric
-    :param path_in: Path to the input directory (will be used to save the figure)
+    :param fname_out: Output figure file name
     """
 
     # Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics
@@ -223,7 +223,6 @@ def generate_figure(df, number_of_subjects, stats_dict, path_in):
 
     # Save the figure
     fig.tight_layout()
-    fname_out = os.path.join(path_in, f'T2w_violin_plots.png')
     fig.savefig(fname_out, dpi=300)
     plt.close(fig)
     logger.info(f'Figure saved to {fname_out}')
@@ -303,8 +302,9 @@ def main():
     # -------------------------------
     # Plotting
     # -------------------------------
+    fname_out = os.path.join(path_in, f'{args.exclude_key}_violin_plots.png')
     # violionplot + swarmplot + lineplot
-    generate_figure(df, number_of_subjects, stats_dict, path_in)
+    generate_figure(df, number_of_subjects, stats_dict, fname_out)
 
 
 if __name__ == "__main__":

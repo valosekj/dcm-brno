@@ -96,6 +96,13 @@ def get_parser():
         default='~/code/dcm-brno/exclude.yml',
         help='Path to the YML file listing subjects to exclude.'
     )
+    parser.add_argument(
+        '-exclude-key',
+        metavar="<str>",
+        required=True,
+        type=str,
+        help='Key in the YML file listing subjects to exclude. Examples: "T2w", "T2star_SC"'
+    )
     return parser
 
 
@@ -276,7 +283,7 @@ def main():
     logger.info(f'CSV file: Number of unique subjects before dropping: {df["Participant"].nunique()}')
 
     # Get the list of subjects to exclude
-    subjects_to_exclude = read_yaml_file(file_path=yml_file_path, key='T2w')
+    subjects_to_exclude = read_yaml_file(file_path=yml_file_path, key=args.exclude_key)
     # Remove session (after the first '_') from the list of subjects to exclude
     subjects_to_exclude = [subject.split('_')[0] for subject in subjects_to_exclude]
 

@@ -1,16 +1,16 @@
 #!/bin/bash
 #
-# Process data.
+# Process data anatomical and DWI data
 #
 # Requirements:
-#   SCT v6.2 -- this version contains the SCIseg and contrast-agnostic models as part of 'sct_deepseg'
+#   SCT v6.2 and higher (containing the SCIseg and contrast-agnostic models as part of 'sct_deepseg')
 #
 # Usage:
 #   ./02_process_data.sh <SUBJECT>
 #
 #
 # Manual segmentations or labels should be located under:
-# PATH_DATA/derivatives/labels/SUBJECT/<CONTRAST>/
+# PATH_DATA/derivatives/labels/SUBJECT/SESSION/<CONTRAST>/
 #
 # Author: Jan Valosek
 #

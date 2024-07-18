@@ -29,7 +29,7 @@ parent = os.path.dirname(current)
 # Add the parent directory to the sys.path to import the utils module
 sys.path.append(parent)
 
-from utils import read_xlsx_file, read_yaml_file, fetch_participant_and_session, format_pvalue
+from utils import read_yaml_file, fetch_participant_and_session, format_pvalue
 
 METRICS = ['MEAN(area)', 'MEAN(diameter_AP)', 'MEAN(diameter_RL)', 'MEAN(compression_ratio)', 'MEAN(eccentricity)',
            'MEAN(solidity)']
@@ -86,12 +86,6 @@ def get_parser():
         help='Path to the "csa-SC_T2w_perlevel" CSV file produced by sct_run_batch. '
              'Example: "/Users/user/results/dcm-brno_2024-02-19/results/"csa-SC_T2w_perlevel"')
     parser.add_argument(
-'-xlsx-table',
-        metavar="<file>",
-        required=True,
-        type=str,
-        help="Path to the table.xlsx file containing 'MR B1' and 'MR B2' columns")
-    parser.add_argument(
         '-yml-file',
         metavar="<file>",
         required=False,
@@ -110,7 +104,7 @@ def get_parser():
 
 
 
-def read_metrics(csv_file_path, subject_df, vert_level):
+def read_metrics(csv_file_path, vert_level):
     """
     Read shape metrics (CSA, diameter_AP, ...) from the "csa-SC_T2w_perlevel" CSV file
     Compute compression ratio (CR) as MEAN(diameter_AP) / MEAN(diameter_RL)
@@ -265,23 +259,7 @@ def main():
     # -------------------------------
     # Read and prepare the data
     # -------------------------------
-    xlsx_file_path = os.path.abspath(args.xlsx_table)
-    # Check if the path to the xlsx file is valid
-    if not os.path.exists(xlsx_file_path):
-        print(f"Path {xlsx_file_path} does not exist.")
-        sys.exit(1)
-
-    # Read the xlsx file
-    logger.info(f"Reading {xlsx_file_path}...")
-    subject_df = read_xlsx_file(xlsx_file_path, columns_to_read=['FUP MR měření B provedeno (ano/ne)',
-                                                                 'Datum operace', 'MR B1', 'MR B2'])
-
-    # Keep only 'FUP MR měření B provedeno (ano/ne)' == 'ano' (yes)
-    subject_df = subject_df[subject_df['FUP MR měření B provedeno (ano/ne)'] == 'ano']
-    # Print number of rows (subjects)
-    logger.info(f'Clinical table: Number of subjects with two sessions: {len(subject_df)}')
-
-    df = read_metrics(csv_file_path, subject_df, VERT_LEVEL)
+    df = read_metrics(csv_file_path, VERT_LEVEL)
     # Print number of unique subjects
     logger.info(f'CSV file: Number of unique subjects before dropping: {df["Participant"].nunique()}')
 

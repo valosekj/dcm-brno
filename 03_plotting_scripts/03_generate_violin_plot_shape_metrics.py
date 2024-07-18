@@ -259,6 +259,7 @@ def main():
     # -------------------------------
     # Read and prepare the data
     # -------------------------------
+    logger.info(f'VertLevel: {VERT_LEVEL}')
     df = read_metrics(csv_file_path, VERT_LEVEL)
     # Print number of unique subjects
     logger.info(f'CSV file: Number of unique subjects before dropping: {df["Participant"].nunique()}')

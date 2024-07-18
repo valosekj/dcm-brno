@@ -97,7 +97,7 @@ def get_parser():
         required=False,
         type=str,
         default='~/code/dcm-brno/exclude.yml',
-        help='Path to the YML file listing subjects to exclude.'
+        help='Path to the YML file listing subjects to exclude. Default: ~/code/dcm-brno/exclude.yml'
     )
     parser.add_argument(
         '-exclude-key',

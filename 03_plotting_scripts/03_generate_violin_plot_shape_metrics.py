@@ -86,7 +86,7 @@ def get_parser():
         help='Path to the "csa-SC_T2w_perlevel" CSV file produced by sct_run_batch. '
              'Example: "/Users/user/results/dcm-brno_2024-02-19/results/"csa-SC_T2w_perlevel"')
     parser.add_argument(
-        '-yml-file',
+        '-exclude-file',
         metavar="<file>",
         required=False,
         type=str,
@@ -238,13 +238,13 @@ def main():
     # CSV with metrics
     csv_file_path = os.path.abspath(os.path.expanduser(args.i))
     # Exclude file
-    yml_file_path = os.path.abspath(os.path.expanduser(args.yml_file))
+    exclude_file_path = os.path.abspath(os.path.expanduser(args.exclude_file))
 
     if not os.path.isfile(csv_file_path):
         raise ValueError(f'ERROR: {args.i} does not exist.')
 
-    if not os.path.isfile(yml_file_path):
-        raise ValueError(f'ERROR: {args.yml_file} does not exist.')
+    if not os.path.isfile(exclude_file_path):
+        raise ValueError(f'ERROR: {args.exclude_file} does not exist.')
 
     # Get the path to the input directory
     path_in = os.path.dirname(csv_file_path)
@@ -264,7 +264,7 @@ def main():
     logger.info(f'CSV file: Number of unique subjects before dropping: {df["Participant"].nunique()}')
 
     # Get the list of subjects to exclude
-    subjects_to_exclude = read_yaml_file(file_path=yml_file_path, key=args.exclude_key)
+    subjects_to_exclude = read_yaml_file(file_path=exclude_file_path, key=args.exclude_key)
     # Remove session (after the first '_') from the list of subjects to exclude
     subjects_to_exclude = [subject.split('_')[0] for subject in subjects_to_exclude]
 

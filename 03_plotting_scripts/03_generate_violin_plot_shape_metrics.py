@@ -51,6 +51,9 @@ METRIC_TO_AXIS = {
     'MEAN(compression_ratio)': 'Compression Ratio [a.u.]',
 }
 
+# Vert level to use; 3 corresponds to C3
+VERT_LEVEL=3
+
 TITLE_FONT_SIZE = 16
 LABELS_FONT_SIZE = 14
 TICKS_FONT_SIZE = 12
@@ -107,11 +110,11 @@ def get_parser():
 
 
 
-def read_metrics(csv_file_path, subject_df):
+def read_metrics(csv_file_path, subject_df, vert_level):
     """
     Read shape metrics (CSA, diameter_AP, ...) from the "csa-SC_T2w_perlevel" CSV file
     Compute compression ratio (CR) as MEAN(diameter_AP) / MEAN(diameter_RL)
-    Keep only VertLevel 3 (C3)
+    Keep only VertLevel specified by vert_level
     """
     # Read the "csa-SC_T2w_perlevel" CSV file
     logger.info(f"Reading {csv_file_path}...")
@@ -127,7 +130,7 @@ def read_metrics(csv_file_path, subject_df):
     df.drop(columns=['Filename', 'Timestamp', 'SCT Version', 'DistancePMJ'], inplace=True)
 
     # Keep only C3 (to be consistent with DWI analysis)
-    df = df[df['VertLevel'] == 3]
+    df = df[df['VertLevel'] == vert_level]
 
     return df
 
@@ -164,12 +167,13 @@ def compute_statistics(df):
     return stats_dict
 
 
-def generate_figure(df, number_of_subjects, stats_dict, fname_out):
+def generate_figure(df, number_of_subjects, vert_level, stats_dict, fname_out):
     """
     Generate 3x2 group figure (violionplot + swarmplot + lineplot) comparing sessions 1 vs session2 for 6 shape metrics
     (CSA, diameter_AP, ..)
     :param df: DataFrame with shape metrics
     :param number_of_subjects: Number of unique subjects
+    :param vert_level: Used vert level (metrics has been already fetched; the variable is now used only for the title)
     :param stats_dict: Dictionary with p-values for each metric
     :param fname_out: Output figure file name
     """
@@ -217,7 +221,7 @@ def generate_figure(df, number_of_subjects, stats_dict, fname_out):
         axs[index].tick_params(axis='both', which='major', labelsize=TICKS_FONT_SIZE)
 
     # Set main title with number of subjects
-    fig.suptitle(f'Shape metrics at C3 level (above the compression)\n'
+    fig.suptitle(f'Shape metrics at C{vert_level} level (above the compression)\n'
                  f'Number of subjects: {number_of_subjects}',
                  fontsize=TITLE_FONT_SIZE)
 
@@ -277,7 +281,7 @@ def main():
     # Print number of rows (subjects)
     logger.info(f'Clinical table: Number of subjects with two sessions: {len(subject_df)}')
 
-    df = read_metrics(csv_file_path, subject_df)
+    df = read_metrics(csv_file_path, subject_df, VERT_LEVEL)
     # Print number of unique subjects
     logger.info(f'CSV file: Number of unique subjects before dropping: {df["Participant"].nunique()}')
 
@@ -302,9 +306,9 @@ def main():
     # -------------------------------
     # Plotting
     # -------------------------------
-    fname_out = os.path.join(path_in, f'{args.exclude_key}_violin_plots.png')
+    fname_out = os.path.join(path_in, f'{args.exclude_key}_violin_plots_C{VERT_LEVEL}.png')
     # violionplot + swarmplot + lineplot
-    generate_figure(df, number_of_subjects, stats_dict, fname_out)
+    generate_figure(df, number_of_subjects, VERT_LEVEL, stats_dict, fname_out)
 
 
 if __name__ == "__main__":

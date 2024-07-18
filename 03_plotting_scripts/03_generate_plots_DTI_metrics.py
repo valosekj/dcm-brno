@@ -136,13 +136,13 @@ def compute_statistics(df):
 
     return stats_dict
 
-def create_rainplot(df, metric, number_of_subjects, csv_file_path):
+def create_rainplot(df, metric, number_of_subjects, fname_out):
     """
     Create Raincloud plots (violionplot + boxplot + individual points)
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
     :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
     :param number_of_subjects: number of unique subjects (will be shown in the title)
-    :param csv_file_path: path to the input CSV file (it is used to save the output figure)
+    :param fname_out: path to the output figure
     """
 
     import ptitprince as pt     # seaborn==0.11 is required for the ptitprince package (https://github.com/pog87/PtitPrince/blob/master/requirements.txt)
@@ -206,9 +206,8 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
 
     plt.tight_layout()
     # Save figure into the same directory as the input CSV file
-    output_file = f'{os.path.dirname(csv_file_path)}/{metric}_rainplot.png'
-    plt.savefig(output_file, dpi=300)
-    print(f'Figure saved to {output_file}')
+    plt.savefig(fname_out, dpi=300)
+    print(f'Figure saved to {fname_out}')
     plt.close()
 
 
@@ -358,7 +357,8 @@ def main():
     # Plotting
     # -------------------------------
     # Raincloud plot (violionplot + boxplot + individual points)
-    create_rainplot(df, metric, number_of_subjects, csv_file_path)
+    # fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_rainplot_C{VERT_LEVEL}.png')
+    # create_rainplot(df, metric, number_of_subjects, fname_out)
 
     # violionplot + swarmplot + lineplot
     fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_violin_plots_C{VERT_LEVEL}.png')

@@ -89,12 +89,12 @@ def get_parser():
         help='Path to the CSV file containing the DTI metrics. Example: results/DWI_FA.csv'
     )
     parser.add_argument(
-        '-yml-file',
+        '-exclude-file',
         metavar="<file>",
         required=False,
         type=str,
         default='~/code/dcm-brno/exclude.yml',
-        help='Path to the YML file listing subjects to exclude.'
+        help='Path to the YML file listing subjects to exclude. Default: ~/code/dcm-brno/exclude.yml'
     )
 
     return parser
@@ -303,13 +303,13 @@ def main():
     # CSV with metrics
     csv_file_path = os.path.abspath(os.path.expanduser(args.i))
     # Exclude file
-    yml_file_path = os.path.abspath(os.path.expanduser(args.yml_file))
+    exclude_file_path = os.path.abspath(os.path.expanduser(args.exclude_file))
 
     if not os.path.isfile(csv_file_path):
         raise ValueError(f'ERROR: {args.i} does not exist.')
 
-    if not os.path.isfile(yml_file_path):
-        raise ValueError(f'ERROR: {args.yml_file} does not exist.')
+    if not os.path.isfile(exclude_file_path):
+        raise ValueError(f'ERROR: {args.exclude_file} does not exist.')
 
     # Fetch metric from file_path, e.g., get FA from DWI_FA.csv
     metric = os.path.basename(csv_file_path).split('_')[1].split('.')[0]
@@ -333,7 +333,7 @@ def main():
     print(f'Number of unique subjects before dropping: {df["Participant"].nunique()}')
 
     # Get the list of subjects to exclude
-    subjects_to_exclude = read_yaml_file(file_path=yml_file_path, key='DWI')
+    subjects_to_exclude = read_yaml_file(file_path=exclude_file_path, key='DWI')
 
     # Remove session (after the first '_') from the list of subjects to exclude
     subjects_to_exclude = [subject.split('_')[0] for subject in subjects_to_exclude]

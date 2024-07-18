@@ -30,7 +30,8 @@ sys.path.append(parent)
 
 from utils import read_csv_file, read_yaml_file, fetch_participant_and_session, format_pvalue
 
-
+# Vert level to use; 3 corresponds to C3
+VERT_LEVEL=3
 
 LABEL_FONT_SIZE = 14
 TICK_FONT_SIZE = 9
@@ -211,14 +212,14 @@ def create_rainplot(df, metric, number_of_subjects, csv_file_path):
     plt.close()
 
 
-def create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path):
+def create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out):
     """
     Create violionplot + swarmplot + lineplot comparing sessions 1 vs session2 for DTI metrics
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
     :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
     :param number_of_subjects: number of unique subjects (will be shown in the title)
     :param stats_dict: dictionary with p-values for each metric
-    :param csv_file_path: path to the input CSV file (it is used to save the output figure)
+    :param fname_out: path to the output figure
     """
 
     # NOTE: for some reason, the color order must be swapped here (compared to the Raincloud plot). Maybe due to the
@@ -285,11 +286,9 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path)
 
     # Save the figure
     fig.tight_layout()
-    fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_violin_plots.png')
     fig.savefig(fname_out, dpi=300)
     plt.close(fig)
     print(f'Figure saved to {fname_out}')
-
 
 
 def main():
@@ -341,8 +340,9 @@ def main():
     # Remove subjects to exclude
     df = df[~df['Participant'].isin(subjects_to_exclude)]
 
-    # Keep only C3
-    df = df[df['VertLevel'] == 3]
+    # Keep only VertLevel specified by VERT_LEVEL
+    print(f'VertLevel: {VERT_LEVEL}')
+    df = df[df['VertLevel'] == VERT_LEVEL]
 
     # Print number of unique subjects
     number_of_subjects = df["Participant"].nunique()
@@ -361,7 +361,8 @@ def main():
     create_rainplot(df, metric, number_of_subjects, csv_file_path)
 
     # violionplot + swarmplot + lineplot
-    create_violinplot(df, metric, number_of_subjects, stats_dict, csv_file_path)
+    fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_violin_plots_C{VERT_LEVEL}.png')
+    create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out)
 
 
 if __name__ == '__main__':

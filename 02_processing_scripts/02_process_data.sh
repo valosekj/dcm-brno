@@ -175,6 +175,33 @@ segment_sc_CA_if_does_not_exist(){
   fi
 }
 
+# Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
+# it does not, perform segmentation using sct_deepseg_sc.
+segment_sc_if_does_not_exist(){
+  local file="$1"
+  local contrast="$2"
+  # Find contrast
+  if [[ $contrast == "dwi" ]]; then
+    folder_contrast="dwi"
+  else
+    folder_contrast="anat"
+  fi
+  # Update global variable with segmentation file name
+  FILESEG="${file}_seg"
+  FILESEGMANUAL="${PATH_DATA}/derivatives/labels/${SUBJECT}/${folder_contrast}/${FILESEG}.nii.gz"
+  echo
+  echo "Looking for manual segmentation: $FILESEGMANUAL"
+  if [[ -e $FILESEGMANUAL ]]; then
+    echo "✅ Found! Using manual segmentation."
+    rsync -avzh $FILESEGMANUAL ${FILESEG}.nii.gz
+    sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
+  else
+    echo "❌ Not found. Proceeding with automatic segmentation."
+    # Segment spinal cord
+    sct_deepseg_sc -i ${file}.nii.gz -c ${contrast} -qc ${PATH_QC} -qc-subject ${file}
+  fi
+}
+
 # Check if manual segmentation already exists. If it does, copy it locally. If
 # it does not, perform seg.
 segment_gm_if_does_not_exist(){
@@ -344,8 +371,10 @@ sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline -param metric=C
 file_dwi=${file_dwi}_moco
 file_dwi_mean=${file_dwi}_dwi_mean
 
-# Segment spinal cord (only if it does not exist) using the contrast-agnostic model (part of SCT v6.2)
-segment_sc_CA_if_does_not_exist ${file_dwi_mean} "dwi"
+# Segment spinal cord (only if it does not exist) using sct_deepseg_sc
+# Note: sct_deepseg_sc seems to work better for DWI than the contrast-agnostic model; details:
+# https://github.com/valosekj/dcm-brno/issues/19
+segment_sc_if_does_not_exist ${file_dwi_mean} "dwi"
 file_dwi_seg=$FILESEG
 
 # Register template->dwi (using T2w-to-template as initial transformation)

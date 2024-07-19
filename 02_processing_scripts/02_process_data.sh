@@ -265,10 +265,9 @@ file_label=${file_t2}_label-disc_c3c5
 sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PATH_QC} -qc-subject ${file}
 
 # Register T2w to PAM50 template using C3 and C5 mid-vertebral levels
-#-param step=1,type=seg,algo=centermassrot:step=2,type=im,algo=syn,iter=5,slicewise=1,metric=CC,smooth=0
-# -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=columnwise
+# Registration params optimization: https://github.com/valosekj/dcm-brno/issues/18
 sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 \
-                         -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5:step=3,type=im,algo=syn,slicewise=1,smooth=0,iter=3 \
+                         -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5 \
                          -qc ${PATH_QC} -qc-subject ${file}
 # Rename warping fields for clarity
 mv warp_template2anat.nii.gz warp_template2T2w.nii.gz
@@ -379,10 +378,11 @@ file_dwi_seg=$FILESEG
 
 # Register template->dwi (using T2w-to-template as initial transformation)
 # Note: in general for DWI we use the PAM50_t1 contrast, which is close to the dwi contrast; see SCT Course for details
+# Registration params optimization: https://github.com/valosekj/dcm-brno/issues/18
 sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
                         -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz \
                         -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz \
-                        -param step=1,type=seg,algo=centermass:step=2,type=seg,algo=columnwise \
+                        -param step=1,type=seg,algo=centermass:step=2,type=im,algo=syn,slicewise=1,iter=5 \
                         -initwarp ../anat/warp_template2T2w.nii.gz -initwarpinv ../anat/warp_T2w2template.nii.gz \
                         -owarp warp_template2dwi.nii.gz -owarpinv warp_dwi2template.nii.gz \
                         -qc "${PATH_QC}" -qc-subject "${SUBJECT}"

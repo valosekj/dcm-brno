@@ -26,7 +26,10 @@ import collections
 
 import numpy as np
 from matplotlib import pyplot as plt
+
+import spinalcordtoolbox.image as msct_image
 from spinalcordtoolbox.image import Image
+from spinalcordtoolbox.resampling import resample_nib
 
 
 def get_parser():
@@ -66,25 +69,39 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     # Keep only the C3 label
     data_discs_c3c5[data_discs_c3c5 != 3] = 0
     # Find non-zero voxels
-    x, y, z = data_discs_c3c5.nonzero()
+    _, _, z = data_discs_c3c5.nonzero()
 
     # Load the T2w image
     t2w_img = Image(t2w_img).change_orientation('RPI')
-    data_img = t2w_img.data
-    # Get the slice number corresponding to the C3 label from the T2w image
-    data_slice = data_img[:, :, z]
 
     # Load the T2w SC segmentation
     t2w_sc_seg = Image(t2w_sc_seg).change_orientation('RPI')
-    data_sc_seg = t2w_sc_seg.data
-    sc_seg_slice = data_sc_seg[:, :, z]
+
+    # Keep only the slice corresponding to the C3 label
+    # This is done by cropping the image and SC seg and properly altering the header; details:
+    # https://github.com/spinalcordtoolbox/spinalcordtoolbox/blob/master/spinalcordtoolbox/image.py#L1307
+    # Note: we do the cropping instead of just getting the slice (using `data_img[:, :, z]`) to be able to do the
+    # resampling in the next step
+    t2w_img_crop = msct_image.spatial_crop(t2w_img, dict(((2, (int(z), int(z))),)))
+    sc_seg_crop = msct_image.spatial_crop(t2w_sc_seg, dict(((2, (int(z), int(z))),)))
+
+    # Resample to 0.8 mm isotropic resolution to make the images from session 1 and session 2 comparable
+    # Inspiration:
+    # https://github.com/spinalcordtoolbox/spinalcordtoolbox/blob/master/spinalcordtoolbox/reports/slice.py#L282
+    t2w_img_crop_r = resample_nib(t2w_img_crop, new_size=[0.8, 0.8, 0.8], new_size_type='mm', interpolation='spline')
+    t2w_img_crop_r_data = t2w_img_crop_r.data
+    sc_seg_crop_r = resample_nib(sc_seg_crop, new_size=[0.8, 0.8, 0.8], new_size_type='mm', interpolation='linear')
+    # Binarize the segmentation using 0.5 threshold
+    # https://github.com/spinalcordtoolbox/spinalcordtoolbox/blob/master/spinalcordtoolbox/reports/slice.py#L289
+    sc_seg_crop_r_data = sc_seg_crop_r.data
+    sc_seg_crop_r_data = (sc_seg_crop_r_data > 0.5) * 1
 
     # Crop the slice around the SC segmentation
     boundary = 10
-    x, y, z = sc_seg_slice.nonzero()
+    x, y, z = sc_seg_crop_r_data.nonzero()
     x_min, x_max = x.min() - boundary, x.max() + boundary
     y_min, y_max = y.min() - boundary, y.max() + boundary
-    data_slice = data_slice[x_min:x_max, y_min:y_max]
+    data_slice = t2w_img_crop_r_data[x_min:x_max, y_min:y_max]
 
     return data_slice
 

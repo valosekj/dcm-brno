@@ -118,8 +118,10 @@ def main():
         # Check if the files exist
         # If so, get the axial slice from the T2w image corresponding to the C3 mid-vertebral level.
         if os.path.isfile(t2w_session1) and os.path.isfile(t2w_discs_c3c5_session1) and os.path.isfile(t2w_sc_session1):
+            print(f'Processing subject: {subject}, session 1')
             dict_slices[subject]['session1'] = get_c3_slice(t2w_discs_c3c5_session1, t2w_session1, t2w_sc_session1)
         if os.path.isfile(t2w_session2) and os.path.isfile(t2w_discs_c3c5_session2) and os.path.isfile(t2w_sc_session2):
+            print(f'Processing subject: {subject}, session 2')
             dict_slices[subject]['session2'] = get_c3_slice(t2w_discs_c3c5_session2, t2w_session2, t2w_sc_session2)
 
     # Plot the slices from all subjects into a single figure with number of rows equal to the number of subjects and

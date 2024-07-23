@@ -320,6 +320,8 @@ else
     echo "⚠️ Skipping T2s processing for ${file}."
     echo "⚠️ Skipping T2s processing for ${file}." >> $PATH_LOG/skipped_processing.log
 fi
+
+# ------------------------------------------------------------------------------
 # DWI
 # ------------------------------------------------------------------------------
 # Steps:

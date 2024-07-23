@@ -63,8 +63,33 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     :param t2w_sc_seg: Path to the T2w SC segmentation
     :return: Axial slice from the T2w image corresponding to the C3 mid-vertebral level
     """
+    # Create a temporary folder based on t2w_discs_c3c5 path
+    tmp_folder = os.path.join(os.path.dirname(t2w_discs_c3c5), 'tmp')
+    # Create a temporary folder
+    os.makedirs(tmp_folder, exist_ok=True)
+
+    # Resample images to 0.8 mm isotropic resolution to make the images from session 1 and session 2 comparable
+    # For discs, we need to dilate the labels before resampling to avoid losing the labels
+    # Inspiration: https://github.com/sct-pipeline/csa-atrophy/pull/75
+    # Note: -x nn is used
+    os.system(f'sct_maths -i {t2w_discs_c3c5} -dilate 2 -o {os.path.join(tmp_folder, "discs_c3c5_dilated.nii.gz")}')
+    os.system(f'sct_resample -i {os.path.join(tmp_folder, "discs_c3c5_dilated.nii.gz")} -mm 0.8x0.8x0.8 -x nn -o '
+              f'{os.path.join(tmp_folder, "discs_c3c5_dilated_r.nii.gz")}')
+    os.system(f'sct_label_utils -i {os.path.join(tmp_folder, "discs_c3c5_dilated_r.nii.gz")} -cubic-to-point -o '
+              f'{os.path.join(tmp_folder, "discs_c3c5_dilated_r_point.nii.gz")}')
+    t2w_discs_c3c5_tmp = os.path.join(tmp_folder, "discs_c3c5_dilated_r_point.nii.gz")
+    # Image
+    os.system(f'sct_resample -i {t2w_img} -mm 0.8x0.8x0.8 -x spline -o {os.path.join(tmp_folder, "t2w_r.nii.gz")}')
+    t2w_img_tmp = os.path.join(tmp_folder, "t2w_r.nii.gz")
+    # SC seg
+    os.system(f'sct_resample -i {t2w_sc_seg} -mm 0.8x0.8x0.8 -x linear -o {os.path.join(tmp_folder, "sc_seg_r.nii.gz")}')
+    # Binarize the segmentation using 0.5 threshold
+    os.system(f'sct_maths -i {os.path.join(tmp_folder, "sc_seg_r.nii.gz")} -thr 0.5 -o '
+              f'{os.path.join(tmp_folder, "sc_seg_r_bin.nii.gz")}')
+    t2w_sc_seg_tmp = os.path.join(tmp_folder, "sc_seg_r_bin.nii.gz")
+
     # Load file with C3 and C5 labels
-    t2w_discs_c3c5_img = Image(t2w_discs_c3c5).change_orientation('RPI')
+    t2w_discs_c3c5_img = Image(t2w_discs_c3c5_tmp).change_orientation('RPI')
     data_discs_c3c5 = t2w_discs_c3c5_img.data
     # Keep only the C3 label
     data_discs_c3c5[data_discs_c3c5 != 3] = 0
@@ -72,10 +97,10 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     _, _, z = data_discs_c3c5.nonzero()
 
     # Load the T2w image
-    t2w_img = Image(t2w_img).change_orientation('RPI')
+    t2w_img = Image(t2w_img_tmp).change_orientation('RPI')
 
     # Load the T2w SC segmentation
-    t2w_sc_seg = Image(t2w_sc_seg).change_orientation('RPI')
+    t2w_sc_seg = Image(t2w_sc_seg_tmp).change_orientation('RPI')
 
     # Keep only the slice corresponding to the C3 label
     # This is done by cropping the image and SC seg and properly altering the header; details:
@@ -102,6 +127,9 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     x_min, x_max = x.min() - boundary, x.max() + boundary
     y_min, y_max = y.min() - boundary, y.max() + boundary
     data_slice = t2w_img_crop_r_data[x_min:x_max, y_min:y_max]
+
+    # Remove the temporary folder
+    os.system(f'rm -rf {tmp_folder}')
 
     return data_slice
 

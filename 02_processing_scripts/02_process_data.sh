@@ -293,7 +293,7 @@ echo "✅ Done: ${file_t2}"
 
 # Skip T2s processing for problematic subjects listed in exclude.yml
 # Note: we have to skip the analysis because we still want to perform DWI processing
-if [[ ! $file =~ "sub-3056B6483B_ses-6483B" ]] && [[ ! $file =~ "sub-3758B6378B_ses-6378B" ]] && [[ ! $file =~ "sub-3998B6406B_ses-6406B" ]]; then
+if [[ ! $file =~ "sub-3056B6483B_ses-6483B" ]] && [[ ! $file =~ "sub-3758B6378B_ses-6378B" ]] && [[ ! $file =~ "sub-3998B6406B_ses-6406B" ]] && [[ ! $file =~ "sub-2320B6468B_ses-6468B" ]]; then
 
     file_t2s="${file}_T2star"
     echo "👉 Processing: ${file_t2s}"

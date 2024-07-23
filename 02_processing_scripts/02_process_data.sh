@@ -12,7 +12,7 @@
 # Manual segmentations or labels should be located under:
 # PATH_DATA/derivatives/labels/SUBJECT/SESSION/<CONTRAST>/
 #
-# Author: Jan Valosek
+# Author: Jan Valosek, Julien Cohen-Adad
 #
 # Inspired by:
 # https://github.com/spine-generic/spine-generic/blob/master/process_data.sh

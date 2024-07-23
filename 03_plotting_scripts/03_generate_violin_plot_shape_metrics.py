@@ -51,9 +51,6 @@ METRIC_TO_AXIS = {
     'MEAN(compression_ratio)': 'Compression Ratio [a.u.]',
 }
 
-# Vert level to use; 3 corresponds to C3
-VERT_LEVEL=3
-
 TITLE_FONT_SIZE = 16
 LABELS_FONT_SIZE = 14
 TICKS_FONT_SIZE = 12
@@ -85,6 +82,13 @@ def get_parser():
         type=str,
         help='Path to the "csa-SC_T2w_perlevel" CSV file produced by sct_run_batch. '
              'Example: "/Users/user/results/dcm-brno_2024-02-19/results/"csa-SC_T2w_perlevel"')
+    parser.add_argument(
+        '-vert-level',
+        metavar="<int>",
+        required=True,
+        type=int,
+        help='Vert level to generate the figure for. Examples: 3 (meaning C3), 4 (meaning C4), etc.'
+    )
     parser.add_argument(
         '-exclude-file',
         metavar="<file>",
@@ -249,8 +253,10 @@ def main():
     # Get the path to the input directory
     path_in = os.path.dirname(csv_file_path)
 
+    VERT_LEVEL = args.vert_level
+
     # Dump log file there
-    fname_log = os.path.join(path_in, f'{args.exclude_key}_violin_plots.log')
+    fname_log = os.path.join(path_in, f'{args.exclude_key}_violin_plots_C{VERT_LEVEL}.log')
     if os.path.exists(fname_log):
         os.remove(fname_log)
     fh = logging.FileHandler(os.path.join(path_in, fname_log))

@@ -30,9 +30,6 @@ sys.path.append(parent)
 
 from utils import read_csv_file, read_yaml_file, fetch_participant_and_session, format_pvalue
 
-# Vert level to use; 3 corresponds to C3
-VERT_LEVEL=3
-
 LABEL_FONT_SIZE = 14
 TICK_FONT_SIZE = 9
 
@@ -88,6 +85,13 @@ def get_parser():
         required=True,
         type=str,
         help='Path to the CSV file containing the DTI metrics. Example: results/DWI_FA.csv'
+    )
+    parser.add_argument(
+        '-vert-level',
+        metavar="<int>",
+        required=True,
+        type=int,
+        help='Vert level to generate the figure for. Examples: 3 (meaning C3), 4 (meaning C4), etc.'
     )
     parser.add_argument(
         '-exclude-file',
@@ -338,6 +342,8 @@ def main():
 
     # Remove subjects to exclude
     df = df[~df['Participant'].isin(subjects_to_exclude)]
+
+    VERT_LEVEL = args.vert_level
 
     # Keep only VertLevel specified by VERT_LEVEL
     print(f'VertLevel: {VERT_LEVEL}')

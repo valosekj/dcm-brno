@@ -293,6 +293,9 @@ def main():
     # -------------------------------
     # Plotting
     # -------------------------------
+    # Rename Session 1 and Session 2 to Pre-surgery and Post-surgery
+    df['Session'] = df['Session'].replace({'Session 1': 'Pre-surgery', 'Session 2': 'Post-surgery'})
+
     fname_out = os.path.join(path_in, f'{args.exclude_key}_violin_plots_C{VERT_LEVEL}.png')
     # violionplot + swarmplot + lineplot
     generate_figure(df, number_of_subjects, VERT_LEVEL, stats_dict, fname_out)

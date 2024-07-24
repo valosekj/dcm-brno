@@ -384,7 +384,7 @@ file_dwi_seg=$FILESEG
 sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
                         -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz \
                         -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz \
-                        -param step=1,type=seg,algo=centermass:step=2,type=im,algo=syn,slicewise=1,iter=5 \
+                        -param step=1,type=seg,algo=centermass:step=2,type=im,algo=syn,slicewise=1,iter=3 \
                         -initwarp ../anat/warp_template2T2w.nii.gz -initwarpinv ../anat/warp_T2w2template.nii.gz \
                         -owarp warp_template2dwi.nii.gz -owarpinv warp_dwi2template.nii.gz \
                         -qc "${PATH_QC}" -qc-subject "${SUBJECT}"

@@ -375,7 +375,7 @@ file_dwi_mean=${file_dwi}_dwi_mean
 # Segment spinal cord (only if it does not exist) using sct_deepseg_sc
 # Note: sct_deepseg_sc seems to work better for DWI than the contrast-agnostic model; details:
 # https://github.com/valosekj/dcm-brno/issues/19
-segment_sc_if_does_not_exist ${file_dwi_mean} "dwi"
+segment_sc_CA_if_does_not_exist ${file_dwi_mean} "dwi"
 file_dwi_seg=$FILESEG
 
 # Register template->dwi (using T2w-to-template as initial transformation)

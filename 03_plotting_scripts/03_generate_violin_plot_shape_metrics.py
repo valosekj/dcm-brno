@@ -54,10 +54,11 @@ TITLE_FONT_SIZE = 16
 LABELS_FONT_SIZE = 14
 TICKS_FONT_SIZE = 12
 
-# NOTE: for some reason, the color order must be swapped here (compared to the DTI Raincloud plot). Maybe due to the
-# `.invert_xaxis` method?
-color_palette = [(0.984313725490196, 0.5019607843137255, 0.4470588235294118),       # red
-                 (0.5529411764705883, 0.8274509803921568, 0.7803921568627451)]     # green
+# NOTE: for some reason, the color order must be swapped here. Maybe due to the `.invert_xaxis` method?
+color_palette = {
+    'Post-surgery': (0.5529411764705883, 0.8274509803921568, 0.7803921568627451),    # red
+    'Pre-surgery': (0.984313725490196, 0.5019607843137255, 0.4470588235294118)      # green
+     }
 
 # Initialize logging
 logger = logging.getLogger(__name__)

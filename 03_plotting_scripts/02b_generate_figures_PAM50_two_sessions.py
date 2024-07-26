@@ -159,8 +159,10 @@ def get_vert_indices(df):
         ind_vert (np.array): indices of slices corresponding to the beginning of each level (=intervertebral disc)
         ind_vert_mid (np.array): indices of slices corresponding to mid-levels
     """
+    # Get unique participant IDs
+    subjects = df['participant_id'].unique()
     # Get vert levels for one certain subject
-    vert = df[df['participant_id'] == 'sub-amu01']['VertLevel']
+    vert = df[df['participant_id'] == subjects[0]]['VertLevel']
     # Get indexes of where array changes value
     ind_vert = vert.diff()[vert.diff() != 0].index.values
     # Get the beginning of C1

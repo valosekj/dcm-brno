@@ -210,11 +210,20 @@ def generate_figure(df, number_of_subjects, vert_level, stats_dict, fname_out):
         axs[index].invert_xaxis()
 
         # If the p-value is less than 0.05, add the significance annotation
-        #if stats_dict[metric] < 0.05:
-        axs[index].annotate(f'p{format_pvalue(stats_dict[metric], alpha=.001, include_space=False)}',
-                            xy=(0.5, 0.95), xycoords='axes fraction',
-                            ha='center', va='center',
-                            fontsize=10, color='black')
+        if stats_dict[metric] < 0.05:
+            axs[index].annotate(f'*',
+                                xy=(0.33, 0.93), xycoords='axes fraction',
+                                ha='center', va='center',
+                                fontsize=15, color='black')
+            axs[index].annotate(f'p{format_pvalue(stats_dict[metric], alpha=.001, include_space=False)}',
+                                xy=(0.5, 0.95), xycoords='axes fraction',
+                                ha='center', va='center',
+                                fontsize=10, color='black')
+        else:
+            axs[index].annotate(f'p{format_pvalue(stats_dict[metric], alpha=.001, include_space=False)}',
+                                xy=(0.5, 0.95), xycoords='axes fraction',
+                                ha='center', va='center',
+                                fontsize=10, color='black')
 
         axs[index].set_xlabel('')
         axs[index].set_ylabel(METRIC_TO_AXIS[metric], fontsize=LABELS_FONT_SIZE)

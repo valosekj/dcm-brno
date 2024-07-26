@@ -138,6 +138,7 @@ def compute_statistics(df):
 
     return stats_dict
 
+
 def create_rainplot(df, metric, number_of_subjects, fname_out):
     """
     Create Raincloud plots (violionplot + boxplot + individual points)

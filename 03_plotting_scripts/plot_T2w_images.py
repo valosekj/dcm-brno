@@ -23,6 +23,7 @@ Author: Jan Valosek
 import os
 import argparse
 import collections
+import pickle
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -168,6 +169,11 @@ def main():
         if os.path.isfile(t2w_session2) and os.path.isfile(t2w_discs_c3c5_session2) and os.path.isfile(t2w_sc_session2):
             print(f'Processing subject: {subject}, session 2')
             dict_slices[subject]['session2'] = get_c3_slice(t2w_discs_c3c5_session2, t2w_session2, t2w_sc_session2)
+
+    # Save dict_slices to a pickle file
+    # This is useful in case you want to plot the slices later without re-running the script
+    with open('dict_slices.pkl', 'wb') as f:
+        pickle.dump(dict_slices, f)
 
     # Plot the slices from all subjects into a single figure with number of rows equal to the number of subjects and
     # two columns (one for each session)

@@ -3,11 +3,10 @@ Load "csa-SC_T2w_perlevel" CSV file with shape metrics perlevel located under "-
 figures comparing sessions 1 vs session 2.
 
 Currently, the figures are generated for VertLevel 2 only.
-Two figures are generated for each metric:
-    - one for subjects without surgery
-    - one for subjects with surgery
 
 The figures are saved in "-path-out".
+
+Author: Jan Valosek
 """
 
 import os

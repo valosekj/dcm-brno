@@ -369,6 +369,9 @@ def main():
     # fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_rainplot_C{VERT_LEVEL}.png')
     # create_rainplot(df, metric, number_of_subjects, fname_out)
 
+    # Rename Session 1 and Session 2 to Pre-surgery and Post-surgery
+    df['Session'] = df['Session'].replace({'Session 1': 'Pre-surgery', 'Session 2': 'Post-surgery'})
+
     # violionplot + swarmplot + lineplot
     fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_violin_plots_C{VERT_LEVEL}.png')
     create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out)

@@ -107,7 +107,6 @@ def get_parser():
     return parser
 
 
-
 def read_metrics(csv_file_path, vert_level):
     """
     Read shape metrics (CSA, diameter_AP, ...) from the "csa-SC_T2w_perlevel" CSV file
@@ -230,7 +229,7 @@ def generate_figure(df, number_of_subjects, vert_level, stats_dict, fname_out):
         axs[index].tick_params(axis='both', which='major', labelsize=TICKS_FONT_SIZE)
 
     # Set main title with number of subjects
-    fig.suptitle(f'Shape metrics at C{vert_level} level (above the compression)\n'
+    fig.suptitle(f'Shape metrics at C{vert_level} level (above the compression). '
                  f'Number of subjects: {number_of_subjects}',
                  fontsize=TITLE_FONT_SIZE)
 

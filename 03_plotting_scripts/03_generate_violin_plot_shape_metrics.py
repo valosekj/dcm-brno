@@ -52,7 +52,7 @@ METRIC_TO_AXIS = {
 
 TITLE_FONT_SIZE = 16
 LABELS_FONT_SIZE = 14
-TICKS_FONT_SIZE = 12
+TICKS_FONT_SIZE = 10
 
 # NOTE: for some reason, the color order must be swapped here. Maybe due to the `.invert_xaxis` method?
 color_palette = {

@@ -65,8 +65,6 @@ scaling_factor = {
     'RD': 1000,
     }
 
-color_palette = [(0.5529411764705883, 0.8274509803921568, 0.7803921568627451),      # green
-                 (0.984313725490196, 0.5019607843137255, 0.4470588235294118)]       # red
 
 def get_parser():
     """
@@ -151,6 +149,9 @@ def create_rainplot(df, metric, number_of_subjects, fname_out):
 
     import ptitprince as pt     # seaborn==0.11 is required for the ptitprince package (https://github.com/pog87/PtitPrince/blob/master/requirements.txt)
 
+    color_palette = [(0.5529411764705883, 0.8274509803921568, 0.7803921568627451),  # green
+                     (0.984313725490196, 0.5019607843137255, 0.4470588235294118)]  # red
+
     mpl.rcParams['font.family'] = 'Arial'
 
     fig_size = (15, 5)
@@ -225,10 +226,11 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out):
     :param fname_out: path to the output figure
     """
 
-    # NOTE: for some reason, the color order must be swapped here (compared to the Raincloud plot). Maybe due to the
-    # `.invert_xaxis` method?
-    color_palette = [(0.984313725490196, 0.5019607843137255, 0.4470588235294118),  # red
-                     (0.5529411764705883, 0.8274509803921568, 0.7803921568627451)]  # green
+    # NOTE: for some reason, the color order must be swapped here. Maybe due to the `.invert_xaxis` method?
+    color_palette = {
+        'Post-surgery': (0.5529411764705883, 0.8274509803921568, 0.7803921568627451),  # red
+        'Pre-surgery': (0.984313725490196, 0.5019607843137255, 0.4470588235294118)  # green
+    }
 
     import seaborn as sns  # seaborn>=0.13.0 is required to properly create the figure
 

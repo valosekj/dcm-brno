@@ -112,6 +112,14 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     t2w_img_slice = t2w_img.data[:, :, c3_z]
     t2w_sc_seg_slice = t2w_sc_seg.data[:, :, c3_z]
 
+    # # Debug: plot t2w_img_slice and t2w_sc_seg_slice
+    # plt.figure()
+    # plt.subplot(1, 2, 1)
+    # plt.imshow(t2w_img_slice, cmap='gray')
+    # plt.subplot(1, 2, 2)
+    # plt.imshow(t2w_sc_seg_slice, cmap='gray')
+    # plt.show()
+
     # Crop the slice around the SC segmentation
     boundary = 10
     x, y = t2w_sc_seg_slice.nonzero()
@@ -120,6 +128,7 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     data_slice = t2w_img_slice[x_min:x_max, y_min:y_max]
 
     # Remove the temporary folder
+    # Comment the following line for debug
     os.system(f'rm -rf {tmp_folder}')
 
     return data_slice

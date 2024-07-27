@@ -79,9 +79,11 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     os.system(f'sct_label_utils -i {os.path.join(tmp_folder, "discs_c3c5_dilated_r.nii.gz")} -cubic-to-point -o '
               f'{os.path.join(tmp_folder, "discs_c3c5_dilated_r_point.nii.gz")}')
     t2w_discs_c3c5_tmp = os.path.join(tmp_folder, "discs_c3c5_dilated_r_point.nii.gz")
+
     # Image
     os.system(f'sct_resample -i {t2w_img} -mm 0.8x0.8x0.8 -x spline -o {os.path.join(tmp_folder, "t2w_r.nii.gz")}')
     t2w_img_tmp = os.path.join(tmp_folder, "t2w_r.nii.gz")
+
     # SC seg
     os.system(f'sct_resample -i {t2w_sc_seg} -mm 0.8x0.8x0.8 -x linear -o {os.path.join(tmp_folder, "sc_seg_r.nii.gz")}')
     # Binarize the segmentation using 0.5 threshold

@@ -77,6 +77,7 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     os.system(f'sct_maths -i {t2w_discs_c3c5} -dilate 2 -o {os.path.join(tmp_folder, "discs_c3c5_dilated.nii.gz")}')
     os.system(f'sct_resample -i {os.path.join(tmp_folder, "discs_c3c5_dilated.nii.gz")} -mm 0.8x0.8x0.8 -x nn -o '
               f'{os.path.join(tmp_folder, "discs_c3c5_dilated_r.nii.gz")}')
+    # Use `-cubic-to-point` to make sure the disc label is a single pixel point
     os.system(f'sct_label_utils -i {os.path.join(tmp_folder, "discs_c3c5_dilated_r.nii.gz")} -cubic-to-point -o '
               f'{os.path.join(tmp_folder, "discs_c3c5_dilated_r_point.nii.gz")}')
     t2w_discs_c3c5_tmp = os.path.join(tmp_folder, "discs_c3c5_dilated_r_point.nii.gz")

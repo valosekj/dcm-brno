@@ -169,12 +169,16 @@ def main():
     # The figure is saved as c3_slices.png
     fig, axs = plt.subplots(len(dict_slices), 2, figsize=(6, 3*len(dict_slices)))
     for i, (subject, slices) in enumerate(dict_slices.items()):
-        axs[i, 0].imshow(np.rot90(slices['session1']), cmap='gray')
-        axs[i, 0].set_title(f'{subject} - session 1')
-        axs[i, 0].axis('off')
-        axs[i, 1].imshow(np.rot90(slices['session2']), cmap='gray')
-        axs[i, 1].set_title(f'{subject} - session 2')
-        axs[i, 1].axis('off')
+        # check if session 1 exists
+        if 'session1' in slices:
+            axs[i, 0].imshow(np.rot90(slices['session1']), cmap='gray')
+            axs[i, 0].set_title(f'{subject} - session 1')
+            axs[i, 0].axis('off')
+        # check if session 2 exists
+        if 'session2' in slices:
+            axs[i, 1].imshow(np.rot90(slices['session2']), cmap='gray')
+            axs[i, 1].set_title(f'{subject} - session 2')
+            axs[i, 1].axis('off')
     plt.tight_layout()
     plt.savefig('c3_slices.png')
 

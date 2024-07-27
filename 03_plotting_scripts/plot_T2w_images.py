@@ -182,6 +182,8 @@ def main():
     # The slices are plotted for session 1 (before surgery) and session 2 (after surgery)
     # The figure is saved as c3_slices.png
     fig, axs = plt.subplots(len(dict_slices), 2, figsize=(6, 3*len(dict_slices)))
+    # Force axs to be a 2-dimensional array (to avoid indexing issues if we have only a subject)
+    axs = np.asanyarray(axs).reshape((len(dict_slices), 2))
     for i, (subject, slices) in enumerate(dict_slices.items()):
         # check if session 1 exists
         if 'session1' in slices:

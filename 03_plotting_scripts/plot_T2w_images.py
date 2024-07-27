@@ -144,6 +144,9 @@ def main():
     if not os.path.isdir(dir_path):
         raise ValueError(f'ERROR: {args.i} does not exist.')
 
+    output_dir = dir_path.replace('data_processed', 'results')
+    os.makedirs(output_dir, exist_ok=True)
+
     dict_slices = collections.defaultdict(dict)
 
     # Loop across subjects
@@ -171,7 +174,7 @@ def main():
 
     # Save dict_slices to a pickle file
     # This is useful in case you want to plot the slices later without re-running the script
-    with open('dict_slices.pkl', 'wb') as f:
+    with open(os.path.join(output_dir, 'dict_slices.pkl'), 'wb') as f:
         pickle.dump(dict_slices, f)
 
     # Plot the slices from all subjects into a single figure with number of rows equal to the number of subjects and
@@ -191,7 +194,7 @@ def main():
             axs[i, 1].set_title(f'{subject} - session 2')
             axs[i, 1].axis('off')
     plt.tight_layout()
-    plt.savefig('c3_slices.png')
+    plt.savefig(os.path.join(output_dir, 'c3_slices.png'))
 
 
 if __name__ == '__main__':

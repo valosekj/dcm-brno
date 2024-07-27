@@ -3,6 +3,7 @@ Plot axial slice from T2w image corresponding to the C3 mid-vertebral level.
 The slices are plotted for session 1 (before surgery) and session 2 (after surgery).
 
 The script:
+    - resamples the images from both sessions to 0.8 mm isotropic resolution
     - reads T2w.nii.gz, T2w_seg.nii.gz and T2w_label-disc_c3c5.nii.gz files
     - gets slice from the T2w.nii.gz image corresponding to C3 label from the T2w_label-disc_c3c5.nii.gz image
     - crops the slice around the SC segmentation from the T2w_seg.nii.gz image
@@ -28,9 +29,7 @@ import pickle
 import numpy as np
 from matplotlib import pyplot as plt
 
-import spinalcordtoolbox.image as msct_image
 from spinalcordtoolbox.image import Image
-from spinalcordtoolbox.resampling import resample_nib
 
 
 def get_parser():
@@ -59,6 +58,8 @@ def get_parser():
 def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     """
     Get the axial slice from the T2w image corresponding to the C3 mid-vertebral level.
+    The slice is then cropped around the SC segmentation to zoom in on the SC.
+    Images are resampled to 0.8 mm isotropic resolution to make the images from session 1 and session 2 comparable.
     :param t2w_discs_c3c5: Path to the T2w_label-disc_c3c5.nii.gz image with C3 and C5 mid-vertebral labels
     :param t2w_img: Path to the T2w
     :param t2w_sc_seg: Path to the T2w SC segmentation

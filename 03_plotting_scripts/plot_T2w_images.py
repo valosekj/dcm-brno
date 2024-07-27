@@ -121,7 +121,7 @@ def get_c3_slice(t2w_discs_c3c5, t2w_img, t2w_sc_seg):
     # plt.show()
 
     # Crop the slice around the SC segmentation
-    boundary = 10
+    boundary = 5
     x, y = t2w_sc_seg_slice.nonzero()
     x_min, x_max = x.min() - boundary, x.max() + boundary
     y_min, y_max = y.min() - boundary, y.max() + boundary

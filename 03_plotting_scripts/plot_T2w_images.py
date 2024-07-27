@@ -2,6 +2,9 @@
 Plot axial slice from T2w image corresponding to the C3 mid-vertebral level.
 The slices are plotted for session 1 (before surgery) and session 2 (after surgery).
 
+Columns correspond to the two sessions.
+Rows to the subjects.
+
 The script:
     - resamples the images from both sessions to 0.8 mm isotropic resolution
     - reads T2w.nii.gz, T2w_seg.nii.gz and T2w_label-disc_c3c5.nii.gz files
@@ -177,8 +180,9 @@ def main():
     with open(os.path.join(output_dir, 'dict_slices.pkl'), 'wb') as f:
         pickle.dump(dict_slices, f)
 
-    # Plot the slices from all subjects into a single figure with number of rows equal to the number of subjects and
-    # two columns (one for each session)
+    # Plot the slices from all subjects into a single figure with
+    # Columns correspond to the two sessions
+    # Rows to the subjects
     # The slices are plotted for session 1 (before surgery) and session 2 (after surgery)
     # The figure is saved as c3_slices.png
     fig, axs = plt.subplots(len(dict_slices), 2, figsize=(6, 3*len(dict_slices)))

@@ -2,7 +2,7 @@
 Load "csa-SC_T2w_perlevel" CSV file with shape metrics perlevel located under "-path-in/results" and generate group
 figures comparing sessions 1 vs session 2.
 
-Currently, the figures are generated for VertLevel 2 only.
+The script generates figure for a single vert level specified by "-vert-level".
 
 The figures are saved in "-path-out".
 

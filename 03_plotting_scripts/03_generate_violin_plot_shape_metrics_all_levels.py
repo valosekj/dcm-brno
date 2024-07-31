@@ -29,21 +29,13 @@ parent = os.path.dirname(current)
 # Add the parent directory to the sys.path to import the utils module
 sys.path.append(parent)
 
-from utils import read_yaml_file, fetch_participant_and_session, format_pvalue
+from utils import read_yaml_file, fetch_participant_and_session, format_pvalue, read_metrics
 
 # Vertebral levels (C2-C7)
 LEVELS = [2, 3, 4, 5, 6, 7]
 
 METRICS = ['MEAN(area)', 'MEAN(diameter_AP)', 'MEAN(diameter_RL)', 'MEAN(compression_ratio)', 'MEAN(eccentricity)',
            'MEAN(solidity)']
-
-METRICS_DTYPE = {
-    'MEAN(diameter_AP)': 'float64',
-    'MEAN(area)': 'float64',
-    'MEAN(diameter_RL)': 'float64',
-    'MEAN(eccentricity)': 'float64',
-    'MEAN(solidity)': 'float64'
-}
 
 METRIC_TO_AXIS = {
     'MEAN(diameter_AP)': 'AP Diameter [mm]',
@@ -102,27 +94,6 @@ def get_parser():
         help='Key in the YML file listing subjects to exclude. Examples: "T2w", "T2star_SC"'
     )
     return parser
-
-
-def read_metrics(csv_file_path):
-    """
-    Read shape metrics (CSA, diameter_AP, ...) from the "csa-SC_T2w_perlevel" CSV file
-    Compute compression ratio (CR) as MEAN(diameter_AP) / MEAN(diameter_RL)
-    """
-    # Read the "csa-SC_T2w_perlevel" CSV file
-    logger.info(f"Reading {csv_file_path}...")
-    df = pd.read_csv(csv_file_path, dtype=METRICS_DTYPE)
-
-    # Fetch participant and session using lambda function
-    df['Participant'], df['Session'] = zip(*df['Filename'].map(lambda x: fetch_participant_and_session(x)))
-
-    # Compute compression ratio (CR) as MEAN(diameter_AP) / MEAN(diameter_RL)
-    df['MEAN(compression_ratio)'] = df['MEAN(diameter_AP)'] / df['MEAN(diameter_RL)']
-
-    # Drop columns
-    df.drop(columns=['Filename', 'Timestamp', 'SCT Version', 'DistancePMJ'], inplace=True)
-
-    return df
 
 
 def compute_statistics(df):
@@ -283,6 +254,7 @@ def main():
     # -------------------------------
     # Read and prepare the data
     # -------------------------------
+    logger.info(f"Reading {csv_file_path}...")
     df = read_metrics(csv_file_path)
     # Print number of unique subjects
     logger.info(f'CSV file: Number of unique subjects before dropping: {df["Participant"].nunique()}')

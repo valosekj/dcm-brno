@@ -28,7 +28,7 @@ parent = os.path.dirname(current)
 # Add the parent directory to the sys.path to import the utils module
 sys.path.append(parent)
 
-from utils import read_yaml_file, fetch_participant_and_session, format_pvalue, read_metrics
+from utils import read_yaml_file, format_pvalue, read_metrics
 
 METRICS = ['MEAN(area)', 'MEAN(diameter_AP)', 'MEAN(diameter_RL)', 'MEAN(compression_ratio)', 'MEAN(eccentricity)',
            'MEAN(solidity)']

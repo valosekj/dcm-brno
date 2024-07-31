@@ -29,7 +29,7 @@ parent = os.path.dirname(current)
 # Add the parent directory to the sys.path to import the utils module
 sys.path.append(parent)
 
-from utils import read_yaml_file, fetch_participant_and_session, format_pvalue, read_metrics
+from utils import read_yaml_file, format_pvalue, read_metrics
 
 # Vertebral levels (C2-C7)
 LEVELS = [2, 3, 4, 5, 6, 7]

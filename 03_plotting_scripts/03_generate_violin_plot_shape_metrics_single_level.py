@@ -178,7 +178,7 @@ def generate_figure(df, number_of_subjects, vert_level, stats_dict, fname_out):
     # Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics
     mpl.rcParams['font.family'] = 'Arial'
 
-    fig, axes = plt.subplots(2, 3, figsize=(10, 8))
+    fig, axes = plt.subplots(1, 6, figsize=(16, 4))
     axs = axes.ravel()
     # Loop across metrics
     for index, metric in enumerate(METRICS):
@@ -218,6 +218,8 @@ def generate_figure(df, number_of_subjects, vert_level, stats_dict, fname_out):
                                 xy=(0.5, 0.95), xycoords='axes fraction',
                                 ha='center', va='center',
                                 fontsize=10, color='black')
+            # change background color to light yellow
+            axs[index].set_facecolor('#FFFFCC')
         else:
             axs[index].annotate(f'p{format_pvalue(stats_dict[metric], alpha=.001, include_space=False)}',
                                 xy=(0.5, 0.95), xycoords='axes fraction',

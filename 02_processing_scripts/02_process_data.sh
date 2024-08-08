@@ -295,6 +295,16 @@ sct_maths -i ${FILESEG}_r.nii.gz -thr 0.5 -o ${FILESEG}_r_bin.nii.gz
 # Generate labeled segmentation using init disc labels
 sct_label_vertebrae -i ${file_t2}_r.nii.gz -s ${FILESEG}_r_bin.nii.gz -discfile ${FILELABEL}_dilated_r_point.nii.gz -c t2 -qc ${PATH_QC} -qc-subject ${file_t2}
 
+# Register the resampled T2w to PAM50 template using C3 and C5 mid-vertebral levels
+# Note: `sct_register_to_template` does resampling to 1 mm isotropic resolution by default. But the output warp fields are then resampled back to the input resolution.
+#  So here, I'm trying to resample the input image to 0.8 mm isotropic resolution, and then register it to the template to get the warp fields at 0.8 mm resolution.
+sct_register_to_template -i ${file_t2}_r.nii.gz -s ${FILESEG}_r_bin.nii.gz -l  ${FILELABEL}_dilated_r_point.nii.gz -c t2 \
+                         -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5 \
+                         -qc ${PATH_QC} -qc-subject ${file}
+# Rename warping fields for clarity
+mv warp_template2anat.nii.gz warp_template2T2w_r.nii.gz
+mv warp_anat2template.nii.gz warp_T2w_r2template.nii.gz
+
 # --------------
 # Compute shape metrics
 # --------------
@@ -312,7 +322,7 @@ sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_label
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_labeled.nii.gz -perslice 1 -normalize-PAM50 1 -angle-corr 1 -o ${PATH_RESULTS}/${file_t2}_metrics_perslice_PAM50.csv
 
 echo "✅ Done: ${file_t2}"
-
+exit
 ## -------------------------------------------------------------------------
 ## T2s
 ## ------------------------------------------------------------------------------

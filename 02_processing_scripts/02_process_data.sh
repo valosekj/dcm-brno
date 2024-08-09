@@ -235,6 +235,11 @@ cd $PATH_DATA_PROCESSED
 # Note: we use '/./' in order to include the sub-folder 'ses-0X'
 rsync -Ravzh $PATH_DATA/./$SUBJECT .
 
+# Remove anat/*MTS* files to save space
+rm -f ${SUBJECT}/anat/*MTS*
+# Remove dwi/*acq-ZOOMitNOinterp* files to save space
+rm -f ${SUBJECT}/dwi/*acq-ZOOMitNOinterp*
+
 # Go to subject folder for source images
 cd ${SUBJECT}/anat
 

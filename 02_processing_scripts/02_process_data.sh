@@ -296,7 +296,7 @@ sct_label_utils -i ${FILELABEL}_dilated_r.nii.gz -cubic-to-point -o ${FILELABEL}
 # Note I'm resampling the original SC seg because I do not want to do the manual correction again
 sct_resample -i ${FILESEG}.nii.gz -mm 0.8x0.8x0.8 -x linear -o ${FILESEG}_r.nii.gz
 # Binarize the segmentation using 0.5 threshold
-sct_maths -i ${FILESEG}_r.nii.gz -thr 0.5 -o ${FILESEG}_r_bin.nii.gz
+sct_maths -i ${FILESEG}_r.nii.gz -bin 0.5 -o ${FILESEG}_r_bin.nii.gz
 # Generate QC
 sct_qc -i ${file_t2}_r.nii.gz -s ${FILESEG}_r_bin.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
 

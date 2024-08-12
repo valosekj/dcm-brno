@@ -3,7 +3,8 @@
 # Process data anatomical and DWI data
 #
 # Requirements:
-#   SCT v6.2 and higher (containing the SCIseg and contrast-agnostic models as part of 'sct_deepseg')
+#   SCT v6.4 and higher (containing the SCIsegV2 and contrast-agnostic models v2.4 as part of 'sct_deepseg')
+#   https://github.com/spinalcordtoolbox/spinalcordtoolbox/releases/tag/6.4
 #
 # Usage:
 #   ./02_process_data.sh <SUBJECT>
@@ -109,7 +110,7 @@ label_if_does_not_exist(){
 }
 
 # Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
-# it does not, perform segmentation using SCIseg nnUNet model (part of SCT v6.2).
+# it does not, perform segmentation using SCIsegV2 nnUNet model (part of SCT v6.4).
 segment_sc_SCIseg_if_does_not_exist(){
   local file="$1"
   local contrast="$2"   # note that contrast is used only for QC purposes and logging
@@ -149,7 +150,8 @@ segment_sc_SCIseg_if_does_not_exist(){
 }
 
 # Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
-# it does not, perform segmentation using the contrast-agnostic model (part of SCT v6.2)
+# it does not, perform segmentation using the contrast-agnostic model v2.4; part of SCT v6.4:
+# https://github.com/spinalcordtoolbox/spinalcordtoolbox/releases/tag/6.4
 segment_sc_CA_if_does_not_exist(){
   local file="$1"
   local contrast="$2"
@@ -251,7 +253,7 @@ file="${SUBJECT//[\/]/_}"
 # T2w
 # -------------------------------------------------------------------------
 # Steps:
-#   - segment spinal cord using the SCIseg nnUNet model (part of SCT v6.2)
+#   - segment spinal cord using the SCIsegV2 nnUNet model (part of SCT v6.4)
 #   - perform vertebral labeling and create C3 and C5 mid-vertebral levels in the cord
 #   - register T2w to PAM50 template using C3 and C5 mid-vertebral levels
 #   - compute cord CSA perlevel and perslice
@@ -259,7 +261,7 @@ file="${SUBJECT//[\/]/_}"
 file_t2="${file}_T2w"
 echo "👉 Processing: ${file_t2}"
 
-# Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
+# Segment spinal cord (only if it does not exist) using the SCIsegV2 nnUNet model (part of SCT v6.4)
 segment_sc_SCIseg_if_does_not_exist $file_t2 "t2"
 
 # Perform vertebral labeling (using sct_label_vertebrae) and create C3 and C5 mid-vertebral levels in the cord
@@ -337,7 +339,7 @@ exit
 ## Steps:
 ##   - bring T2w vertebral levels into T2s space (using `-identity 1`)
 ##   - segment gray matter (only if it does not exist)
-##   - segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
+##   - segment spinal cord (only if it does not exist) using the SCIsegV2 nnUNet model (part of SCT v6.4)
 ##   - compute the gray matter and cord CSA perlevel
 #
 ## Skip T2s processing for problematic subjects listed in exclude.yml
@@ -354,7 +356,7 @@ exit
 #    # Segment gray matter (only if it does not exist)
 #    #segment_gm_if_does_not_exist $file_t2s "t2s"
 #    #file_t2s_seg=$FILESEG
-#    # Segment spinal cord (only if it does not exist) using the SCIseg nnUNet model (part of SCT v6.2)
+#    # Segment spinal cord (only if it does not exist) using the SCIsegV2 nnUNet model (part of SCT v6.4)
 #    segment_sc_SCIseg_if_does_not_exist $file_t2s "t2s"
 #    file_t2s_scseg=$FILESEG
 #

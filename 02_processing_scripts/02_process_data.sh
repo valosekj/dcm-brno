@@ -338,7 +338,7 @@ exit
 # ------------------------------------------------------------------------------
 # Steps:
 #   - average DWI volumes
-#   - get centerline on averaged DWI scan (this is just an initial segmentation to crop the data)
+#   - get centerline on averaged DWI scan (to crop the data)
 #   - crop data for faster processing
 #   - motion correction
 #   - average DWI moco volumes
@@ -361,8 +361,9 @@ file_bvec=${file_dwi}.bvec
 sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
 
 # Get the centerline
-# Comparison "contrast-agnostic SC" vs "sct_get_centerline":
-# https://github.com/valosekj/dcm-brno/issues/13
+# Note, I use the centerline (sct_get_centerline) instead of SC seg as the contrast-agnostic SC seg model might miss
+# top/bottom of the cord slices due to signal dropout. This would result in cropping these slices.
+# Details: https://github.com/valosekj/dcm-brno/issues/13
 sct_get_centerline -i "${file_dwi}"_dwi_mean.nii.gz -c dwi
 
 # Crop data around the centerline for faster processing

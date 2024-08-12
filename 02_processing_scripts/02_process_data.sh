@@ -281,47 +281,8 @@ mv warp_template2anat.nii.gz warp_template2T2w.nii.gz
 mv warp_anat2template.nii.gz warp_T2w2template.nii.gz
 
 # --------------
-# Resample T2w image, SC seg, and discs to 0.8 mm isotropic resolution (to match session 2 resolution)
-# --------------
-# Image
-sct_resample -i ${file_t2}.nii.gz -mm 0.8x0.8x0.8 -x spline -o ${file_t2}_r.nii.gz
-
-# For discs, we need to dilate the labels before resampling to avoid losing the labels
-# Inspiration: https://github.com/sct-pipeline/csa-atrophy/pull/75
-# Note: -x nn is used
-sct_maths -i ${FILELABEL}.nii.gz -dilate 2 -o ${FILELABEL}_dilated.nii.gz
-sct_resample -i ${FILELABEL}_dilated.nii.gz -mm 0.8x0.8x0.8 -x nn -o ${FILELABEL}_dilated_r.nii.gz
-# Use `-cubic-to-point` to make sure the disc label is a single pixel point
-sct_label_utils -i ${FILELABEL}_dilated_r.nii.gz -cubic-to-point -o ${FILELABEL}_dilated_r_point.nii.gz
-
-# SC seg
-# Note I'm resampling the original SC seg because I do not want to do the manual correction again
-sct_resample -i ${FILESEG}.nii.gz -mm 0.8x0.8x0.8 -x linear -o ${FILESEG}_r.nii.gz
-# Binarize the segmentation using 0.5 threshold
-sct_maths -i ${FILESEG}_r.nii.gz -bin 0.5 -o ${FILESEG}_r_bin.nii.gz
-# Generate QC
-sct_qc -i ${file_t2}_r.nii.gz -s ${FILESEG}_r_bin.nii.gz -p sct_deepseg_sc -qc ${PATH_QC} -qc-subject ${file}
-
-# Generate labeled segmentation using init disc labels
-sct_label_vertebrae -i ${file_t2}_r.nii.gz -s ${FILESEG}_r_bin.nii.gz -discfile ${FILELABEL}_dilated_r_point.nii.gz -c t2 -qc ${PATH_QC} -qc-subject ${file_t2}
-
-# Register the resampled T2w to PAM50 template using C3 and C5 mid-vertebral levels
-# Note: `sct_register_to_template` does resampling to 1 mm isotropic resolution by default. But the output warp fields are then resampled back to the input resolution.
-#  So here, I'm trying to resample the input image to 0.8 mm isotropic resolution, and then register it to the template to get the warp fields at 0.8 mm resolution.
-sct_register_to_template -i ${file_t2}_r.nii.gz -s ${FILESEG}_r_bin.nii.gz -l  ${FILELABEL}_dilated_r_point.nii.gz -c t2 \
-                         -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5 \
-                         -qc ${PATH_QC} -qc-subject ${file}
-# Rename warping fields for clarity
-mv warp_template2anat.nii.gz warp_template2T2w_r.nii.gz
-mv warp_anat2template.nii.gz warp_T2w_r2template.nii.gz
-
-# --------------
 # Compute shape metrics
 # --------------
-# Compute cord CSA perlevel on resampled resolution
-sct_process_segmentation -i ${FILESEG}_r_bin.nii.gz -perlevel 1 -vert 2:7 -vertfile ${FILESEG}_r_bin_labeled.nii.gz -o ${PATH_RESULTS}/csa-SC_T2w_perlevel_r.csv -angle-corr 1 -append 1
-# Compute cord CSA perslice on resampled resolution
-sct_process_segmentation -i ${FILESEG}_r_bin.nii.gz -vertfile ${FILESEG}_r_bin_labeled.nii.gz -perslice 1 -o ${PATH_RESULTS}/csa-SC_T2w_perslice_r.csv -angle-corr 1 -append 1
 
 # Compute cord CSA perlevel
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -perlevel 1 -vert 2:7 -vertfile ${file_t2}_seg_labeled.nii.gz -o ${PATH_RESULTS}/csa-SC_T2w_perlevel.csv -angle-corr 1 -append 1

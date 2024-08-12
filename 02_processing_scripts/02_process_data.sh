@@ -273,8 +273,11 @@ sct_qc -i ${file_t2}.nii.gz -s ${file_label}.nii.gz -p sct_label_utils -qc ${PAT
 
 # Register T2w to PAM50 template using C3 and C5 mid-vertebral levels
 # Registration params optimization: https://github.com/valosekj/dcm-brno/issues/18
+# Steps details:
+#   1. Segmentation-based registration: centermassrot is used to account for cord rotations
+#   2. Segmentation-based registration: syn is used for small scale deformations. `metric=MeanSquares` is used to due to `type=seg`.
 sct_register_to_template -i ${file_t2}.nii.gz -s ${file_t2}_seg.nii.gz -l ${file_label}.nii.gz -c t2 \
-                         -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,slicewise=1,smooth=0,iter=5 \
+                         -param step=1,type=seg,algo=centermassrot:step=2,type=seg,algo=syn,metric=MeanSquares,slicewise=1,smooth=0,iter=5 \
                          -qc ${PATH_QC} -qc-subject ${file}
 # Rename warping fields for clarity
 mv warp_template2anat.nii.gz warp_template2T2w.nii.gz

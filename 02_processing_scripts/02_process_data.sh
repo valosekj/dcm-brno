@@ -397,10 +397,16 @@ file_dwi_seg=$FILESEG
 # Register template->dwi (using T2w-to-template as initial transformation)
 # Note: in general for DWI we use the PAM50_t1 contrast, which is close to the dwi contrast; see SCT Course for details
 # Registration params optimization: https://github.com/valosekj/dcm-brno/issues/18
+# Three-step registration is inspired by:
+# https://github.com/sandrinebedard/k23-cervical-radiculopathy/blob/8c122e0613f80a3a285937e05a7b631ada70cfd9/preprocess_data_spinalcord.sh#L484
+# Steps details:
+#   1. Segmentation-based registration: centermassrot is used to account for cord rotations
+#   2. Segmentation-based registration: bsplinesyn (=regularized SyN) is used to maintain the consistency of the internal structure. `metric=MeanSquares` is used to due to `type=seg`.
+#   3. Image-based registration: syn is used for small scale deformations based on the image (`type=im`)
 sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
                         -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz \
                         -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz \
-                        -param step=1,type=seg,algo=centermass:step=2,type=im,algo=syn,slicewise=1,iter=3 \
+                        -param step=1,type=seg,algo=centermass:step=2,type=seg,algo=bsplinesyn,metric=MeanSquares,slicewise=1,iter=3:step=3,type=im,algo=syn,metric=CC,iter=3,slicewise=1 \
                         -initwarp ../anat/warp_template2T2w.nii.gz -initwarpinv ../anat/warp_T2w2template.nii.gz \
                         -owarp warp_template2dwi.nii.gz -owarpinv warp_dwi2template.nii.gz \
                         -qc "${PATH_QC}" -qc-subject "${SUBJECT}"

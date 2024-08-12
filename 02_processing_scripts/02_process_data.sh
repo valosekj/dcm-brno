@@ -18,6 +18,7 @@
 # Inspired by:
 # https://github.com/spine-generic/spine-generic/blob/master/process_data.sh
 # https://github.com/sct-pipeline/spine-park/blob/main/batch_processing.sh
+# https://github.com/sandrinebedard/k23-cervical-radiculopathy/blob/8c122e0613f80a3a285937e05a7b631ada70cfd9/preprocess_data_spinalcord.sh
 #
 
 

@@ -423,7 +423,7 @@ sct_qc -i ${file_dwi_mean}.nii.gz -s label_${file_dwi}/template/PAM50_levels.nii
 # Compute DTI metrics on the cropped moco data; the following files will be created: ${file_dwi}_FA, ${file_dwi}_MD, ...
 sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -o ${file_dwi}_
 
-# Bring DRI metrics in the PAM50 space
+# Bring DTI metrics in the PAM50 space
 dti_metrics=(FA MD RD AD)
 for dti_metric in ${dti_metrics[@]}; do
   sct_apply_transfo -i ${file_dwi}_${dti_metric}.nii.gz -d $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz -w warp_dwi2template.nii.gz -o ${file_dwi}_${dti_metric}_PAM50.nii.gz

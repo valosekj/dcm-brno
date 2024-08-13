@@ -142,7 +142,8 @@ segment_sc_SCIseg_if_does_not_exist(){
     # Add into to log file
     echo "❌ ${FILESEG}.nii.gz NOT found --> segmenting automatically" >> "${PATH_LOG}/${contrast}_SC_segmentations.log"
 
-    if [[ $contrast == "t2" ]]; then
+    # For T2w, generate also sagittal QC report
+    if [[ $contrast == "T2w" ]]; then
       # Generate sagittal SC QC report (https://github.com/ivadomed/canproco/issues/37#issuecomment-1644497220)
       sct_qc -i ${file}.nii.gz -s ${FILESEG}.nii.gz -d ${FILESEG}.nii.gz -p sct_deepseg_lesion -plane sagittal -qc ${PATH_QC} -qc-subject ${file}
     fi
@@ -267,7 +268,7 @@ file_t2="${file}_T2w"
 echo "👉 Processing: ${file_t2}"
 
 # Segment spinal cord (only if it does not exist) using the SCIsegV2 nnUNet model (part of SCT v6.4)
-segment_sc_SCIseg_if_does_not_exist $file_t2 "t2"
+segment_sc_SCIseg_if_does_not_exist $file_t2 "T2w"
 
 # Perform vertebral labeling (using sct_label_vertebrae) and create C3 and C5 mid-vertebral levels in the cord
 label_if_does_not_exist ${file_t2} ${file_t2}_seg "t2"
@@ -326,7 +327,7 @@ exit
 #    #segment_gm_if_does_not_exist $file_t2s "t2s"
 #    #file_t2s_seg=$FILESEG
 #    # Segment spinal cord (only if it does not exist) using the SCIsegV2 nnUNet model (part of SCT v6.4)
-#    segment_sc_SCIseg_if_does_not_exist $file_t2s "t2s"
+#    segment_sc_SCIseg_if_does_not_exist $file_t2s "T2s"
 #    file_t2s_scseg=$FILESEG
 #
 #    # Compute the gray matter and cord CSA perlevel

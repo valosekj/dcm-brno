@@ -275,7 +275,7 @@ sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_label
 sct_process_segmentation -i ${file_t2}_seg.nii.gz -vertfile ${file_t2}_seg_labeled.nii.gz -perslice 1 -normalize-PAM50 1 -angle-corr 1 -o ${PATH_RESULTS}/${file_t2}_metrics_perslice_PAM50.csv
 
 echo "✅ Done: ${file_t2}"
-exit
+
 ## -------------------------------------------------------------------------
 ## T2s
 ## ------------------------------------------------------------------------------

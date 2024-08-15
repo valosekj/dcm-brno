@@ -392,7 +392,6 @@ def main():
     df.loc[df['Participant'].isin(subject_lesions), 'T2w hyperintensity'] = 1
 
     VERT_LEVEL = args.vert_level
-
     # Keep only VertLevel specified by VERT_LEVEL
     print(f'VertLevel: {VERT_LEVEL}')
     df = df[df['VertLevel'] == VERT_LEVEL]

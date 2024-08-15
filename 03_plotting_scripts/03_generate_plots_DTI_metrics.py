@@ -250,7 +250,7 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, hue, fname_out
     # Scale the 'MAP()' column (containing FA, MD, ...) by the scaling factor
     df['MAP()'] = df['MAP()'] * scaling_factor[metric]
 
-    fig, axes = plt.subplots(2, 6, figsize=(14, 8))
+    fig, axes = plt.subplots(2, 6, figsize=(14, 8), sharey=True)
     axs = axes.ravel()
     # Loop across metrics
     for index, tract in enumerate(label_to_tract.values()):

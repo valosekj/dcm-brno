@@ -300,6 +300,9 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, hue, fname_out
         # Add title
         axs[index].set_title(tract.replace('\n', ' '), fontsize=LABEL_FONT_SIZE-2)
 
+        # Add horizontal grid
+        axs[index].yaxis.grid(True)
+
     axs[11].remove()  # remove the last unused subplot
 
     # Create custom legend for hue

@@ -9,6 +9,27 @@ T2w:
   - sub-2702B6403B_ses-2702B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
   - sub-2247B6492B_ses-2247B_T2w    # blurry-- hard to correct SC seg; see https://github.com/valosekj/dcm-brno/issues/2#issuecomment-1928021144
 
+# Hyperintense lesions on T2w images - no need to exclude from analysis, the key is used for filtering
+# https://github.com/valosekj/dcm-brno/issues/7
+T2w_lesions:
+  - sub-1836B6029B_ses-6029B_T2w
+  - sub-2333B2333B_ses-2333B_T2w
+  - sub-2750B4646B_ses-2750B_T2w
+  - sub-2750B4646B_ses-4646B_T2w
+  - sub-3132B4599B_ses-3132B_T2w
+  - sub-3132B4599B_ses-4599B_T2w
+  - sub-3793B4681B_ses-3793B_T2w
+  - sub-3793B4681B_ses-4681B_T2w
+  - sub-2320B6468B_ses-6468B_T2w
+  - sub-2333B6135B_ses-2333B_T2w
+  - sub-2333B6135B_ses-6135B_T2w
+  - sub-2340B6562B_ses-2340B_T2w
+  - sub-2340B6562B_ses-6562B_T2w
+  - sub-3056B6483B_ses-3056B_T2w
+  - sub-3758B6378B_ses-6378B_T2w
+  - sub-3759B6530B_ses-6530B_T2w
+  - sub-3998B6406B_ses-6406B_T2w
+
 # https://github.com/valosekj/dcm-brno/issues/12
 T1w:
   - sub-2389B_ses-2389B_T1w        # only 21 slices; see https://github.com/valosekj/dcm-brno/issues/12#issue-2389256248

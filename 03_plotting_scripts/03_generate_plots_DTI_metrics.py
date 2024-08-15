@@ -104,7 +104,8 @@ def get_parser():
         required=False,
         type=str,
         default='~/code/dcm-brno/exclude.yml',
-        help='Path to the YML file listing subjects to exclude. Default: ~/code/dcm-brno/exclude.yml'
+        help='Path to the YML file listing subjects to exclude and subjects with T2w hyperintensities. '
+             'Default: ~/code/dcm-brno/exclude.yml'
     )
 
     return parser
@@ -351,12 +352,20 @@ def main():
 
     # Get the list of subjects to exclude
     subjects_to_exclude = read_yaml_file(file_path=exclude_file_path, key='DWI')
+    # Get the list of subjects with hyperintense lesions on T2w images
+    subject_lesions = read_yaml_file(file_path=exclude_file_path, key='T2w_lesions')
 
     # Remove session (after the first '_') from the list of subjects to exclude
     subjects_to_exclude = [subject.split('_')[0] for subject in subjects_to_exclude]
+    # Remove session (after the first '_') from the list of subjects with hyperintense lesions
+    subject_lesions = [subject.split('_')[0] for subject in subject_lesions]
 
     # Remove subjects to exclude
     df = df[~df['Participant'].isin(subjects_to_exclude)]
+
+    # Create a new column "T2w hyperintensity" and set it to 1 for subjects in the `subject_lesions` list
+    df['T2w hyperintensity'] = 0
+    df.loc[df['Participant'].isin(subject_lesions), 'T2w hyperintensity'] = 1
 
     VERT_LEVEL = args.vert_level
 

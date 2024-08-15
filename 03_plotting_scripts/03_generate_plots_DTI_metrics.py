@@ -16,6 +16,7 @@ import os
 import sys
 import argparse
 
+import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -28,7 +29,7 @@ parent = os.path.dirname(current)
 # Add the parent directory to the sys.path to import the utils module
 sys.path.append(parent)
 
-from utils import read_csv_file, read_yaml_file, fetch_participant_and_session, format_pvalue
+from utils import read_csv_file, read_xlsx_file, read_yaml_file, fetch_participant_and_session, format_pvalue
 
 LABEL_FONT_SIZE = 14
 TICK_FONT_SIZE = 9
@@ -91,6 +92,12 @@ def get_parser():
         type=int,
         help='Vert level to generate the figure for. Examples: 3 (meaning C3), 4 (meaning C4), etc.'
     )
+    parser.add_argument(
+        '-xlsx-table',
+        metavar="<file>",
+        required=True,
+        type=str,
+        help="Path to the table.xlsx file containing 'MR B1', 'MR B2', group, and sex columns")
     parser.add_argument(
         '-exclude-file',
         metavar="<file>",
@@ -309,12 +316,17 @@ def main():
     csv_file_path = os.path.abspath(os.path.expanduser(args.i))
     # Exclude file
     exclude_file_path = os.path.abspath(os.path.expanduser(args.exclude_file))
+    # XLSX file with the group and sex columns
+    xlsx_file_path = os.path.abspath(os.path.expanduser(args.xlsx_table))
 
     if not os.path.isfile(csv_file_path):
         raise ValueError(f'ERROR: {args.i} does not exist.')
 
     if not os.path.isfile(exclude_file_path):
         raise ValueError(f'ERROR: {args.exclude_file} does not exist.')
+
+    if not os.path.isfile(xlsx_file_path):
+        raise ValueError(f'ERROR: {args.xlsx_table} does not exist.')
 
     # Fetch metric from file_path, e.g., get FA from DWI_FA.csv
     metric = os.path.basename(csv_file_path).split('_')[1].split('.')[0]
@@ -351,6 +363,19 @@ def main():
     # Keep only VertLevel specified by VERT_LEVEL
     print(f'VertLevel: {VERT_LEVEL}')
     df = df[df['VertLevel'] == VERT_LEVEL]
+
+    # Read the xlsx file with group and sex
+    print(f"Reading {xlsx_file_path}...")
+    df_group = read_xlsx_file(xlsx_file_path, columns_to_read=['Group těsně před operací', 'Pohlaví', 'MR B1', 'MR B2'])
+    # Combine 'MR B1' and 'MR B2' into participant_id by 'sub-' + 'MR B1' + 'MR B2'
+    df_group['Participant'] = 'sub-' + df_group['MR B1'] + df_group['MR B2']
+    # Rename columns
+    df_group = df_group.rename(columns={'Group těsně před operací': 'Group before surgery', 'Pohlaví': 'sex'})
+    # Merge the df_group into the dataframe with shape metrics (df)
+    df = pd.merge(df, df_group[['Participant', 'Group before surgery', 'sex']], on='Participant', how='left')
+
+    # Keep only subject with Group before surgery == 1
+    #df = df[df['Group before surgery'] == 1]
 
     # Print number of unique subjects
     number_of_subjects = df["Participant"].nunique()

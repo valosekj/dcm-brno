@@ -238,8 +238,8 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, hue, fname_out
 
     # NOTE: for some reason, the color order must be swapped here. Maybe due to the `.invert_xaxis` method?
     color_palette = {
-        'Post-surgery': (0.5529411764705883, 0.8274509803921568, 0.7803921568627451),  # red
-        'Pre-surgery': (0.984313725490196, 0.5019607843137255, 0.4470588235294118)  # green
+        'Post-surgery': (0.727, 0.727, 0.727, 0.5),  # light gray with transparency
+        'Pre-surgery': (0.9, 0.9, 0.9, 0.5)  # different tone of light gray with transparency
     }
 
     import seaborn as sns  # seaborn>=0.13.0 is required to properly create the figure

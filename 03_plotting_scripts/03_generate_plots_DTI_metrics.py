@@ -225,13 +225,14 @@ def create_rainplot(df, metric, number_of_subjects, fname_out):
     plt.close()
 
 
-def create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out):
+def create_violinplot(df, metric, number_of_subjects, stats_dict, hue, fname_out):
     """
     Create violionplot + swarmplot + lineplot comparing sessions 1 vs session2 for DTI metrics
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
     :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
     :param number_of_subjects: number of unique subjects (will be shown in the title)
     :param stats_dict: dictionary with p-values for each metric
+    :param hue: hue to distinguish groups (e.g., 'Group before surgery', 'T2w hyperintensity', )
     :param fname_out: path to the output figure
     """
 
@@ -267,14 +268,22 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out):
         sns.swarmplot(color='black',
                       alpha=0.5,
                       **kwargs)
-        # Plot lineplot connecting points of the same subject between sessions
-        sns.lineplot(units='Participant',
-                     estimator=None,
-                     legend=False,
-                     linewidth=0.5,
-                     color='black',
-                     alpha=0.5,
-                     **kwargs)
+
+        # Loop across groups to distinguish asymptomatic (1) and symptomatic (2) subjects
+        unique_groups = df[hue].unique()
+        for group in unique_groups:
+            # Filter data for the current tract and group
+            data = df[(df['Label'] == tract) & (df[hue] == group)]
+            kwargs = dict(x='Session', y='MAP()', ax=axs[index], data=data)
+
+            # Plot lineplot connecting points of the same subject between sessions
+            sns.lineplot(units='Participant',
+                         estimator=None,
+                         legend=False,
+                         linewidth=1.5,
+                         color='black' if group == unique_groups[0] else 'red',
+                         alpha=0.5,
+                         **kwargs)
 
         # Invert x-axis to have MR B1 on the left and MR B2 on the right
         axs[index].invert_xaxis()
@@ -292,6 +301,18 @@ def create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out):
         axs[index].set_title(tract.replace('\n', ' '), fontsize=LABEL_FONT_SIZE-2)
 
     axs[11].remove()  # remove the last unused subplot
+
+    # Create custom legend for hue
+    markers = [Line2D([0], [0], color=value, linestyle='-', linewidth=2, alpha=0.5)
+               for value in ['black', 'red']]
+    # Insert legend below subplots, NB - this line has to be below the plt.tight_layout()
+    legend = fig.legend(markers, unique_groups, loc='lower left', bbox_to_anchor=(0.7, 0.93),
+                        bbox_transform=plt.gcf().transFigure, ncol=len(unique_groups), fontsize=TICK_FONT_SIZE)
+    # Change box's frame color to black
+    frame = legend.get_frame()
+    frame.set_edgecolor('black')
+    # Add title to the legend
+    legend.set_title(hue, prop={'size': TICK_FONT_SIZE})
 
     # Set main title with number of subjects
     fig.suptitle(f'{metric} at C3 level (above the compression)\n'
@@ -407,8 +428,18 @@ def main():
     df['Session'] = df['Session'].replace({'Session 1': 'Pre-surgery', 'Session 2': 'Post-surgery'})
 
     # violionplot + swarmplot + lineplot
-    fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_violin_plots_C{VERT_LEVEL}.png')
-    create_violinplot(df, metric, number_of_subjects, stats_dict, fname_out)
+    # Group before surgery: 1 (asymptomatic), 2 (symptomatic)
+    fname_out = os.path.join(os.path.dirname(csv_file_path),
+                             f'{metric}_violin_plots_C{VERT_LEVEL}_group_before_surgery.png')
+    create_violinplot(df, metric, number_of_subjects, stats_dict, hue='Group before surgery', fname_out=fname_out)
+    # T2w hyperintensity: 0 (no hyperintensity), 1 (hyperintensity)
+    fname_out = os.path.join(os.path.dirname(csv_file_path),
+                             f'{metric}_violin_plots_C{VERT_LEVEL}_T2w_hyperintensity.png')
+    create_violinplot(df, metric, number_of_subjects, stats_dict, hue='T2w hyperintensity', fname_out=fname_out)
+    # Sex
+    fname_out = os.path.join(os.path.dirname(csv_file_path),
+                             f'{metric}_violin_plots_C{VERT_LEVEL}_sex.png')
+    create_violinplot(df, metric, number_of_subjects, stats_dict, hue='sex', fname_out=fname_out)
 
 
 if __name__ == '__main__':

@@ -379,7 +379,7 @@ file_dwi_seg=$FILESEG
 # Three-step registration is inspired by:
 # https://github.com/sandrinebedard/k23-cervical-radiculopathy/blob/8c122e0613f80a3a285937e05a7b631ada70cfd9/preprocess_data_spinalcord.sh#L484
 # Steps details:
-#   1. Segmentation-based registration: centermassrot is used to account for cord rotations
+#   1. Segmentation-based registration: centermass is used to account for cord rotations
 #   2. Segmentation-based registration: bsplinesyn (=regularized SyN) is used to maintain the consistency of the internal structure. `metric=MeanSquares` is used to due to `type=seg`.
 #   3. Image-based registration: syn is used for small scale deformations based on the image (`type=im`)
 sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \

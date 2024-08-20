@@ -43,13 +43,15 @@ label_to_tract = {
     "dorsal columns": "Dorsal\nColumns",
     "ventral funiculi": "Ventral\nColumns",
     "lateral funiculi": "Lateral\nColumns",
-    "0,1": "Fasciculus\nGracilis",
-    "2,3": "Fasciculus\nCuneatus",
-    "4,5": "Lateral Corticospinal\nTracts",
-    "12,13": "Spinal\nLemniscus",        # (spinothalamic and spinoreticular tracts)
-    "30,31": "Ventral\nGM Horns",
-    "34,35": "Dorsal\nGM Horns"
-}
+    "4,5": "Lateral Corticospinal\nTracts"
+    }
+#     "0,1": "Fasciculus\nGracilis",
+#     "2,3": "Fasciculus\nCuneatus",
+#     "4,5": "Lateral Corticospinal\nTracts",
+#     "12,13": "Spinal\nLemniscus",        # (spinothalamic and spinoreticular tracts)
+#     "30,31": "Ventral\nGM Horns",
+#     "34,35": "Dorsal\nGM Horns"
+# }
 
 metric_to_axis = {
     'FA': 'Fractional anisotropy',
@@ -350,7 +352,6 @@ def create_violinplot(df, metric, number_of_subjects, hue, fname_out):
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
     :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
     :param number_of_subjects: number of unique subjects (will be shown in the title)
-    :param stats_dict: dictionary with p-values for each metric
     :param hue: hue to distinguish groups (e.g., 'Group before surgery', 'T2w hyperintensity', )
     :param fname_out: path to the output figure
     """
@@ -363,13 +364,12 @@ def create_violinplot(df, metric, number_of_subjects, hue, fname_out):
 
     import seaborn as sns  # seaborn>=0.13.0 is required to properly create the figure
 
-    # Generate 3x2 group figure comparing sessions 1 vs session2 for 6 shape metrics
     mpl.rcParams['font.family'] = 'Arial'
 
     # Scale the 'MAP()' column (containing FA, MD, ...) by the scaling factor
     df['MAP()'] = df['MAP()'] * scaling_factor[metric]
 
-    fig, axes = plt.subplots(2, 6, figsize=(14, 8), sharey=True)
+    fig, axes = plt.subplots(1, 6, figsize=(14, 6), sharey=True)
     axs = axes.ravel()
     # Loop across metrics
     for index, tract in enumerate(label_to_tract.values()):
@@ -441,22 +441,21 @@ def create_violinplot(df, metric, number_of_subjects, hue, fname_out):
         # Invert x-axis to have MR B1 on the left and MR B2 on the right
         axs[index].invert_xaxis()
 
-        # If the p-value is less than 0.05, add the significance annotation
-        if stats_dict[tract] < 0.05:
-            axs[index].annotate('*', xy=(0.5, 0.9), xycoords='axes fraction', ha='center', va='center',
-                                fontsize=30, color='black')
-
         axs[index].set_xlabel('')
         axs[index].set_ylabel(metric_to_axis[metric], fontsize=TICK_FONT_SIZE)
         axs[index].tick_params(axis='both', which='major', labelsize=TICK_FONT_SIZE)
 
         # Add title
-        axs[index].set_title(tract.replace('\n', ' '), fontsize=LABEL_FONT_SIZE-2)
+        axs[index].set_title(tract.replace('\n', ' '), fontsize=LABEL_FONT_SIZE-2, y=0.97)
 
-        # Add horizontal grid
-        axs[index].yaxis.grid(True)
+        # Add horizontal dashed grid
+        axs[index].yaxis.grid(True, linestyle='--', which='major', color='grey', alpha=.3)
 
-    axs[11].remove()  # remove the last unused subplot
+        # Remove all spines
+        for spine in axs[index].spines.values():
+            spine.set_visible(False)
+
+    # axs[11].remove()  # remove the last unused subplot
 
     # Create custom legend for hue
     if hue:
@@ -616,7 +615,9 @@ def main():
         'Age groups'
     ]
 
+    # ----------
     # Raincloud plot (violionplot + boxplot + individual points)
+    # ----------
     # fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_rainplot_C{VERT_LEVEL}.png')
     # create_rainplot(df, metric, number_of_subjects, fname_out)
 

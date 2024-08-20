@@ -9,7 +9,7 @@
 surgery:
  - sub-1860B6472B
  - sub-2255B6372B
- - sub-2284B4723B
+ - sub-2284B4723B  # surgery after MR B2 --> excluding
  - sub-2320B6468B
  - sub-2340B6562B
  - sub-2349B6345B

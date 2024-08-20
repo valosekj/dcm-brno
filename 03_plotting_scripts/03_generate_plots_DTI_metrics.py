@@ -225,7 +225,126 @@ def create_rainplot(df, metric, number_of_subjects, fname_out):
     plt.close()
 
 
-def create_violinplot(df, metric, number_of_subjects, stats_dict, hue, fname_out):
+def create_scatterplot(df, metric, number_of_subjects, hue, fname_out):
+    """
+    Create scatterplot with lines connecting the same subject between sessions 1 and 2
+    The x-axis represents the time from surgery (in days) and the y-axis represents the DTI metric (e.g., FA, ...)
+    :param df: dataframe with DTI metrics for individual subjects and individual tracts
+    :param metric: DTI metric to plot (e.g., FA, MD, RD, AD)
+    :param number_of_subjects: number of unique subjects (will be shown in the title)
+    :param hue: hue to distinguish groups (e.g., 'Group before surgery', 'T2w hyperintensity', ...)
+    :param fname_out: path to the output figure
+    """
+    def _plot_data(ax, data, color, marker):
+        # Loop across participants
+        participants = data['Participant'].unique()
+        for participant in participants:
+            data_tmp = data[data['Participant'] == participant]
+
+            x_session1 = data_tmp[data_tmp['Session'] == 'Pre-surgery']['Days between surgery and baseline MRI']
+            y_session1 = data_tmp[data_tmp['Session'] == 'Pre-surgery']['MAP()']
+            x_session2 = data_tmp[data_tmp['Session'] == 'Post-surgery']['Days between surgery and follow-up MRI']
+            y_session2 = data_tmp[data_tmp['Session'] == 'Post-surgery']['MAP()']
+
+            # Plot scatterplot
+            ax.plot([x_session1, x_session2], [y_session1, y_session2],
+                    color=color,
+                    marker=marker,
+                    alpha=0.5,
+                    linewidth=1.5)
+
+    # Compute the difference in days between the surgery and the MRI scans
+    df['Days between surgery and baseline MRI'] = (df['Date of baseline MRI'] - df['Date of surgery']).dt.days
+    df['Days between surgery and follow-up MRI'] = (df['Date of follow-up MRI'] - df['Date of surgery']).dt.days
+
+    mpl.rcParams['font.family'] = 'Arial'
+
+    # Scale the 'MAP()' column (containing FA, MD, ...) by the scaling factor
+    df['MAP()'] = df['MAP()'] * scaling_factor[metric]
+
+    fig, axes = plt.subplots(1, 6, figsize=(18, 6), sharey=True)
+    axs = axes.ravel()
+    # Loop across metrics
+    for index, tract in enumerate(label_to_tract.values()):
+        # 3 groups
+        if hue in ['Maximum compressed level']:
+            unique_groups = df[hue].unique()
+            colors = ['black', 'red', 'blue']
+            markers = ['o', 's', 'D']
+        # 1 group
+        elif hue is None:
+            unique_groups = [None]
+            colors = ['black']
+            markers = ['o']
+        # 2 groups
+        else:
+            unique_groups = df[hue].unique()
+            colors = ['black', 'red']
+            markers = ['o', 's']
+        color_map = dict(zip(unique_groups, colors))
+        marker_map = dict(zip(unique_groups, markers))
+
+        for group in unique_groups:
+            data = df[df['Label'] == tract]
+            if hue is not None:
+                data = data[data[hue] == group]
+            _plot_data(axs[index], data, color_map[group], marker_map[group])
+
+        # Plot vertical dashed line at x=0
+        axs[index].axvline(x=0, color='black', linestyle='--', alpha=0.5)
+
+        # Change x-axis limits to [-500, 2500]
+        axs[index].set_xlim([-1000, 2500])
+
+        axs[index].set_xlabel('Time from surgery [days]', fontsize=TICK_FONT_SIZE)
+        # Set y-axis label only for the first subplot
+        if index == 0:
+            axs[index].set_ylabel(metric_to_axis[metric], fontsize=TICK_FONT_SIZE)
+        axs[index].tick_params(axis='both', which='major', labelsize=TICK_FONT_SIZE)
+
+        # Add title
+        axs[index].set_title(tract.replace('\n', ' '), fontsize=LABEL_FONT_SIZE - 2, y=1)
+
+        # Add horizontal dashed grid
+        axs[index].yaxis.grid(True, linestyle='--', which='major', color='grey', alpha=.3)
+
+        # Remove spines
+        axs[index].spines['right'].set_visible(False)
+        axs[index].spines['top'].set_visible(False)
+
+    # Create custom legend for hue
+    # Create marker and label for the surgery day
+    markers = [Line2D([0], [0], color='black', linestyle='--', linewidth=2, alpha=0.5)]
+    labels = ['surgery day']
+    # If hue is specified, add the groups to the legend
+    if hue:
+        markers_groups = [Line2D([0], [0], color=value, linestyle='-', linewidth=2, alpha=0.5)
+                          for value in colors]
+        markers = markers + markers_groups
+        labels = labels + list(unique_groups)
+
+    legend = fig.legend(markers, labels, loc='lower left',
+                        bbox_to_anchor=(0.7, 0.91), bbox_transform=plt.gcf().transFigure,
+                        ncol=len(labels), fontsize=TICK_FONT_SIZE)
+    # Change box's frame color to black
+    frame = legend.get_frame()
+    frame.set_edgecolor('black')
+    # Add title to the legend
+    legend.set_title(hue, prop={'size': TICK_FONT_SIZE})
+
+    # Set main title with number of subjects
+    fig.suptitle(f'{metric} at C3 level (above the compression)\n'
+                 f'Number of subjects: {number_of_subjects}',
+                 fontsize=LABEL_FONT_SIZE)
+
+    # Save the figure
+    fig.tight_layout()
+    fig.savefig(fname_out, dpi=300)
+    plt.close(fig)
+    print(f'Figure saved to {fname_out}')
+
+
+def create_violinplot(df, metric, number_of_subjects, hue, fname_out):
     """
     Create violionplot + swarmplot + lineplot comparing sessions 1 vs session2 for DTI metrics
     :param df: dataframe with DTI metrics for individual subjects and individual tracts
@@ -454,6 +573,15 @@ def main():
     # -------------------------------
     # Plotting
     # -------------------------------
+    hue_options = [
+        None,
+        'Group before surgery',
+        'T2w hyperintensity',
+        'Sex',
+        'Maximum compressed level',
+        'Age groups'
+    ]
+
     # Raincloud plot (violionplot + boxplot + individual points)
     # fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_rainplot_C{VERT_LEVEL}.png')
     # create_rainplot(df, metric, number_of_subjects, fname_out)
@@ -461,6 +589,15 @@ def main():
     # Rename Session 1 and Session 2 to Pre-surgery and Post-surgery
     df['Session'] = df['Session'].replace({'Session 1': 'Pre-surgery', 'Session 2': 'Post-surgery'})
 
+    # ----------
+    # longitudinal scatter plot
+    # ----------
+    for hue in hue_options:
+        hue_suffix = f'_{hue.lower().replace(" ", "_")}' if hue else ''
+        fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_scatter_plots_C{VERT_LEVEL}{hue_suffix}.png')
+        create_scatterplot(df, metric, number_of_subjects, hue=hue, fname_out=fname_out)
+
+    # ----------
     # violionplot + swarmplot + lineplot
     # Group before surgery: 1 (asymptomatic), 2 (symptomatic)
     fname_out = os.path.join(os.path.dirname(csv_file_path),

@@ -388,11 +388,28 @@ def create_violinplot(df, metric, number_of_subjects, hue, fname_out):
                       alpha=0.5,
                       **kwargs)
 
-        # Loop across groups to distinguish asymptomatic (1) and symptomatic (2) subjects
-        unique_groups = df[hue].unique()
-        for group in unique_groups:
+        # Plot lineplot in different color for each group depending on the hue
+        # Loop across groups if hue is specified
+        if hue in ['Maximum compressed level']:
+            unique_groups = df[hue].unique()
+            for group in unique_groups:
+                # Filter data for the current tract and group
+                data = df[(df['Label'] == tract) & (df[hue] == group)]
+                kwargs = dict(x='Session', y='MAP()', ax=axs[index], data=data)
+
+                legend_colors = ['black', 'red', 'blue']
+                color_map = dict(zip(unique_groups, legend_colors))
+                # Plot lineplot connecting points of the same subject between sessions
+                sns.lineplot(units='Participant',
+                             estimator=None,
+                             legend=False,
+                             linewidth=1.5,
+                             color=color_map[group],
+                             alpha=0.5,
+                             **kwargs)
+        elif hue is None:
             # Filter data for the current tract and group
-            data = df[(df['Label'] == tract) & (df[hue] == group)]
+            data = df[(df['Label'] == tract)]
             kwargs = dict(x='Session', y='MAP()', ax=axs[index], data=data)
 
             # Plot lineplot connecting points of the same subject between sessions
@@ -400,9 +417,26 @@ def create_violinplot(df, metric, number_of_subjects, hue, fname_out):
                          estimator=None,
                          legend=False,
                          linewidth=1.5,
-                         color='black' if group == unique_groups[0] else 'red',
+                         color='black',
                          alpha=0.5,
                          **kwargs)
+        else:
+            unique_groups = df[hue].unique()
+            for group in unique_groups:
+                # Filter data for the current tract and group
+                data = df[(df['Label'] == tract) & (df[hue] == group)]
+                kwargs = dict(x='Session', y='MAP()', ax=axs[index], data=data)
+
+                legend_colors = ['black', 'red']
+                color_map = dict(zip(unique_groups, legend_colors))
+                # Plot lineplot connecting points of the same subject between sessions
+                sns.lineplot(units='Participant',
+                             estimator=None,
+                             legend=False,
+                             linewidth=1.5,
+                             color=color_map[group],
+                             alpha=0.5,
+                             **kwargs)
 
         # Invert x-axis to have MR B1 on the left and MR B2 on the right
         axs[index].invert_xaxis()
@@ -425,16 +459,16 @@ def create_violinplot(df, metric, number_of_subjects, hue, fname_out):
     axs[11].remove()  # remove the last unused subplot
 
     # Create custom legend for hue
-    markers = [Line2D([0], [0], color=value, linestyle='-', linewidth=2, alpha=0.5)
-               for value in ['black', 'red']]
-    # Insert legend below subplots, NB - this line has to be below the plt.tight_layout()
-    legend = fig.legend(markers, unique_groups, loc='lower left', bbox_to_anchor=(0.7, 0.93),
-                        bbox_transform=plt.gcf().transFigure, ncol=len(unique_groups), fontsize=TICK_FONT_SIZE)
-    # Change box's frame color to black
-    frame = legend.get_frame()
-    frame.set_edgecolor('black')
-    # Add title to the legend
-    legend.set_title(hue, prop={'size': TICK_FONT_SIZE})
+    if hue:
+        markers = [Line2D([0], [0], color=value, linestyle='-', linewidth=2, alpha=0.5)
+                   for value in legend_colors]
+        legend = fig.legend(markers, unique_groups, loc='lower left', bbox_to_anchor=(0.7, 0.91),
+                            bbox_transform=plt.gcf().transFigure, ncol=len(unique_groups), fontsize=TICK_FONT_SIZE)
+        # Change box's frame color to black
+        frame = legend.get_frame()
+        frame.set_edgecolor('black')
+        # Add title to the legend
+        legend.set_title(hue, prop={'size': TICK_FONT_SIZE})
 
     # Set main title with number of subjects
     fig.suptitle(f'{metric} at C3 level (above the compression)\n'
@@ -599,18 +633,11 @@ def main():
 
     # ----------
     # violionplot + swarmplot + lineplot
-    # Group before surgery: 1 (asymptomatic), 2 (symptomatic)
-    fname_out = os.path.join(os.path.dirname(csv_file_path),
-                             f'{metric}_violin_plots_C{VERT_LEVEL}_group_before_surgery.png')
-    create_violinplot(df, metric, number_of_subjects, stats_dict, hue='Group before surgery', fname_out=fname_out)
-    # T2w hyperintensity: 0 (no hyperintensity), 1 (hyperintensity)
-    fname_out = os.path.join(os.path.dirname(csv_file_path),
-                             f'{metric}_violin_plots_C{VERT_LEVEL}_T2w_hyperintensity.png')
-    create_violinplot(df, metric, number_of_subjects, stats_dict, hue='T2w hyperintensity', fname_out=fname_out)
-    # Sex
-    fname_out = os.path.join(os.path.dirname(csv_file_path),
-                             f'{metric}_violin_plots_C{VERT_LEVEL}_sex.png')
-    create_violinplot(df, metric, number_of_subjects, stats_dict, hue='sex', fname_out=fname_out)
+    # ----------
+    for hue in hue_options:
+        hue_suffix = f'_{hue.lower().replace(" ", "_")}' if hue else ''
+        fname_out = os.path.join(os.path.dirname(csv_file_path), f'{metric}_violin_plots_C{VERT_LEVEL}{hue_suffix}.png')
+        create_violinplot(df, metric, number_of_subjects, hue=hue, fname_out=fname_out)
 
 
 if __name__ == '__main__':

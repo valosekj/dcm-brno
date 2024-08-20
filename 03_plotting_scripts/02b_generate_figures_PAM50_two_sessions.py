@@ -6,6 +6,8 @@
 #       python generate_figures.py
 #       -path-HC $SCT_DIR/data/PAM50_normalized_metrics
 #       -participant-file $SCT_DIR/data/PAM50_normalized_metrics/participants.tsv
+#       -ses1 sub-001_ses-01_T2w_metrics_perslice_PAM50.csv
+#       -ses2 sub-001_ses-02_T2w_metrics_perslice_PAM50.csv
 #       -single-subject-sex M
 #
 # Author: Jan Valosek

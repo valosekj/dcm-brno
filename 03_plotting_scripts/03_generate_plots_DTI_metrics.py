@@ -438,6 +438,9 @@ def main():
     # Keep only subject with Group before surgery == 1
     #df = df[df['Group before surgery'] == 1]
 
+    # Exclude sub-2284B4723B -- surgery after MR B2 --> see surgery.yml
+    df = df[df['Participant'] != 'sub-2284B4723B']
+
     # Print number of unique subjects
     number_of_subjects = df["Participant"].nunique()
     print(f'CSV file: Number of unique subjects after dropping: {number_of_subjects}')

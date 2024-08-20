@@ -398,13 +398,42 @@ def main():
 
     # Read the xlsx file with group and sex
     print(f"Reading {xlsx_file_path}...")
-    df_group = read_xlsx_file(xlsx_file_path, columns_to_read=['Group těsně před operací', 'Pohlaví', 'MR B1', 'MR B2'])
+    df_group = read_xlsx_file(xlsx_file_path, columns_to_read=['Group těsně před operací',
+                                                               'Datum operace ',
+                                                               'Etáž nejtěžší komprese',
+                                                               'Pohlaví',
+                                                               'Věk v době MRI baseline B',
+                                                               'MR B1',
+                                                               'MR B2',
+                                                               'Datum MRI baseline B',
+                                                               'Datum MRI FUP1 B'])
+
+    # Remove white spaces at the end of the columns
+    df_group.columns = df_group.columns.str.strip()
+    # Remove time from columns with dates
+    df_group['Datum operace'] = df_group['Datum operace'].dt.date
+    df_group['Datum MRI baseline B'] = df_group['Datum MRI baseline B'].dt.date
+    df_group['Datum MRI FUP1 B'] = df_group['Datum MRI FUP1 B'].dt.date
+
     # Combine 'MR B1' and 'MR B2' into participant_id by 'sub-' + 'MR B1' + 'MR B2'
     df_group['Participant'] = 'sub-' + df_group['MR B1'] + df_group['MR B2']
     # Rename columns
-    df_group = df_group.rename(columns={'Group těsně před operací': 'Group before surgery', 'Pohlaví': 'sex'})
+    df_group = df_group.rename(columns={'Group těsně před operací': 'Group before surgery',
+                                        'Etáž nejtěžší komprese': 'Maximum compressed level',
+                                        'Pohlaví': 'Sex',
+                                        'Věk v době MRI baseline B': 'age',
+                                        'Datum operace': 'Date of surgery',
+                                        'Datum MRI baseline B': 'Date of baseline MRI',
+                                        'Datum MRI FUP1 B': 'Date of follow-up MRI'})
+
     # Merge the df_group into the dataframe with shape metrics (df)
-    df = pd.merge(df, df_group[['Participant', 'Group before surgery', 'sex']], on='Participant', how='left')
+    df = pd.merge(df, df_group[['Participant', 'Group before surgery', 'Maximum compressed level', 'Sex', 'age',
+                                'Date of surgery', 'Date of baseline MRI', 'Date of follow-up MRI']],
+                  on='Participant', how='left')
+
+    # Recode age into categories
+    age_cutoff = 59
+    df['Age groups'] = pd.cut(df['age'], bins=[0, age_cutoff, 100], labels=[f'<{age_cutoff}', f'>={age_cutoff}'])
 
     # Keep only subject with Group before surgery == 1
     #df = df[df['Group before surgery'] == 1]

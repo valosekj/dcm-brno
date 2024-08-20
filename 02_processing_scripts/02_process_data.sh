@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Process data anatomical and DWI data
+# Process anatomical and DWI data
 #
 # Requirements:
 #   SCT v6.4 and higher (containing the SCIsegV2 and contrast-agnostic models v2.4 as part of 'sct_deepseg')
@@ -107,11 +107,11 @@ label_if_does_not_exist(){
 
   # Create labels in the cord at C3 and C5 mid-vertebral levels (needed for template registration)
   sct_label_utils -i ${file_seg}_labeled.nii.gz -vert-body 3,5 -o ${file}_label-disc_c3c5.nii.gz
-
 }
 
 # Check if manual segmentation already exists (under /derivatives/labels/). If it does, copy it locally. If
-# it does not, perform segmentation using SCIsegV2 nnUNet model (part of SCT v6.4).
+# it does not, perform segmentation using SCIsegV2 nnUNet model (part of SCT v6.4). The model segments both the SC and
+# intramedullary lesion.
 segment_sc_SCIseg_if_does_not_exist(){
   local file="$1"
   local contrast="$2"   # note that contrast is used only for QC purposes and logging

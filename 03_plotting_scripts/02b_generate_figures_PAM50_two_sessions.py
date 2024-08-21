@@ -347,10 +347,11 @@ def main():
     ses2 = ses2.replace('ses-', '')
 
     if single_subject_sex:
-        number_of_subjects = str(len(df_normative_data[df_normative_data['sex'] == single_subject_sex]))
+        number_of_subjects = len(df_normative_data[df_normative_data['sex'] == single_subject_sex]
+                                 ['participant_id'].unique())
         print(f"Number of {SEX_TO_LEGEND[single_subject_sex]}: {number_of_subjects}")
     else:
-        number_of_subjects = str(len(df_normative_data['participant_id'].unique()))
+        number_of_subjects = len(df_normative_data['participant_id'].unique())
         print(f'Number of subjects: {number_of_subjects}')
 
     # Create plots

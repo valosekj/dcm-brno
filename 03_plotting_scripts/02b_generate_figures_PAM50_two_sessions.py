@@ -64,10 +64,12 @@ def get_parser():
     parser = argparse.ArgumentParser(
         description="Plot single subject morphometric metrics (two sessions) together with normative values computed "
                     "from normative database (spine-generic dataset in PAM50 space) per slice and vertebral levels ")
-    parser.add_argument('-path-HC', required=True, type=str,
+    parser.add_argument('-path-HC', required=False, type=str,
+                        default='$SCT_DIR/data/PAM50_normalized_metrics',
                         help="Path to the folder with CSV files with normative data from spine-generic dataset "
                              "computed per slice.")
     parser.add_argument('-participant-file', required=False, type=str,
+                        default='$SCT_DIR/data/PAM50_normalized_metrics/participants.tsv',
                         help="Path to the spine-generic participants.tsv file (used to filter per sex).")
     parser.add_argument('-ses1', required=True, type=str,
                         help="Path to single-subject CSV file for session 1.")
@@ -314,8 +316,8 @@ def main():
     # Parse arguments
     parser = get_parser()
     args = parser.parse_args()
-    path_HC = args.path_HC
-    path_participants_tsv = args.participant_file
+    path_HC = os.path.expandvars(args.path_HC)
+    path_participants_tsv = os.path.expandvars(args.participant_file)
     path_ses1 = args.ses1
     path_ses2 = args.ses2
     single_subject_sex = args.single_subject_sex

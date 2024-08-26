@@ -97,6 +97,10 @@ def main():
                                                          'MR B2',
                                                          'Datum MRI FUP1 B',
                                                          'Interval baseline-FUP MRI B (měsíce)',
+                                                         'Komprese C3/4',
+                                                         'Komprese C4/5',
+                                                         'Komprese C5/6',
+                                                         'Komprese C6/7',
                                                          'Group - baseline',
                                                          'Group + 6M',
                                                          'Group +12M',
@@ -122,13 +126,20 @@ def main():
     # Keep only the subjects that are in the YML file
     df = df[df['MR B1'].isin(subject_list)]
 
+    # Make 'Komprese C3/4', 'Komprese C4/5', 'Komprese C5/6', 'Komprese C6/7' boolean
+    df['Komprese C3/4'] = df['Komprese C3/4'].apply(lambda x: True if x == 1 else False)
+    df['Komprese C4/5'] = df['Komprese C4/5'].apply(lambda x: True if x == 1 else False)
+    df['Komprese C5/6'] = df['Komprese C5/6'].apply(lambda x: True if x == 1 else False)
+    df['Komprese C6/7'] = df['Komprese C6/7'].apply(lambda x: True if x == 1 else False)
+
     # Reorder columns into the following order 'MR B1', 'Datum MRI baseline B', 'MR B2', 'Datum MRI FUP1 B',
     # 'Věk v době MRI baseline B', 'Pohlaví', 'Datum operace', 'Group - baseline', 'Group + 6M', 'Group +12M',
     # 'Group + 24M', 'Group + 36M'
     df = df[['MR B1', 'Datum MRI baseline B', 'MR B2', 'Datum MRI FUP1 B', 'Interval baseline-FUP MRI B (měsíce)',
              'Datum operace', 'Group těsně před operací',
              'Věk v době MRI baseline B', 'Pohlaví',
-             'Etáž nejtěžší komprese', 'mJOA těsně před operací',
+             'Etáž nejtěžší komprese', 'Komprese C3/4', 'Komprese C4/5', 'Komprese C5/6', 'Komprese C6/7',
+             'mJOA těsně před operací',
              'Group - baseline', 'Group + 6M', 'Group + 12M', 'Group + 24M', 'Group + 36M']]
 
     # Save the fetched demographics into a CSV file
